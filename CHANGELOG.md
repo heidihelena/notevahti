@@ -20,7 +20,18 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   example adapters. No production extractor; the core runs with any extractor or none.
 - **Batch** (`validate_batch`) and **CLI** (`notevahti validate`).
 - Synthetic lung-cancer MDT corpus fixture with known ground truth (incl. adversarial cases).
-- Test asserting the validation core makes no network calls. 56 tests, deterministic, offline.
+- **Synthetic MDT corpus generator** (`scripts/gen_corpus.py`): deterministic, offline, seeded.
+  Three modalities mirroring the NTOG tools — free text (fi/sv/nb/da/is/en), semistructured (EN),
+  fully structured (EN) — at 500 cases/group (4000 total). Six gold fields per case with exact source
+  spans (histology, clinical_stage/cTNM, treatment intent, treatment, PD-L1 TPS, driver alteration).
+  Every gold span verifies through NoteVahti's own provenance check (100%). Generated data is
+  git-ignored (`corpus/`) and regenerable from the seed; the generator and its tests are tracked.
+  Each case also carries a `challenges` block: `surface_variant` (correct value, non-verbatim
+  surface — 100% validate as correct) and `present_but_wrong` (wrong value that appears in the note
+  as the pre-MDT cTNM — found by provenance, not a hallucination). The present-but-wrong cases
+  surfaced a real weighting issue: a disagreeing independent anchor currently flags only ~13% of
+  them, recorded for Stage-1 calibration (see SKILL.md).
+- Test asserting the validation core makes no network calls. 60 tests, deterministic, offline.
 
 ### Project docs
 - Design note, research → validated-tool pathway, deep-research evidence base, and SKILL.md build

@@ -97,10 +97,38 @@ real errors?) is a *study*, not code — see [docs/design/pathway.md].
 
 ## Synthetic MDT corpus (the test fixture)
 
+Generator: `scripts/gen_corpus.py` (deterministic, offline, seeded). It mirrors the three NTOG MDT
+tools — `mdt.html` (free text), `mdt-structured-mini.html` (semistructured), `mdt-structured-v3_1.html`
+(fully structured) — across six languages for the free-text modality (fi, sv, nb, da, is, en) and
+English for the two structured tools, at 500 cases/group by default (4000 total). Regenerate with:
+
+```
+PYTHONPATH=src python3 scripts/gen_corpus.py --n 500 --out corpus   # corpus/ is git-ignored
+```
+
 The harness is developed against synthetic lung-cancer MDT notes with a **known ground truth** — the
 case is generated from a clinical schema, so the correct registry value is known by construction.
 This is the ideal fixture for a validation harness and keeps development outside the Findata
 secure-environment constraint (no real PHI).
+
+Each case ships six gold fields with exact spans (histology, clinical_stage/cTNM, treatment intent,
+treatment, PD-L1 TPS, driver alteration). `tests/test_gen_corpus.py` asserts every gold span resolves
+through NoteVahti's own provenance check — fixture and tool must agree.
+
+Each case also carries a `challenges` block with two adversarial extraction targets that test the
+*validity heuristic*, not just provenance:
+- **surface_variant** — a correct value whose surface differs from the note (spacing/case), found
+  only via normalized/compact matching. Should validate as correct (it does: 100% pass).
+- **present_but_wrong** — a wrong value that nonetheless appears in the note (the pre-MDT cTNM, which
+  the tools record), so provenance returns SPAN_FOUND (not a hallucination). Only an independent
+  anchor / the validity heuristic can catch it.
+
+Finding from the present-but-wrong cases (n=2600): with a *disagreeing* independent anchor, only
+**13%** are flagged — a wrong-but-present value scores ~0.74–0.80 and clears the 0.80 threshold
+because a single disagreeing anchor (anchor_agreement→0, weight 0.20) cannot pull a
+strong-provenance value below threshold. This is the kind of weighting/threshold issue Stage-1
+calibration must fix; a principled candidate is to flag whenever an independent anchor disagrees,
+regardless of score. Recorded here, not silently changed.
 
 - Generate with a capable **general** LLM and structured prompting from TNM/staging schemas — the
   research found no advantage for medical-specific generators for *generation*. Seed from ntog.org
