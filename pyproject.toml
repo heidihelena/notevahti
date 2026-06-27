@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "notevahti"
+version = "0.1.0.dev0"
+description = "Transparent, local-first extraction-validation toolkit for clinical registry data."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "Heidi Helena Andersén" }]
+keywords = ["clinical", "registry", "validation", "provenance", "local-first", "audit"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+# The validation core has NO runtime dependencies: deterministic, offline, model-free.
+dependencies = []
+
+[project.optional-dependencies]
+# Optional, never imported by the core. Local extractors / models live here.
+extractors = []  # e.g. gliner, transformers — added per-adapter, never required by the core
+dev = ["pytest>=7"]
+
+[project.urls]
+Homepage = "https://github.com/heidihelena/notevahti"
+Source = "https://github.com/heidihelena/notevahti"
+
+[project.scripts]
+notevahti = "notevahti.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/notevahti"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

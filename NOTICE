@@ -1,0 +1,15 @@
+NoteVahti
+Copyright 2026 Heidi Helena Andersén
+
+This product is part of the Vahtian family of open tools.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+these files except in compliance with the License. You may obtain a copy of the
+License in the LICENSE file in this repository or at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Boundary: NoteVahti is not a medical device and not clinical advice. It produces
+validation evidence (provenance, a validity heuristic, agreement metrics, an
+independence check, and an audit record) for human review. It does not guarantee
+the correctness of any extracted value.
