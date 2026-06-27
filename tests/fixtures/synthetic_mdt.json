@@ -1,0 +1,36 @@
+[
+  {
+    "case_id": "syn-001",
+    "note": "MDT 2026-05-12. 67M, smoker. CT: 3.1 cm spiculated mass RUL. Biopsy: adenocarcinoma. PET-CT: no nodal or distant uptake. Clinical stage cT2a N0 M0. Decision: SABR.",
+    "fields": {
+      "histology": {"value": "adenocarcinoma", "field_type": "categorical", "gold": "adenocarcinoma"},
+      "clinical_stage": {"value": "cT2aN0M0", "field_type": "staging", "gold": "cT2aN0M0"},
+      "treatment": {"value": "SABR", "field_type": "categorical", "gold": "SABR"}
+    }
+  },
+  {
+    "case_id": "syn-002",
+    "note": "MDT 2026-05-19. 72F, never-smoker. CT: 5.4 cm LUL mass with hilar nodes. EBUS: squamous cell carcinoma, N2. PET-CT: no distant disease. Clinical stage cT3 N2 M0. Decision: concurrent chemoradiotherapy.",
+    "fields": {
+      "histology": {"value": "squamous cell carcinoma", "field_type": "categorical", "gold": "squamous cell carcinoma"},
+      "clinical_stage": {"value": "cT3N2M0", "field_type": "staging", "gold": "cT3N2M0"},
+      "treatment": {"value": "concurrent chemoradiotherapy", "field_type": "categorical", "gold": "concurrent chemoradiotherapy"}
+    }
+  },
+  {
+    "case_id": "syn-003-adversarial-hallucination",
+    "note": "MDT 2026-05-26. 59M. CT: 2.2 cm RLL nodule. CT-guided biopsy: adenocarcinoma. PET-CT negative. Clinical stage cT1c N0 M0. Decision: lobectomy.",
+    "fields": {
+      "clinical_stage": {"value": "cT1cN0M0", "field_type": "staging", "gold": "cT1cN0M0"},
+      "treatment_hallucinated": {"value": "pneumonectomy", "field_type": "categorical", "gold": "lobectomy", "note": "value not present in source -> must be flagged"}
+    }
+  },
+  {
+    "case_id": "syn-004-adversarial-wrong-stage",
+    "note": "MDT 2026-06-02. 64F. CT: 4.0 cm LLL mass, contralateral nodes. EBUS: adenocarcinoma N3. PET-CT: no distant disease. Clinical stage cT2b N3 M0. Decision: systemic therapy.",
+    "fields": {
+      "clinical_stage": {"value": "cT2bN3M0", "field_type": "staging", "gold": "cT2bN3M0"},
+      "clinical_stage_wrong": {"value": "cT2bN0M0", "field_type": "staging", "gold": "cT2bN3M0", "note": "extractor read N0 but source says N3 -> disagreement vs gold"}
+    }
+  }
+]
