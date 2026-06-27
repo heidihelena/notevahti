@@ -29,8 +29,14 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   Each case also carries a `challenges` block: `surface_variant` (correct value, non-verbatim
   surface — 100% validate as correct) and `present_but_wrong` (wrong value that appears in the note
   as the pre-MDT cTNM — found by provenance, not a hallucination). The present-but-wrong cases
-  surfaced a real weighting issue: a disagreeing independent anchor currently flags only ~13% of
-  them, recorded for Stage-1 calibration (see SKILL.md).
+  surfaced a real weighting issue (a disagreeing independent anchor originally flagged only ~13% of
+  them), now fixed by the validity rule below.
+
+### Changed
+- **Validity correctness rule:** a *disagreeing* independent anchor (anchor_agreement < 1 with ≥1
+  independent anchor) now forces `flag_for_human_review` regardless of score — a disagreeing
+  independent second source is the canonical adjudication trigger. Present-but-wrong flagging went
+  from ~13% to 100% on the synthetic corpus; correct surface-variant pass rate stays at 100%.
 - Test asserting the validation core makes no network calls. 60 tests, deterministic, offline.
 
 ### Project docs

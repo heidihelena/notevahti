@@ -123,12 +123,14 @@ Each case also carries a `challenges` block with two adversarial extraction targ
   the tools record), so provenance returns SPAN_FOUND (not a hallucination). Only an independent
   anchor / the validity heuristic can catch it.
 
-Finding from the present-but-wrong cases (n=2600): with a *disagreeing* independent anchor, only
-**13%** are flagged — a wrong-but-present value scores ~0.74–0.80 and clears the 0.80 threshold
-because a single disagreeing anchor (anchor_agreement→0, weight 0.20) cannot pull a
-strong-provenance value below threshold. This is the kind of weighting/threshold issue Stage-1
-calibration must fix; a principled candidate is to flag whenever an independent anchor disagrees,
-regardless of score. Recorded here, not silently changed.
+Finding from the present-but-wrong cases (n=2600): originally only **13%** were flagged — a
+wrong-but-present value scored ~0.74–0.80 and cleared the 0.80 threshold because a single
+disagreeing anchor (anchor_agreement→0, weight 0.20) could not pull a strong-provenance value below
+threshold. Fixed by a correctness rule in `score_validity`: **a disagreeing independent anchor
+(anchor_agreement<1 with ≥1 independent anchor) forces `flag_for_human_review` regardless of score.**
+After the rule, present-but-wrong flagging is 100% and correct surface-variant pass rate is
+unchanged at 100%. (Weight/threshold *calibration* remains a Stage-1 task; this rule is correctness,
+not calibration.)
 
 - Generate with a capable **general** LLM and structured prompting from TNM/staging schemas — the
   research found no advantage for medical-specific generators for *generation*. Seed from ntog.org

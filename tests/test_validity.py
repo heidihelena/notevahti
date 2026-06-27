@@ -67,6 +67,23 @@ def test_monotonic_in_span_quality():
     assert exact.score > mismatch.score
 
 
+def test_disagreeing_independent_anchor_always_flags():
+    # A wrong-but-present value with strong (exact) provenance would otherwise clear the threshold;
+    # a disagreeing independent anchor must force review regardless of score.
+    note = "Pre-MDT cTNM cT2a N0 M0. MDT recommendation: cTNM cT2a N2 M0."
+    wrong = "cT2a N0 M0"  # present in note (pre-MDT), but the registry value is the post-MDT stage
+    anchor = [Signal("cT2a N2 M0", Lineage(human_id="B"), SignalKind.INDEPENDENT_HUMAN)]
+    v = _score(wrong, note, anchor)
+    assert v.flag_for_human_review is True
+    assert "disagree" in v.detail
+
+
+def test_agreeing_anchor_does_not_force_flag():
+    anchor = [Signal(VALUE, Lineage(human_id="B"))]
+    v = _score(VALUE, NOTE, anchor)
+    assert v.flag_for_human_review is False
+
+
 def test_score_is_deterministic():
     anchors = [Signal(VALUE, Lineage(human_id="B"))]
     a = _score(VALUE, NOTE, anchors)

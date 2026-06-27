@@ -109,13 +109,21 @@ def score_validity(
         score = min(score, _NO_SPAN_CEILING)
 
     score = max(0.0, min(1.0, score))
-    flag = score < threshold
+
+    # Correctness rule (not mere calibration): a disagreeing independent anchor is the canonical
+    # "needs human adjudication" signal, so it forces review regardless of score. Without this, a
+    # wrong-but-present value with strong provenance can clear the threshold despite an independent
+    # second source contradicting it.
+    disagreeing_anchor = n_indep >= 1 and agreeing < n_indep
+    flag = (score < threshold) or disagreeing_anchor
 
     detail = (
         f"span_presence={span_presence:.2f}, span_quality={span_quality:.2f}, "
         f"independence={indep:.2f} ({independence.status.value}), "
         f"anchor_agreement={agreement:.2f} ({agreeing}/{n_indep} independent)"
     )
+    if disagreeing_anchor:
+        detail += "; flagged: independent anchor disagrees"
     return Validity(
         score=round(score, 4),
         flag_for_human_review=flag,
