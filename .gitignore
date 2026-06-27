@@ -7,6 +7,8 @@ venv/
 dist/
 build/
 .DS_Store
-*.jsonl
 .claude/
-corpus/
+# Audit logs written locally are ignored; the synthetic corpus (corpus/) is committed on purpose
+# so the exact dataset is reproducible, not only regenerable from the generator.
+audit.jsonl
+*.audit.jsonl

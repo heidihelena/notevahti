@@ -1,0 +1,66 @@
+{
+  "n_per_group": 500,
+  "groups": {
+    "free_fi": {
+      "kind": "free",
+      "language": "fi",
+      "n": 500,
+      "file": "free_fi.jsonl"
+    },
+    "free_sv": {
+      "kind": "free",
+      "language": "sv",
+      "n": 500,
+      "file": "free_sv.jsonl"
+    },
+    "free_nb": {
+      "kind": "free",
+      "language": "nb",
+      "n": 500,
+      "file": "free_nb.jsonl"
+    },
+    "free_da": {
+      "kind": "free",
+      "language": "da",
+      "n": 500,
+      "file": "free_da.jsonl"
+    },
+    "free_is": {
+      "kind": "free",
+      "language": "is",
+      "n": 500,
+      "file": "free_is.jsonl"
+    },
+    "free_en": {
+      "kind": "free",
+      "language": "en",
+      "n": 500,
+      "file": "free_en.jsonl"
+    },
+    "semistructured_en": {
+      "kind": "semi",
+      "language": "en",
+      "n": 500,
+      "file": "semistructured_en.jsonl"
+    },
+    "structured_en": {
+      "kind": "struct",
+      "language": "en",
+      "n": 500,
+      "file": "structured_en.jsonl"
+    }
+  },
+  "gold_fields": [
+    "histology",
+    "clinical_stage",
+    "intent",
+    "treatment",
+    "pdl1",
+    "driver"
+  ],
+  "tools": {
+    "free": "ntog.org/mdt.html",
+    "semi": "ntog.org/mdt-structured-mini.html",
+    "struct": "ntog.org/mdt-structured-v3_1.html"
+  }
+}

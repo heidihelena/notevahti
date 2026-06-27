@@ -100,10 +100,11 @@ real errors?) is a *study*, not code — see [docs/design/pathway.md].
 Generator: `scripts/gen_corpus.py` (deterministic, offline, seeded). It mirrors the three NTOG MDT
 tools — `mdt.html` (free text), `mdt-structured-mini.html` (semistructured), `mdt-structured-v3_1.html`
 (fully structured) — across six languages for the free-text modality (fi, sv, nb, da, is, en) and
-English for the two structured tools, at 500 cases/group by default (4000 total). Regenerate with:
+English for the two structured tools, at 500 cases/group by default (4000 total). The exact dataset
+is committed under `corpus/` so it is reproducible; rebuild it deterministically with:
 
 ```
-PYTHONPATH=src python3 scripts/gen_corpus.py --n 500 --out corpus   # corpus/ is git-ignored
+PYTHONPATH=src python3 scripts/gen_corpus.py --n 500 --out corpus
 ```
 
 The harness is developed against synthetic lung-cancer MDT notes with a **known ground truth** — the
