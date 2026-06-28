@@ -8,6 +8,7 @@ field whose value cannot be located in the note (at the claimed span or anywhere
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping, Sequence
 
 from .types import FieldType, MatchKind, Provenance, ProvenanceStatus
 
@@ -53,22 +54,61 @@ def canonical_value(s: str, field_type: FieldType = FieldType.TEXT) -> str:
     return _compact(s) if field_type in _COMPACT_TYPES else _norm(s)
 
 
-def _find(value: str, note: str, field_type: FieldType) -> tuple[int, int, MatchKind] | None:
+def _bounded(note: str, start: int, end: int, numeric: bool) -> bool:
+    """True if [start, end) is not embedded inside a larger token of the same character class.
+
+    For numeric values a neighbouring digit breaks the boundary, and a '.'/',' breaks it only when
+    it sits between digits (a real decimal/grouping separator) -- so "1" matches "ECOG 1." but not
+    the "1" inside "4.1". For other field types any adjacent alphanumeric breaks the boundary (so
+    "M" does not match inside "Male").
+    """
+    before = note[start - 1] if start > 0 else ""
+    after = note[end] if end < len(note) else ""
+    if numeric:
+        before2 = note[start - 2] if start > 1 else ""
+        after2 = note[end + 1] if end + 1 < len(note) else ""
+
+        def breaks(neighbour: str, outer: str) -> bool:
+            return neighbour.isdigit() or (neighbour in ".," and outer.isdigit())
+
+        return not breaks(before, before2) and not breaks(after, after2)
+    return not before.isalnum() and not after.isalnum()
+
+
+def _first_substring(note: str, needle: str, *, ci: bool, numeric: bool, wb: bool) -> int:
+    """Index of the first (optionally word-bounded) occurrence of needle, or -1."""
+    hay = note.lower() if ci else note
+    pat = needle.lower() if ci else needle
+    start = 0
+    while True:
+        i = hay.find(pat, start)
+        if i < 0:
+            return -1
+        if not wb or _bounded(note, i, i + len(needle), numeric):
+            return i
+        start = i + 1
+
+
+def _find(
+    value: str, note: str, field_type: FieldType, word_boundary: bool = False
+) -> tuple[int, int, MatchKind] | None:
     """Locate the value in the note, returning (start, end, match_kind) or None.
 
     Strategies are tried in order of strictness; the first hit wins, so an exact match is preferred
-    over a looser one and reported as such.
+    over a looser one and reported as such. ``word_boundary`` (opt-in; default off so behaviour is
+    unchanged) rejects matches embedded inside a larger token.
     """
     if not value:
         return None
+    numeric = field_type is FieldType.NUMERIC
 
     # 1. exact substring
-    i = note.find(value)
+    i = _first_substring(note, value, ci=False, numeric=numeric, wb=word_boundary)
     if i >= 0:
         return (i, i + len(value), MatchKind.EXACT)
 
     # 2. case-insensitive substring
-    i = note.lower().find(value.lower())
+    i = _first_substring(note, value, ci=True, numeric=numeric, wb=word_boundary)
     if i >= 0:
         return (i, i + len(value), MatchKind.NORMALIZED)
 
@@ -76,9 +116,9 @@ def _find(value: str, note: str, field_type: FieldType) -> tuple[int, int, Match
     tokens = [t for t in re.split(r"\s+", value) if t]
     if tokens:
         pattern = r"\s+".join(re.escape(t) for t in tokens)
-        m = re.search(pattern, note, flags=re.IGNORECASE)
-        if m:
-            return (m.start(), m.end(), MatchKind.NORMALIZED)
+        for m in re.finditer(pattern, note, flags=re.IGNORECASE):
+            if not word_boundary or _bounded(note, m.start(), m.end(), numeric):
+                return (m.start(), m.end(), MatchKind.NORMALIZED)
 
     # 4. compact (whitespace-removed) match for types where whitespace is not meaningful
     if field_type in _COMPACT_TYPES:
@@ -86,11 +126,47 @@ def _find(value: str, note: str, field_type: FieldType) -> tuple[int, int, Match
         compact_note = "".join(ch.lower() for _, ch in kept)
         vc = _compact(value)
         j = compact_note.find(vc)
-        if j >= 0 and vc:
+        while j >= 0 and vc:
             start = kept[j][0]
             end = kept[j + len(vc) - 1][0] + 1
-            return (start, end, MatchKind.NORMALIZED)
+            if not word_boundary or _bounded(note, start, end, numeric):
+                return (start, end, MatchKind.NORMALIZED)
+            j = compact_note.find(vc, j + 1)
 
+    return None
+
+
+def _synonym_variants(
+    value: str, field_type: FieldType, synonyms: Mapping[str, Sequence[str]]
+) -> list[str]:
+    """Surface variants of value from the synonym table (matched by canonical key)."""
+    key = canonical_value(value, field_type)
+    for canonical, variants in synonyms.items():
+        members = [canonical, *variants]
+        if any(canonical_value(m, field_type) == key for m in members):
+            return members
+    return []
+
+
+def _locate(
+    value: str,
+    note: str,
+    field_type: FieldType,
+    word_boundary: bool,
+    synonyms: Mapping[str, Sequence[str]] | None,
+) -> tuple[int, int, MatchKind] | None:
+    """Find value (and, if a synonym table is given, its known surface variants)."""
+    hit = _find(value, note, field_type, word_boundary)
+    if hit is not None:
+        return hit
+    if synonyms is not None:
+        for variant in _synonym_variants(value, field_type, synonyms):
+            if variant == value:
+                continue
+            vhit = _find(variant, note, field_type, word_boundary)
+            if vhit is not None:
+                s, e, _ = vhit
+                return (s, e, MatchKind.NORMALIZED)  # synonym match is a normalised match
     return None
 
 
@@ -99,6 +175,9 @@ def verify_span(
     note: str,
     claimed_span: tuple[int, int] | None = None,
     field_type: FieldType = FieldType.TEXT,
+    *,
+    word_boundary: bool = False,
+    synonyms: Mapping[str, Sequence[str]] | None = None,
 ) -> Provenance:
     """Verify that ``value`` is supported by ``note``.
 
@@ -107,6 +186,11 @@ def verify_span(
       and the mismatch is recorded (a weaker provenance, which downstream scoring penalises).
     - If the value is found nowhere, the result is ``no_span_found`` with the hallucination flag
       set.
+
+    ``word_boundary`` and ``synonyms`` are opt-in and default off, so the deterministic default
+    behaviour is unchanged. ``word_boundary`` rejects matches embedded inside a larger token (so a
+    single token does not bind spuriously); ``synonyms`` (e.g. from ``notevahti.synonyms``) lets
+    known abbreviations of a value count as support.
     """
     # Validate a provided claimed span against the note bounds.
     if claimed_span is not None:
@@ -126,7 +210,7 @@ def verify_span(
                     detail="claimed span verified",
                 )
         # Claimed span is out of bounds or its text does not support the value: look elsewhere.
-        found = _find(value, note, field_type)
+        found = _locate(value, note, field_type, word_boundary, synonyms)
         if found is not None:
             s, e, kind = found
             reason = (
@@ -154,7 +238,7 @@ def verify_span(
         )
 
     # No claimed span: search the note.
-    found = _find(value, note, field_type)
+    found = _locate(value, note, field_type, word_boundary, synonyms)
     if found is not None:
         s, e, kind = found
         return Provenance(
