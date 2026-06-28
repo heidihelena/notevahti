@@ -7,8 +7,9 @@ reports a single batch-level :class:`Agreement`.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Optional, Sequence
+from typing import Any
 
 from .agreement import agreement as _agreement
 from .audit import AuditLog
@@ -29,7 +30,7 @@ def validate_batch(
     items: Sequence[dict[str, Any]],
     *,
     field_type: FieldType = FieldType.TEXT,
-    audit_log: Optional[AuditLog] = None,
+    audit_log: AuditLog | None = None,
 ) -> BatchResult:
     """Validate many field inputs.
 

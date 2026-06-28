@@ -8,7 +8,6 @@ field whose value cannot be located in the note (at the claimed span or anywhere
 from __future__ import annotations
 
 import re
-from typing import Optional
 
 from .types import FieldType, MatchKind, Provenance, ProvenanceStatus
 
@@ -25,7 +24,7 @@ def _compact(s: str) -> str:
     return re.sub(r"\s+", "", s).lower()
 
 
-def _equality_kind(claimed_text: str, value: str, field_type: FieldType) -> Optional[MatchKind]:
+def _equality_kind(claimed_text: str, value: str, field_type: FieldType) -> MatchKind | None:
     """How (if at all) the claimed-span text equals the value."""
     if claimed_text == value:
         return MatchKind.EXACT
@@ -48,13 +47,13 @@ def values_equivalent(a: str, b: str, field_type: FieldType = FieldType.TEXT) ->
 def canonical_value(s: str, field_type: FieldType = FieldType.TEXT) -> str:
     """Canonical key for a value under this field type — the category identity used by agreement.
 
-    Consistent with :func:`values_equivalent`: two values are equivalent iff their canonical keys are
-    equal (whitespace removed for compact types, collapsed-and-lowercased otherwise).
+    Consistent with :func:`values_equivalent`: two values are equivalent iff their canonical keys
+    are equal (whitespace removed for compact types, collapsed-and-lowercased otherwise).
     """
     return _compact(s) if field_type in _COMPACT_TYPES else _norm(s)
 
 
-def _find(value: str, note: str, field_type: FieldType) -> Optional[tuple[int, int, MatchKind]]:
+def _find(value: str, note: str, field_type: FieldType) -> tuple[int, int, MatchKind] | None:
     """Locate the value in the note, returning (start, end, match_kind) or None.
 
     Strategies are tried in order of strictness; the first hit wins, so an exact match is preferred
@@ -98,15 +97,16 @@ def _find(value: str, note: str, field_type: FieldType) -> Optional[tuple[int, i
 def verify_span(
     value: str,
     note: str,
-    claimed_span: Optional[tuple[int, int]] = None,
+    claimed_span: tuple[int, int] | None = None,
     field_type: FieldType = FieldType.TEXT,
 ) -> Provenance:
     """Verify that ``value`` is supported by ``note``.
 
     - If ``claimed_span`` is given and its text matches the value, that span is the provenance.
-    - If the claimed span does not match but the value is found elsewhere, the found span is used and
-      the mismatch is recorded (a weaker provenance, which downstream scoring penalises).
-    - If the value is found nowhere, the result is ``no_span_found`` with the hallucination flag set.
+    - If the claimed span does not match but the value is found elsewhere, the found span is used
+      and the mismatch is recorded (a weaker provenance, which downstream scoring penalises).
+    - If the value is found nowhere, the result is ``no_span_found`` with the hallucination flag
+      set.
     """
     # Validate a provided claimed span against the note bounds.
     if claimed_span is not None:
@@ -129,7 +129,11 @@ def verify_span(
         found = _find(value, note, field_type)
         if found is not None:
             s, e, kind = found
-            reason = "claimed span out of bounds" if not in_bounds else "claimed span did not match value"
+            reason = (
+                "claimed span out of bounds"
+                if not in_bounds
+                else "claimed span did not match value"
+            )
             return Provenance(
                 status=ProvenanceStatus.SPAN_FOUND,
                 claimed_span=claimed_span,

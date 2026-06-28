@@ -16,8 +16,8 @@ from notevahti.types import (
     ProvenanceStatus,
     Signal,
     SignalKind,
-    Validity,
     ValidationRecord,
+    Validity,
 )
 
 
@@ -36,12 +36,18 @@ def _record() -> ValidationRecord:
         validity=Validity(score=0.9, flag_for_human_review=False, threshold=0.8),
         agreement=Agreement(status=AgreementStatus.NOT_AVAILABLE),
         independence=Independence(
-            status=IndependenceStatus.SATISFIED, reason="anchor lineage disjoint",
-            anchors_considered=1, independent_anchors=1,
+            status=IndependenceStatus.SATISFIED,
+            reason="anchor lineage disjoint",
+            anchors_considered=1,
+            independent_anchors=1,
         ),
         audit=AuditEntry(
-            record_id="r1", timestamp="2026-06-27T00:00:00Z", actor="tester",
-            prev_hash="0" * 64, payload={"k": "v"}, entry_hash="abc",
+            record_id="r1",
+            timestamp="2026-06-27T00:00:00Z",
+            actor="tester",
+            prev_hash="0" * 64,
+            payload={"k": "v"},
+            entry_hash="abc",
         ),
         notevahti_version="0.1.0.dev0",
     )

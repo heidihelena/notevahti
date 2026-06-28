@@ -2,16 +2,13 @@
 
 from notevahti.independence import check_independence
 from notevahti.provenance import verify_span
-from notevahti.validity import DEFAULT_WEIGHTS, score_validity
 from notevahti.types import (
     FieldType,
     Lineage,
-    Provenance,
-    ProvenanceStatus,
-    MatchKind,
     Signal,
     SignalKind,
 )
+from notevahti.validity import DEFAULT_WEIGHTS, score_validity
 
 NOTE = "Clinical stage cT2a N0 M0. Plan: SABR."
 VALUE = "cT2aN0M0"
@@ -59,11 +56,13 @@ def test_disagreeing_independent_anchor_lowers_score():
 def test_monotonic_in_span_quality():
     # exact claimed span vs value found elsewhere (claimed mismatch) -> exact scores higher
     span = (NOTE.index("cT2a"), NOTE.index("cT2a") + len("cT2a N0 M0"))
-    exact = _score("cT2a N0 M0", NOTE, [Signal("cT2a N0 M0", Lineage(human_id="B"))],
-                   claimed_span=span)
+    exact = _score(
+        "cT2a N0 M0", NOTE, [Signal("cT2a N0 M0", Lineage(human_id="B"))], claimed_span=span
+    )
     bad_span = (NOTE.index("SABR"), NOTE.index("SABR") + 4)
-    mismatch = _score("cT2a N0 M0", NOTE, [Signal("cT2a N0 M0", Lineage(human_id="B"))],
-                      claimed_span=bad_span)
+    mismatch = _score(
+        "cT2a N0 M0", NOTE, [Signal("cT2a N0 M0", Lineage(human_id="B"))], claimed_span=bad_span
+    )
     assert exact.score > mismatch.score
 
 

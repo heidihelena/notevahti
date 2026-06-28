@@ -1,8 +1,8 @@
 """Step 8: extractor interface and example adapters; the contract is extractor-agnostic."""
 
 from notevahti.extractors import Extractor, PassThroughExtractor, RegexExtractor
-from notevahti.validate import validate_field
 from notevahti.types import ExtractionResult, FieldSpec, FieldType, Lineage, ProvenanceStatus
+from notevahti.validate import validate_field
 
 NOTE = "Clinical stage cT2a N0 M0. Plan: SABR."
 STAGE = FieldSpec(name="clinical_stage", field_type=FieldType.STAGING)
@@ -26,7 +26,7 @@ def test_regex_extracts_span():
     ex = RegexExtractor({"clinical_stage": r"(cT\d\w*\s*N\d\s*M\d)"})
     r = ex.extract(NOTE, STAGE)
     assert r.value == "cT2a N0 M0"
-    assert NOTE[r.source_span[0]:r.source_span[1]] == "cT2a N0 M0"
+    assert NOTE[r.source_span[0] : r.source_span[1]] == "cT2a N0 M0"
 
 
 def test_swapping_extractor_does_not_change_validation_contract():
@@ -37,10 +37,12 @@ def test_swapping_extractor_does_not_change_validation_contract():
     rb = b.extract(NOTE, STAGE)
 
     vlin = Lineage(source_id="note_1", model_id="x")
-    rec_a = validate_field(ra.value, NOTE, field=STAGE, claimed_span=ra.source_span,
-                           value_lineage=vlin)
-    rec_b = validate_field(rb.value, NOTE, field=STAGE, claimed_span=rb.source_span,
-                           value_lineage=vlin)
+    rec_a = validate_field(
+        ra.value, NOTE, field=STAGE, claimed_span=ra.source_span, value_lineage=vlin
+    )
+    rec_b = validate_field(
+        rb.value, NOTE, field=STAGE, claimed_span=rb.source_span, value_lineage=vlin
+    )
     assert rec_a.provenance.status is ProvenanceStatus.SPAN_FOUND
     assert rec_b.provenance.status is ProvenanceStatus.SPAN_FOUND
     assert rec_a.validity.flag_for_human_review == rec_b.validity.flag_for_human_review

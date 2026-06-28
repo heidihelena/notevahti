@@ -2,7 +2,6 @@
 
 import notevahti
 from notevahti.audit import AuditLog
-from notevahti.validate import validate_field
 from notevahti.types import (
     AgreementStatus,
     FieldType,
@@ -12,14 +11,17 @@ from notevahti.types import (
     Signal,
     SignalKind,
 )
+from notevahti.validate import validate_field
 
 NOTE = "MDT 2026-06-20. RUL adenocarcinoma. Clinical stage cT2a N0 M0. Plan: SABR."
 
 
 def test_strong_field_full_record():
     rec = validate_field(
-        "cT2aN0M0", NOTE,
-        field_type=FieldType.STAGING, field_name="clinical_stage",
+        "cT2aN0M0",
+        NOTE,
+        field_type=FieldType.STAGING,
+        field_name="clinical_stage",
         value_lineage=Lineage(source_id="note_1", model_id="regex_v1"),
         anchors=[Signal("cT2aN0M0", Lineage(human_id="B"), SignalKind.INDEPENDENT_HUMAN)],
     )
@@ -31,8 +33,9 @@ def test_strong_field_full_record():
 
 
 def test_hallucination_flagged_end_to_end():
-    rec = validate_field("pneumonectomy", NOTE, field_type=FieldType.CATEGORICAL,
-                         value_lineage=Lineage(model_id="m"))
+    rec = validate_field(
+        "pneumonectomy", NOTE, field_type=FieldType.CATEGORICAL, value_lineage=Lineage(model_id="m")
+    )
     assert rec.provenance.hallucination_flag is True
     assert rec.validity.flag_for_human_review is True
     assert rec.validity.score <= 0.10
@@ -40,7 +43,9 @@ def test_hallucination_flagged_end_to_end():
 
 def test_circular_validation_refused():
     rec = validate_field(
-        "cT2aN0M0", NOTE, field_type=FieldType.STAGING,
+        "cT2aN0M0",
+        NOTE,
+        field_type=FieldType.STAGING,
         value_lineage=Lineage(model_id="regex_v1"),
         anchors=[Signal("cT2aN0M0", Lineage(model_id="regex_v1"))],  # self-validation
     )
@@ -61,9 +66,14 @@ def test_reference_gives_single_item_agreement():
 def test_audit_persisted_and_verifies(tmp_path):
     log = AuditLog(str(tmp_path / "audit.jsonl"))
     rec = validate_field(
-        "cT2aN0M0", NOTE, field_type=FieldType.STAGING,
+        "cT2aN0M0",
+        NOTE,
+        field_type=FieldType.STAGING,
         value_lineage=Lineage(source_id="note_1", model_id="m"),
-        audit_log=log, record_id="r1", timestamp="2026-06-27T00:00:00Z", actor="A",
+        audit_log=log,
+        record_id="r1",
+        timestamp="2026-06-27T00:00:00Z",
+        actor="A",
     )
     assert rec.audit is not None and rec.audit.entry_hash
     ok, _ = log.verify()
@@ -75,8 +85,11 @@ def test_audit_persisted_and_verifies(tmp_path):
 
 
 def test_determinism_same_inputs_same_record():
-    kw = dict(field_type=FieldType.STAGING, value_lineage=Lineage(source_id="n", model_id="m"),
-              anchors=[Signal("cT2aN0M0", Lineage(human_id="B"))])
+    kw = dict(
+        field_type=FieldType.STAGING,
+        value_lineage=Lineage(source_id="n", model_id="m"),
+        anchors=[Signal("cT2aN0M0", Lineage(human_id="B"))],
+    )
     a = validate_field("cT2aN0M0", NOTE, **kw).to_dict()
     b = validate_field("cT2aN0M0", NOTE, **kw).to_dict()
     assert a == b

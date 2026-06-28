@@ -1,8 +1,8 @@
 """The pluggable extractor interface and two example adapters.
 
 NoteVahti binds to no extractor. An extractor is optional and never trusted as truth â€” it only
-*proposes* a (value, span); the validation core decides whether to believe it. Swapping the extractor
-must never change the validation contract.
+*proposes* a (value, span); the validation core decides whether to believe it. Swapping the
+extractor must never change the validation contract.
 
 Shipped here: a pass-through adapter (wrap already-extracted values) and a trivial regex adapter.
 No production extractor. Local models (GLiNER, clinical-BERT, Llama/Mistral finetunes served via
@@ -12,7 +12,7 @@ llama.cpp/Ollama/vLLM) are additional adapters that satisfy the same Protocol â€
 from __future__ import annotations
 
 import re
-from typing import Optional, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 from .types import ExtractionResult, FieldSpec
 
@@ -34,7 +34,7 @@ class PassThroughExtractor:
     def __init__(
         self,
         values: dict[str, str],
-        spans: Optional[dict[str, tuple[int, int]]] = None,
+        spans: dict[str, tuple[int, int]] | None = None,
         extractor_id: str = "passthrough",
         version: str = "0",
     ):
@@ -67,12 +67,14 @@ class RegexExtractor:
     def extract(self, note: str, field: FieldSpec) -> ExtractionResult:
         pattern = self._patterns.get(field.name)
         if pattern is None:
-            return ExtractionResult(value="", source_span=None, extractor_id="regex",
-                                    version=self._version)
+            return ExtractionResult(
+                value="", source_span=None, extractor_id="regex", version=self._version
+            )
         m = pattern.search(note)
         if m is None:
-            return ExtractionResult(value="", source_span=None, extractor_id="regex",
-                                    version=self._version)
+            return ExtractionResult(
+                value="", source_span=None, extractor_id="regex", version=self._version
+            )
         group = 1 if m.groups() else 0
         return ExtractionResult(
             value=m.group(group),

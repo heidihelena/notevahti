@@ -21,8 +21,9 @@ Gwet AC1/AC2 — Wongpakaran 2013 (BMC Med Res Methodol 13:61).
 from __future__ import annotations
 
 import random
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Literal, Optional, Sequence
+from typing import Literal
 
 Weighting = Literal["quadratic", "identity"]
 
@@ -38,7 +39,7 @@ class OrdinalAgreement:
     prevalence: dict[str, float]
     paradox_suspected: bool
     weighting: Weighting
-    ci: Optional[dict[str, tuple[float, float]]] = None
+    ci: dict[str, tuple[float, float]] | None = None
 
 
 def _weight(i: int, j: int, k: int, weighting: Weighting) -> float:
@@ -54,13 +55,14 @@ def _weight(i: int, j: int, k: int, weighting: Weighting) -> float:
 def _coefficients(
     a_idx: Sequence[int], b_idx: Sequence[int], k: int, weighting: Weighting
 ) -> tuple[float, float, float, float, list[float]]:
-    """Return (observed, cohen_kappa, weighted_kappa, gwet_ac2, prevalence) for index-coded ratings."""
+    """Return (observed, cohen_kappa, weighted_kappa, gwet_ac2, prevalence) for index-coded
+    ratings."""
     n = len(a_idx)
     # confusion matrix and marginals
     obs = [[0 for _ in range(k)] for _ in range(k)]
     a_marg = [0] * k
     b_marg = [0] * k
-    for ai, bi in zip(a_idx, b_idx):
+    for ai, bi in zip(a_idx, b_idx, strict=True):
         obs[ai][bi] += 1
         a_marg[ai] += 1
         b_marg[bi] += 1
@@ -106,7 +108,7 @@ def ordinal_agreement(
     *,
     weighting: Weighting = "quadratic",
     bootstrap: int = 0,
-    seed: Optional[int] = None,
+    seed: int | None = None,
     alpha: float = 0.05,
 ) -> OrdinalAgreement:
     """Ordinal agreement between two raters over an ORDERED ``categories`` list.
@@ -135,13 +137,17 @@ def ordinal_agreement(
     # Kappa paradox: high observed agreement but a low unweighted kappa from skewed marginals.
     paradox = po >= 0.80 and cohen < 0.50
 
-    ci: Optional[dict[str, tuple[float, float]]] = None
+    ci: dict[str, tuple[float, float]] | None = None
     if bootstrap > 0:
         if seed is None:
             raise ValueError("bootstrap requires an explicit integer seed for reproducibility")
         rng = random.Random(seed)
-        cols: dict[str, list[float]] = {"observed": [], "cohen_kappa": [],
-                                        "weighted_kappa": [], "gwet_ac2": []}
+        cols: dict[str, list[float]] = {
+            "observed": [],
+            "cohen_kappa": [],
+            "weighted_kappa": [],
+            "gwet_ac2": [],
+        }
         for _ in range(bootstrap):
             pick = [rng.randrange(n) for _ in range(n)]
             ra = [a_idx[i] for i in pick]
@@ -154,9 +160,16 @@ def ordinal_agreement(
         ci = {name: _percentile_ci(vals, alpha) for name, vals in cols.items()}
 
     return OrdinalAgreement(
-        n=n, categories=tuple(categories), observed_agreement=round(po, 6),
-        cohen_kappa=round(cohen, 6), weighted_kappa=round(wkappa, 6), gwet_ac2=round(ac2, 6),
-        prevalence=prevalence, paradox_suspected=paradox, weighting=weighting, ci=ci,
+        n=n,
+        categories=tuple(categories),
+        observed_agreement=round(po, 6),
+        cohen_kappa=round(cohen, 6),
+        weighted_kappa=round(wkappa, 6),
+        gwet_ac2=round(ac2, 6),
+        prevalence=prevalence,
+        paradox_suspected=paradox,
+        weighting=weighting,
+        ci=ci,
     )
 
 

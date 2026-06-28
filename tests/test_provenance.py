@@ -23,7 +23,7 @@ def test_compact_normalized_match_for_staging():
     p = verify_span("cT2aN0M0", NOTE, claimed_span=None, field_type=FieldType.STAGING)
     assert p.status is ProvenanceStatus.SPAN_FOUND
     assert p.match_kind is MatchKind.NORMALIZED
-    assert NOTE[p.matched_span[0]:p.matched_span[1]].replace(" ", "") == "cT2aN0M0"
+    assert NOTE[p.matched_span[0] : p.matched_span[1]].replace(" ", "") == "cT2aN0M0"
     assert p.hallucination_flag is False
 
 
