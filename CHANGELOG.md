@@ -40,6 +40,13 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   deterministic (seeded) percentile bootstrap CIs. Separate from the deterministic core. Hand-verified
   against worked examples (κ 0.644 → weighted 0.804 → AC2 0.833; paradox case κ −0.05 vs AC2 0.89).
 
+### Fixed
+- **Batch agreement is no longer pooled across fields** (audit priority #1): `validate_batch` now
+  computes agreement **per `(field_name, field_type)` group**, each using its own field type. A new
+  `BatchResult.agreements_by_field` holds the per-group results; the top-level `agreement` is reported
+  only for a single group and is `not_available` (with a pointer) when fields are mixed — a pooled κ
+  across staging/date/text was incorrect.
+
 ### Changed (engineering)
 - The codebase is now **`mypy --strict` clean** (13 modules); strict config added to `pyproject.toml`
   and `mypy` added to the dev extra. (Further WP-A tooling — ruff, Hypothesis, pytest-socket, CI —
