@@ -1,0 +1,151 @@
+note_id,seeded_error_type,expected_issue,should_trigger_review
+SYN-0001,unit_format,unit representation mismatch,True
+SYN-0002,none,valid,False
+SYN-0003,none,valid,False
+SYN-0004,temporal_trap,old temporal value extracted,True
+SYN-0005,temporal_trap,old temporal value extracted,True
+SYN-0006,multilingual_variant,mixed Finnish/Swedish expression,True
+SYN-0007,none,valid,False
+SYN-0008,independence_fail,extractor and verifier share same source lineage,True
+SYN-0009,none,valid,False
+SYN-0010,none,valid,False
+SYN-0011,negation_trap,negated/refuted value extracted,True
+SYN-0012,temporal_trap,old temporal value extracted,True
+SYN-0013,none,valid,False
+SYN-0014,unit_format,unit representation mismatch,True
+SYN-0015,source_conflict,conflicting sources,True
+SYN-0016,none,valid,False
+SYN-0017,copy_forward_old_stage,copy-forward old value,True
+SYN-0018,none,valid,False
+SYN-0019,none,valid,False
+SYN-0020,unit_format,unit representation mismatch,True
+SYN-0021,none,valid,False
+SYN-0022,copy_forward_old_stage,copy-forward old value,True
+SYN-0023,none,valid,False
+SYN-0024,unsupported_value,unsupported ordinal category,True
+SYN-0025,unsupported_value,unsupported ordinal category,True
+SYN-0026,unsupported_value,unsupported ordinal category,True
+SYN-0027,negation_trap,negated/refuted value extracted,True
+SYN-0028,source_conflict,conflicting sources,True
+SYN-0029,temporal_trap,old temporal value extracted,True
+SYN-0030,copy_forward_old_stage,copy-forward old value,True
+SYN-0031,unsupported_value,unsupported ordinal category,True
+SYN-0032,unit_format,unit representation mismatch,True
+SYN-0033,negation_trap,negated/refuted value extracted,True
+SYN-0034,none,valid,False
+SYN-0035,temporal_trap,old temporal value extracted,True
+SYN-0036,negation_trap,negated/refuted value extracted,True
+SYN-0037,temporal_trap,old temporal value extracted,True
+SYN-0038,copy_forward_old_stage,copy-forward old value,True
+SYN-0039,synonym_miss,provenance may miss synonym if exact string only,True
+SYN-0040,multilingual_variant,mixed Finnish/Swedish expression,True
+SYN-0041,none,valid,False
+SYN-0042,unit_format,unit representation mismatch,True
+SYN-0043,unsupported_value,unsupported ordinal category,True
+SYN-0044,unsupported_value,unsupported ordinal category,True
+SYN-0045,multilingual_variant,mixed Finnish/Swedish expression,True
+SYN-0046,none,valid,False
+SYN-0047,none,valid,False
+SYN-0048,none,valid,False
+SYN-0049,none,valid,False
+SYN-0050,unsupported_value,unsupported ordinal category,True
+SYN-0051,unsupported_value,unsupported ordinal category,True
+SYN-0052,temporal_trap,old temporal value extracted,True
+SYN-0053,none,valid,False
+SYN-0054,none,valid,False
+SYN-0055,none,valid,False
+SYN-0056,source_conflict,conflicting sources,True
+SYN-0057,negation_trap,negated/refuted value extracted,True
+SYN-0058,none,valid,False
+SYN-0059,temporal_trap,old temporal value extracted,True
+SYN-0060,none,valid,False
+SYN-0061,none,valid,False
+SYN-0062,temporal_trap,old temporal value extracted,True
+SYN-0063,none,valid,False
+SYN-0064,temporal_trap,old temporal value extracted,True
+SYN-0065,none,valid,False
+SYN-0066,none,valid,False
+SYN-0067,copy_forward_old_stage,copy-forward old value,True
+SYN-0068,multilingual_variant,mixed Finnish/Swedish expression,True
+SYN-0069,none,valid,False
+SYN-0070,unit_format,unit representation mismatch,True
+SYN-0071,unsupported_value,unsupported ordinal category,True
+SYN-0072,unsupported_value,unsupported ordinal category,True
+SYN-0073,copy_forward_old_stage,copy-forward old value,True
+SYN-0074,source_conflict,conflicting sources,True
+SYN-0075,independence_fail,extractor and verifier share same source lineage,True
+SYN-0076,none,valid,False
+SYN-0077,none,valid,False
+SYN-0078,unsupported_value,unsupported ordinal category,True
+SYN-0079,negation_trap,negated/refuted value extracted,True
+SYN-0080,independence_fail,extractor and verifier share same source lineage,True
+SYN-0081,none,valid,False
+SYN-0082,none,valid,False
+SYN-0083,unsupported_value,unsupported ordinal category,True
+SYN-0084,temporal_trap,old temporal value extracted,True
+SYN-0085,negation_trap,negated/refuted value extracted,True
+SYN-0086,multilingual_variant,mixed Finnish/Swedish expression,True
+SYN-0087,unit_format,unit representation mismatch,True
+SYN-0088,none,valid,False
+SYN-0089,none,valid,False
+SYN-0090,negation_trap,negated/refuted value extracted,True
+SYN-0091,unit_format,unit representation mismatch,True
+SYN-0092,none,valid,False
+SYN-0093,copy_forward_old_stage,copy-forward old value,True
+SYN-0094,none,valid,False
+SYN-0095,none,valid,False
+SYN-0096,unsupported_value,unsupported ordinal category,True
+SYN-0097,synonym_miss,provenance may miss synonym if exact string only,True
+SYN-0098,source_conflict,conflicting sources,True
+SYN-0099,unit_format,unit representation mismatch,True
+SYN-0100,none,valid,False
+SYN-0101,copy_forward_old_stage,copy-forward old value,True
+SYN-0102,unit_format,unit representation mismatch,True
+SYN-0103,negation_trap,negated/refuted value extracted,True
+SYN-0104,negation_trap,negated/refuted value extracted,True
+SYN-0105,unit_format,unit representation mismatch,True
+SYN-0106,none,valid,False
+SYN-0107,none,valid,False
+SYN-0108,independence_fail,extractor and verifier share same source lineage,True
+SYN-0109,copy_forward_old_stage,copy-forward old value,True
+SYN-0110,synonym_miss,provenance may miss synonym if exact string only,True
+SYN-0111,unit_format,unit representation mismatch,True
+SYN-0112,synonym_miss,provenance may miss synonym if exact string only,True
+SYN-0113,none,valid,False
+SYN-0114,negation_trap,negated/refuted value extracted,True
+SYN-0115,none,valid,False
+SYN-0116,unsupported_value,unsupported ordinal category,True
+SYN-0117,none,valid,False
+SYN-0118,unit_format,unit representation mismatch,True
+SYN-0119,none,valid,False
+SYN-0120,multilingual_variant,mixed Finnish/Swedish expression,True
+SYN-0121,multilingual_variant,mixed Finnish/Swedish expression,True
+SYN-0122,none,valid,False
+SYN-0123,unsupported_value,unsupported ordinal category,True
+SYN-0124,negation_trap,negated/refuted value extracted,True
+SYN-0125,multilingual_variant,mixed Finnish/Swedish expression,True
+SYN-0126,none,valid,False
+SYN-0127,none,valid,False
+SYN-0128,unsupported_value,unsupported ordinal category,True
+SYN-0129,source_conflict,conflicting sources,True
+SYN-0130,temporal_trap,old temporal value extracted,True
+SYN-0131,temporal_trap,old temporal value extracted,True
+SYN-0132,none,valid,False
+SYN-0133,none,valid,False
+SYN-0134,copy_forward_old_stage,copy-forward old value,True
+SYN-0135,none,valid,False
+SYN-0136,none,valid,False
+SYN-0137,none,valid,False
+SYN-0138,none,valid,False
+SYN-0139,unsupported_value,unsupported ordinal category,True
+SYN-0140,none,valid,False
+SYN-0141,unsupported_value,unsupported ordinal category,True
+SYN-0142,multilingual_variant,mixed Finnish/Swedish expression,True
+SYN-0143,synonym_miss,provenance may miss synonym if exact string only,True
+SYN-0144,multilingual_variant,mixed Finnish/Swedish expression,True
+SYN-0145,none,valid,False
+SYN-0146,none,valid,False
+SYN-0147,synonym_miss,provenance may miss synonym if exact string only,True
+SYN-0148,multilingual_variant,mixed Finnish/Swedish expression,True
+SYN-0149,unit_format,unit representation mismatch,True
+SYN-0150,none,valid,False

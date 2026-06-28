@@ -39,6 +39,14 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   κ, Gwet's AC2 (paradox-resistant), per-category prevalence, a kappa-paradox flag, and optional
   deterministic (seeded) percentile bootstrap CIs. Separate from the deterministic core. Hand-verified
   against worked examples (κ 0.644 → weighted 0.804 → AC2 0.833; paradox case κ −0.05 vs AC2 0.89).
+- **External synthetic clinical-note dataset** (`corpus/synthetic_clinical_notes/`, 150 notes —
+  en/fi/sv — with gold labels, simulated extractions and seeded failure modes) plus a Stage-1
+  enrichment eval (`scripts/eval_clinical_notes.py`). Honest result (gold never fed to the validator):
+  the review flag concentrates true against-gold errors at **~66× enrichment** with **100% review
+  precision** and **60% sensitivity**. It catches absence-type errors (unsupported_value, unit_format,
+  negation_trap: all caught) but — as a recorded limitation (audit #2/#3) — misses present-but-wrong
+  errors (temporal_trap, copy_forward_old_stage, source_conflict: 0 caught), which need temporality
+  and independent-anchor signals. Characterized by `tests/test_external_clinical_notes.py`.
 
 ### Changed (engineering)
 - The codebase is now **`mypy --strict` clean** (13 modules); strict config added to `pyproject.toml`

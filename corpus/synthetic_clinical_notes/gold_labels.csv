@@ -1,0 +1,1951 @@
+note_id,field_name,gold_value
+SYN-0001,diagnosis,keuhkon lung adenocarcinoma
+SYN-0001,histology,lung adenocarcinoma
+SYN-0001,stage,IIIA
+SYN-0001,tnm_t,T2
+SYN-0001,tnm_n,N2
+SYN-0001,tnm_m,M0
+SYN-0001,egfr,positive L858R
+SYN-0001,alk,positive
+SYN-0001,pdl1,1-49%
+SYN-0001,smoking_status,current
+SYN-0001,pack_years,0
+SYN-0001,treatment_intent,curative
+SYN-0001,planned_treatment,concurrent chemoradiotherapy
+SYN-0002,diagnosis,small cell lung cancer of the lung
+SYN-0002,histology,small cell lung cancer
+SYN-0002,stage,IA
+SYN-0002,tnm_t,T1
+SYN-0002,tnm_n,N0
+SYN-0002,tnm_m,M0
+SYN-0002,egfr,positive Ex19del
+SYN-0002,alk,negative
+SYN-0002,pdl1,1-49%
+SYN-0002,smoking_status,never
+SYN-0002,pack_years,0
+SYN-0002,treatment_intent,curative
+SYN-0002,planned_treatment,concurrent chemoradiotherapy
+SYN-0003,diagnosis,small cell lung cancer of the lung
+SYN-0003,histology,small cell lung cancer
+SYN-0003,stage,IIB
+SYN-0003,tnm_t,T3
+SYN-0003,tnm_n,N0
+SYN-0003,tnm_m,M0
+SYN-0003,egfr,pending
+SYN-0003,alk,pending
+SYN-0003,pdl1,<1%
+SYN-0003,smoking_status,never
+SYN-0003,pack_years,0
+SYN-0003,treatment_intent,curative
+SYN-0003,planned_treatment,SABR
+SYN-0004,diagnosis,NSCLC NOS of the lung
+SYN-0004,histology,NSCLC NOS
+SYN-0004,stage,IB
+SYN-0004,tnm_t,T2a
+SYN-0004,tnm_n,N0
+SYN-0004,tnm_m,M0
+SYN-0004,egfr,positive Ex19del
+SYN-0004,alk,not tested
+SYN-0004,pdl1,<1%
+SYN-0004,smoking_status,former
+SYN-0004,pack_years,50
+SYN-0004,treatment_intent,curative
+SYN-0004,planned_treatment,concurrent chemoradiotherapy
+SYN-0005,diagnosis,small cell lung cancer i lunga
+SYN-0005,histology,small cell lung cancer
+SYN-0005,stage,IVB
+SYN-0005,tnm_t,T4
+SYN-0005,tnm_n,N2
+SYN-0005,tnm_m,M1c
+SYN-0005,egfr,positive Ex19del
+SYN-0005,alk,not tested
+SYN-0005,pdl1,<1%
+SYN-0005,smoking_status,current
+SYN-0005,pack_years,12
+SYN-0005,treatment_intent,palliative
+SYN-0005,planned_treatment,best supportive care
+SYN-0006,diagnosis,squamous cell carcinoma i lunga
+SYN-0006,histology,squamous cell carcinoma
+SYN-0006,stage,IB
+SYN-0006,tnm_t,T2a
+SYN-0006,tnm_n,N0
+SYN-0006,tnm_m,M0
+SYN-0006,egfr,positive Ex19del
+SYN-0006,alk,positive
+SYN-0006,pdl1,50%
+SYN-0006,smoking_status,never
+SYN-0006,pack_years,0
+SYN-0006,treatment_intent,curative
+SYN-0006,planned_treatment,SABR
+SYN-0007,diagnosis,small cell lung cancer of the lung
+SYN-0007,histology,small cell lung cancer
+SYN-0007,stage,IIIB
+SYN-0007,tnm_t,T3
+SYN-0007,tnm_n,N2
+SYN-0007,tnm_m,M0
+SYN-0007,egfr,positive L858R
+SYN-0007,alk,pending
+SYN-0007,pdl1,50%
+SYN-0007,smoking_status,never
+SYN-0007,pack_years,0
+SYN-0007,treatment_intent,palliative
+SYN-0007,planned_treatment,best supportive care
+SYN-0008,diagnosis,lung adenocarcinoma i lunga
+SYN-0008,histology,lung adenocarcinoma
+SYN-0008,stage,IIA
+SYN-0008,tnm_t,T2b
+SYN-0008,tnm_n,N0
+SYN-0008,tnm_m,M0
+SYN-0008,egfr,not tested
+SYN-0008,alk,positive
+SYN-0008,pdl1,1-49%
+SYN-0008,smoking_status,former
+SYN-0008,pack_years,18
+SYN-0008,treatment_intent,curative
+SYN-0008,planned_treatment,concurrent chemoradiotherapy
+SYN-0009,diagnosis,keuhkon squamous cell carcinoma
+SYN-0009,histology,squamous cell carcinoma
+SYN-0009,stage,IIIB
+SYN-0009,tnm_t,T3
+SYN-0009,tnm_n,N2
+SYN-0009,tnm_m,M0
+SYN-0009,egfr,positive Ex19del
+SYN-0009,alk,positive
+SYN-0009,pdl1,<1%
+SYN-0009,smoking_status,former
+SYN-0009,pack_years,18
+SYN-0009,treatment_intent,palliative
+SYN-0009,planned_treatment,chemoimmunotherapy
+SYN-0010,diagnosis,NSCLC NOS i lunga
+SYN-0010,histology,NSCLC NOS
+SYN-0010,stage,IIB
+SYN-0010,tnm_t,T3
+SYN-0010,tnm_n,N0
+SYN-0010,tnm_m,M0
+SYN-0010,egfr,pending
+SYN-0010,alk,not tested
+SYN-0010,pdl1,80%
+SYN-0010,smoking_status,never
+SYN-0010,pack_years,0
+SYN-0010,treatment_intent,curative
+SYN-0010,planned_treatment,concurrent chemoradiotherapy
+SYN-0011,diagnosis,keuhkon NSCLC NOS
+SYN-0011,histology,NSCLC NOS
+SYN-0011,stage,IIIC
+SYN-0011,tnm_t,T4
+SYN-0011,tnm_n,N3
+SYN-0011,tnm_m,M0
+SYN-0011,egfr,not tested
+SYN-0011,alk,not tested
+SYN-0011,pdl1,50%
+SYN-0011,smoking_status,never
+SYN-0011,pack_years,0
+SYN-0011,treatment_intent,palliative
+SYN-0011,planned_treatment,best supportive care
+SYN-0012,diagnosis,keuhkon lung adenocarcinoma
+SYN-0012,histology,lung adenocarcinoma
+SYN-0012,stage,IIA
+SYN-0012,tnm_t,T2b
+SYN-0012,tnm_n,N0
+SYN-0012,tnm_m,M0
+SYN-0012,egfr,positive L858R
+SYN-0012,alk,not tested
+SYN-0012,pdl1,not available
+SYN-0012,smoking_status,never
+SYN-0012,pack_years,0
+SYN-0012,treatment_intent,curative
+SYN-0012,planned_treatment,SABR
+SYN-0013,diagnosis,NSCLC NOS of the lung
+SYN-0013,histology,NSCLC NOS
+SYN-0013,stage,IVB
+SYN-0013,tnm_t,T4
+SYN-0013,tnm_n,N2
+SYN-0013,tnm_m,M1c
+SYN-0013,egfr,positive Ex19del
+SYN-0013,alk,negative
+SYN-0013,pdl1,not available
+SYN-0013,smoking_status,former
+SYN-0013,pack_years,50
+SYN-0013,treatment_intent,palliative
+SYN-0013,planned_treatment,best supportive care
+SYN-0014,diagnosis,squamous cell carcinoma of the lung
+SYN-0014,histology,squamous cell carcinoma
+SYN-0014,stage,IVA
+SYN-0014,tnm_t,T2
+SYN-0014,tnm_n,N1
+SYN-0014,tnm_m,M1a
+SYN-0014,egfr,positive Ex19del
+SYN-0014,alk,pending
+SYN-0014,pdl1,not available
+SYN-0014,smoking_status,never
+SYN-0014,pack_years,0
+SYN-0014,treatment_intent,palliative
+SYN-0014,planned_treatment,targeted therapy
+SYN-0015,diagnosis,NSCLC NOS i lunga
+SYN-0015,histology,NSCLC NOS
+SYN-0015,stage,IVB
+SYN-0015,tnm_t,T4
+SYN-0015,tnm_n,N2
+SYN-0015,tnm_m,M1c
+SYN-0015,egfr,not tested
+SYN-0015,alk,positive
+SYN-0015,pdl1,1-49%
+SYN-0015,smoking_status,former
+SYN-0015,pack_years,50
+SYN-0015,treatment_intent,palliative
+SYN-0015,planned_treatment,best supportive care
+SYN-0016,diagnosis,lung adenocarcinoma i lunga
+SYN-0016,histology,lung adenocarcinoma
+SYN-0016,stage,IIIB
+SYN-0016,tnm_t,T3
+SYN-0016,tnm_n,N2
+SYN-0016,tnm_m,M0
+SYN-0016,egfr,pending
+SYN-0016,alk,negative
+SYN-0016,pdl1,<1%
+SYN-0016,smoking_status,former
+SYN-0016,pack_years,50
+SYN-0016,treatment_intent,palliative
+SYN-0016,planned_treatment,chemoimmunotherapy
+SYN-0017,diagnosis,lung adenocarcinoma i lunga
+SYN-0017,histology,lung adenocarcinoma
+SYN-0017,stage,IB
+SYN-0017,tnm_t,T2a
+SYN-0017,tnm_n,N0
+SYN-0017,tnm_m,M0
+SYN-0017,egfr,pending
+SYN-0017,alk,negative
+SYN-0017,pdl1,not available
+SYN-0017,smoking_status,never
+SYN-0017,pack_years,0
+SYN-0017,treatment_intent,curative
+SYN-0017,planned_treatment,SABR
+SYN-0018,diagnosis,squamous cell carcinoma i lunga
+SYN-0018,histology,squamous cell carcinoma
+SYN-0018,stage,IIIA
+SYN-0018,tnm_t,T2
+SYN-0018,tnm_n,N2
+SYN-0018,tnm_m,M0
+SYN-0018,egfr,not tested
+SYN-0018,alk,not tested
+SYN-0018,pdl1,1-49%
+SYN-0018,smoking_status,current
+SYN-0018,pack_years,50
+SYN-0018,treatment_intent,curative
+SYN-0018,planned_treatment,concurrent chemoradiotherapy
+SYN-0019,diagnosis,NSCLC NOS of the lung
+SYN-0019,histology,NSCLC NOS
+SYN-0019,stage,IVA
+SYN-0019,tnm_t,T2
+SYN-0019,tnm_n,N1
+SYN-0019,tnm_m,M1a
+SYN-0019,egfr,not tested
+SYN-0019,alk,not tested
+SYN-0019,pdl1,<1%
+SYN-0019,smoking_status,never
+SYN-0019,pack_years,0
+SYN-0019,treatment_intent,palliative
+SYN-0019,planned_treatment,chemoimmunotherapy
+SYN-0020,diagnosis,keuhkon squamous cell carcinoma
+SYN-0020,histology,squamous cell carcinoma
+SYN-0020,stage,IIB
+SYN-0020,tnm_t,T3
+SYN-0020,tnm_n,N0
+SYN-0020,tnm_m,M0
+SYN-0020,egfr,positive Ex19del
+SYN-0020,alk,negative
+SYN-0020,pdl1,<1%
+SYN-0020,smoking_status,never
+SYN-0020,pack_years,0
+SYN-0020,treatment_intent,curative
+SYN-0020,planned_treatment,lobectomy
+SYN-0021,diagnosis,lung adenocarcinoma i lunga
+SYN-0021,histology,lung adenocarcinoma
+SYN-0021,stage,IVB
+SYN-0021,tnm_t,T4
+SYN-0021,tnm_n,N2
+SYN-0021,tnm_m,M1c
+SYN-0021,egfr,positive L858R
+SYN-0021,alk,pending
+SYN-0021,pdl1,80%
+SYN-0021,smoking_status,never
+SYN-0021,pack_years,0
+SYN-0021,treatment_intent,palliative
+SYN-0021,planned_treatment,targeted therapy
+SYN-0022,diagnosis,small cell lung cancer i lunga
+SYN-0022,histology,small cell lung cancer
+SYN-0022,stage,IIB
+SYN-0022,tnm_t,T3
+SYN-0022,tnm_n,N0
+SYN-0022,tnm_m,M0
+SYN-0022,egfr,pending
+SYN-0022,alk,not tested
+SYN-0022,pdl1,1-49%
+SYN-0022,smoking_status,never
+SYN-0022,pack_years,0
+SYN-0022,treatment_intent,curative
+SYN-0022,planned_treatment,lobectomy
+SYN-0023,diagnosis,small cell lung cancer of the lung
+SYN-0023,histology,small cell lung cancer
+SYN-0023,stage,IVA
+SYN-0023,tnm_t,T2
+SYN-0023,tnm_n,N1
+SYN-0023,tnm_m,M1a
+SYN-0023,egfr,positive Ex19del
+SYN-0023,alk,negative
+SYN-0023,pdl1,<1%
+SYN-0023,smoking_status,former
+SYN-0023,pack_years,35
+SYN-0023,treatment_intent,palliative
+SYN-0023,planned_treatment,chemoimmunotherapy
+SYN-0024,diagnosis,small cell lung cancer of the lung
+SYN-0024,histology,small cell lung cancer
+SYN-0024,stage,IIA
+SYN-0024,tnm_t,T2b
+SYN-0024,tnm_n,N0
+SYN-0024,tnm_m,M0
+SYN-0024,egfr,pending
+SYN-0024,alk,positive
+SYN-0024,pdl1,50%
+SYN-0024,smoking_status,former
+SYN-0024,pack_years,5
+SYN-0024,treatment_intent,curative
+SYN-0024,planned_treatment,lobectomy
+SYN-0025,diagnosis,lung adenocarcinoma i lunga
+SYN-0025,histology,lung adenocarcinoma
+SYN-0025,stage,IA
+SYN-0025,tnm_t,T1
+SYN-0025,tnm_n,N0
+SYN-0025,tnm_m,M0
+SYN-0025,egfr,not tested
+SYN-0025,alk,negative
+SYN-0025,pdl1,<1%
+SYN-0025,smoking_status,never
+SYN-0025,pack_years,0
+SYN-0025,treatment_intent,curative
+SYN-0025,planned_treatment,SABR
+SYN-0026,diagnosis,small cell lung cancer of the lung
+SYN-0026,histology,small cell lung cancer
+SYN-0026,stage,IA
+SYN-0026,tnm_t,T1
+SYN-0026,tnm_n,N0
+SYN-0026,tnm_m,M0
+SYN-0026,egfr,positive L858R
+SYN-0026,alk,not tested
+SYN-0026,pdl1,<1%
+SYN-0026,smoking_status,former
+SYN-0026,pack_years,12
+SYN-0026,treatment_intent,curative
+SYN-0026,planned_treatment,SABR
+SYN-0027,diagnosis,small cell lung cancer i lunga
+SYN-0027,histology,small cell lung cancer
+SYN-0027,stage,IIA
+SYN-0027,tnm_t,T2b
+SYN-0027,tnm_n,N0
+SYN-0027,tnm_m,M0
+SYN-0027,egfr,positive L858R
+SYN-0027,alk,pending
+SYN-0027,pdl1,1-49%
+SYN-0027,smoking_status,never
+SYN-0027,pack_years,0
+SYN-0027,treatment_intent,curative
+SYN-0027,planned_treatment,concurrent chemoradiotherapy
+SYN-0028,diagnosis,keuhkon lung adenocarcinoma
+SYN-0028,histology,lung adenocarcinoma
+SYN-0028,stage,IA
+SYN-0028,tnm_t,T1
+SYN-0028,tnm_n,N0
+SYN-0028,tnm_m,M0
+SYN-0028,egfr,not tested
+SYN-0028,alk,not tested
+SYN-0028,pdl1,not available
+SYN-0028,smoking_status,current
+SYN-0028,pack_years,5
+SYN-0028,treatment_intent,curative
+SYN-0028,planned_treatment,lobectomy
+SYN-0029,diagnosis,squamous cell carcinoma of the lung
+SYN-0029,histology,squamous cell carcinoma
+SYN-0029,stage,IB
+SYN-0029,tnm_t,T2a
+SYN-0029,tnm_n,N0
+SYN-0029,tnm_m,M0
+SYN-0029,egfr,not tested
+SYN-0029,alk,negative
+SYN-0029,pdl1,1-49%
+SYN-0029,smoking_status,former
+SYN-0029,pack_years,0
+SYN-0029,treatment_intent,curative
+SYN-0029,planned_treatment,lobectomy
+SYN-0030,diagnosis,lung adenocarcinoma of the lung
+SYN-0030,histology,lung adenocarcinoma
+SYN-0030,stage,IIIC
+SYN-0030,tnm_t,T4
+SYN-0030,tnm_n,N3
+SYN-0030,tnm_m,M0
+SYN-0030,egfr,not tested
+SYN-0030,alk,pending
+SYN-0030,pdl1,50%
+SYN-0030,smoking_status,never
+SYN-0030,pack_years,0
+SYN-0030,treatment_intent,palliative
+SYN-0030,planned_treatment,best supportive care
+SYN-0031,diagnosis,small cell lung cancer of the lung
+SYN-0031,histology,small cell lung cancer
+SYN-0031,stage,IIA
+SYN-0031,tnm_t,T2b
+SYN-0031,tnm_n,N0
+SYN-0031,tnm_m,M0
+SYN-0031,egfr,negative
+SYN-0031,alk,not tested
+SYN-0031,pdl1,50%
+SYN-0031,smoking_status,never
+SYN-0031,pack_years,0
+SYN-0031,treatment_intent,curative
+SYN-0031,planned_treatment,lobectomy
+SYN-0032,diagnosis,lung adenocarcinoma i lunga
+SYN-0032,histology,lung adenocarcinoma
+SYN-0032,stage,IB
+SYN-0032,tnm_t,T2a
+SYN-0032,tnm_n,N0
+SYN-0032,tnm_m,M0
+SYN-0032,egfr,not tested
+SYN-0032,alk,positive
+SYN-0032,pdl1,not available
+SYN-0032,smoking_status,former
+SYN-0032,pack_years,5
+SYN-0032,treatment_intent,curative
+SYN-0032,planned_treatment,concurrent chemoradiotherapy
+SYN-0033,diagnosis,NSCLC NOS i lunga
+SYN-0033,histology,NSCLC NOS
+SYN-0033,stage,IIIA
+SYN-0033,tnm_t,T2
+SYN-0033,tnm_n,N2
+SYN-0033,tnm_m,M0
+SYN-0033,egfr,positive L858R
+SYN-0033,alk,not tested
+SYN-0033,pdl1,not available
+SYN-0033,smoking_status,current
+SYN-0033,pack_years,12
+SYN-0033,treatment_intent,curative
+SYN-0033,planned_treatment,concurrent chemoradiotherapy
+SYN-0034,diagnosis,keuhkon NSCLC NOS
+SYN-0034,histology,NSCLC NOS
+SYN-0034,stage,IB
+SYN-0034,tnm_t,T2a
+SYN-0034,tnm_n,N0
+SYN-0034,tnm_m,M0
+SYN-0034,egfr,positive L858R
+SYN-0034,alk,pending
+SYN-0034,pdl1,<1%
+SYN-0034,smoking_status,never
+SYN-0034,pack_years,0
+SYN-0034,treatment_intent,curative
+SYN-0034,planned_treatment,concurrent chemoradiotherapy
+SYN-0035,diagnosis,squamous cell carcinoma of the lung
+SYN-0035,histology,squamous cell carcinoma
+SYN-0035,stage,IIIB
+SYN-0035,tnm_t,T3
+SYN-0035,tnm_n,N2
+SYN-0035,tnm_m,M0
+SYN-0035,egfr,positive L858R
+SYN-0035,alk,pending
+SYN-0035,pdl1,not available
+SYN-0035,smoking_status,former
+SYN-0035,pack_years,12
+SYN-0035,treatment_intent,palliative
+SYN-0035,planned_treatment,chemoimmunotherapy
+SYN-0036,diagnosis,lung adenocarcinoma i lunga
+SYN-0036,histology,lung adenocarcinoma
+SYN-0036,stage,IA
+SYN-0036,tnm_t,T1
+SYN-0036,tnm_n,N0
+SYN-0036,tnm_m,M0
+SYN-0036,egfr,negative
+SYN-0036,alk,positive
+SYN-0036,pdl1,50%
+SYN-0036,smoking_status,never
+SYN-0036,pack_years,0
+SYN-0036,treatment_intent,curative
+SYN-0036,planned_treatment,SABR
+SYN-0037,diagnosis,lung adenocarcinoma of the lung
+SYN-0037,histology,lung adenocarcinoma
+SYN-0037,stage,IB
+SYN-0037,tnm_t,T2a
+SYN-0037,tnm_n,N0
+SYN-0037,tnm_m,M0
+SYN-0037,egfr,positive Ex19del
+SYN-0037,alk,positive
+SYN-0037,pdl1,not available
+SYN-0037,smoking_status,never
+SYN-0037,pack_years,0
+SYN-0037,treatment_intent,curative
+SYN-0037,planned_treatment,concurrent chemoradiotherapy
+SYN-0038,diagnosis,squamous cell carcinoma of the lung
+SYN-0038,histology,squamous cell carcinoma
+SYN-0038,stage,IA
+SYN-0038,tnm_t,T1
+SYN-0038,tnm_n,N0
+SYN-0038,tnm_m,M0
+SYN-0038,egfr,negative
+SYN-0038,alk,pending
+SYN-0038,pdl1,<1%
+SYN-0038,smoking_status,former
+SYN-0038,pack_years,5
+SYN-0038,treatment_intent,curative
+SYN-0038,planned_treatment,lobectomy
+SYN-0039,diagnosis,small cell lung cancer of the lung
+SYN-0039,histology,small cell lung cancer
+SYN-0039,stage,IIA
+SYN-0039,tnm_t,T2b
+SYN-0039,tnm_n,N0
+SYN-0039,tnm_m,M0
+SYN-0039,egfr,positive L858R
+SYN-0039,alk,positive
+SYN-0039,pdl1,1-49%
+SYN-0039,smoking_status,former
+SYN-0039,pack_years,0
+SYN-0039,treatment_intent,curative
+SYN-0039,planned_treatment,SABR
+SYN-0040,diagnosis,small cell lung cancer of the lung
+SYN-0040,histology,small cell lung cancer
+SYN-0040,stage,IIB
+SYN-0040,tnm_t,T3
+SYN-0040,tnm_n,N0
+SYN-0040,tnm_m,M0
+SYN-0040,egfr,negative
+SYN-0040,alk,positive
+SYN-0040,pdl1,<1%
+SYN-0040,smoking_status,former
+SYN-0040,pack_years,50
+SYN-0040,treatment_intent,curative
+SYN-0040,planned_treatment,lobectomy
+SYN-0041,diagnosis,small cell lung cancer of the lung
+SYN-0041,histology,small cell lung cancer
+SYN-0041,stage,IIIB
+SYN-0041,tnm_t,T3
+SYN-0041,tnm_n,N2
+SYN-0041,tnm_m,M0
+SYN-0041,egfr,negative
+SYN-0041,alk,positive
+SYN-0041,pdl1,1-49%
+SYN-0041,smoking_status,never
+SYN-0041,pack_years,0
+SYN-0041,treatment_intent,palliative
+SYN-0041,planned_treatment,best supportive care
+SYN-0042,diagnosis,lung adenocarcinoma of the lung
+SYN-0042,histology,lung adenocarcinoma
+SYN-0042,stage,IIIA
+SYN-0042,tnm_t,T2
+SYN-0042,tnm_n,N2
+SYN-0042,tnm_m,M0
+SYN-0042,egfr,negative
+SYN-0042,alk,not tested
+SYN-0042,pdl1,not available
+SYN-0042,smoking_status,former
+SYN-0042,pack_years,0
+SYN-0042,treatment_intent,curative
+SYN-0042,planned_treatment,lobectomy
+SYN-0043,diagnosis,NSCLC NOS of the lung
+SYN-0043,histology,NSCLC NOS
+SYN-0043,stage,IA
+SYN-0043,tnm_t,T1
+SYN-0043,tnm_n,N0
+SYN-0043,tnm_m,M0
+SYN-0043,egfr,positive Ex19del
+SYN-0043,alk,not tested
+SYN-0043,pdl1,50%
+SYN-0043,smoking_status,current
+SYN-0043,pack_years,50
+SYN-0043,treatment_intent,curative
+SYN-0043,planned_treatment,concurrent chemoradiotherapy
+SYN-0044,diagnosis,lung adenocarcinoma i lunga
+SYN-0044,histology,lung adenocarcinoma
+SYN-0044,stage,IIIC
+SYN-0044,tnm_t,T4
+SYN-0044,tnm_n,N3
+SYN-0044,tnm_m,M0
+SYN-0044,egfr,not tested
+SYN-0044,alk,positive
+SYN-0044,pdl1,50%
+SYN-0044,smoking_status,never
+SYN-0044,pack_years,0
+SYN-0044,treatment_intent,palliative
+SYN-0044,planned_treatment,best supportive care
+SYN-0045,diagnosis,squamous cell carcinoma of the lung
+SYN-0045,histology,squamous cell carcinoma
+SYN-0045,stage,IIIB
+SYN-0045,tnm_t,T3
+SYN-0045,tnm_n,N2
+SYN-0045,tnm_m,M0
+SYN-0045,egfr,pending
+SYN-0045,alk,negative
+SYN-0045,pdl1,50%
+SYN-0045,smoking_status,current
+SYN-0045,pack_years,12
+SYN-0045,treatment_intent,palliative
+SYN-0045,planned_treatment,best supportive care
+SYN-0046,diagnosis,keuhkon NSCLC NOS
+SYN-0046,histology,NSCLC NOS
+SYN-0046,stage,IVB
+SYN-0046,tnm_t,T4
+SYN-0046,tnm_n,N2
+SYN-0046,tnm_m,M1c
+SYN-0046,egfr,negative
+SYN-0046,alk,not tested
+SYN-0046,pdl1,50%
+SYN-0046,smoking_status,former
+SYN-0046,pack_years,35
+SYN-0046,treatment_intent,palliative
+SYN-0046,planned_treatment,best supportive care
+SYN-0047,diagnosis,small cell lung cancer of the lung
+SYN-0047,histology,small cell lung cancer
+SYN-0047,stage,IIA
+SYN-0047,tnm_t,T2b
+SYN-0047,tnm_n,N0
+SYN-0047,tnm_m,M0
+SYN-0047,egfr,not tested
+SYN-0047,alk,pending
+SYN-0047,pdl1,80%
+SYN-0047,smoking_status,current
+SYN-0047,pack_years,50
+SYN-0047,treatment_intent,curative
+SYN-0047,planned_treatment,lobectomy
+SYN-0048,diagnosis,NSCLC NOS of the lung
+SYN-0048,histology,NSCLC NOS
+SYN-0048,stage,IVA
+SYN-0048,tnm_t,T2
+SYN-0048,tnm_n,N1
+SYN-0048,tnm_m,M1a
+SYN-0048,egfr,pending
+SYN-0048,alk,not tested
+SYN-0048,pdl1,1-49%
+SYN-0048,smoking_status,current
+SYN-0048,pack_years,18
+SYN-0048,treatment_intent,palliative
+SYN-0048,planned_treatment,best supportive care
+SYN-0049,diagnosis,NSCLC NOS of the lung
+SYN-0049,histology,NSCLC NOS
+SYN-0049,stage,IB
+SYN-0049,tnm_t,T2a
+SYN-0049,tnm_n,N0
+SYN-0049,tnm_m,M0
+SYN-0049,egfr,positive L858R
+SYN-0049,alk,pending
+SYN-0049,pdl1,1-49%
+SYN-0049,smoking_status,never
+SYN-0049,pack_years,0
+SYN-0049,treatment_intent,curative
+SYN-0049,planned_treatment,SABR
+SYN-0050,diagnosis,small cell lung cancer of the lung
+SYN-0050,histology,small cell lung cancer
+SYN-0050,stage,IB
+SYN-0050,tnm_t,T2a
+SYN-0050,tnm_n,N0
+SYN-0050,tnm_m,M0
+SYN-0050,egfr,pending
+SYN-0050,alk,not tested
+SYN-0050,pdl1,not available
+SYN-0050,smoking_status,never
+SYN-0050,pack_years,0
+SYN-0050,treatment_intent,curative
+SYN-0050,planned_treatment,concurrent chemoradiotherapy
+SYN-0051,diagnosis,squamous cell carcinoma of the lung
+SYN-0051,histology,squamous cell carcinoma
+SYN-0051,stage,IA
+SYN-0051,tnm_t,T1
+SYN-0051,tnm_n,N0
+SYN-0051,tnm_m,M0
+SYN-0051,egfr,positive Ex19del
+SYN-0051,alk,not tested
+SYN-0051,pdl1,1-49%
+SYN-0051,smoking_status,never
+SYN-0051,pack_years,0
+SYN-0051,treatment_intent,curative
+SYN-0051,planned_treatment,concurrent chemoradiotherapy
+SYN-0052,diagnosis,keuhkon lung adenocarcinoma
+SYN-0052,histology,lung adenocarcinoma
+SYN-0052,stage,IVA
+SYN-0052,tnm_t,T2
+SYN-0052,tnm_n,N1
+SYN-0052,tnm_m,M1a
+SYN-0052,egfr,positive L858R
+SYN-0052,alk,not tested
+SYN-0052,pdl1,not available
+SYN-0052,smoking_status,current
+SYN-0052,pack_years,25
+SYN-0052,treatment_intent,palliative
+SYN-0052,planned_treatment,targeted therapy
+SYN-0053,diagnosis,keuhkon small cell lung cancer
+SYN-0053,histology,small cell lung cancer
+SYN-0053,stage,IVB
+SYN-0053,tnm_t,T4
+SYN-0053,tnm_n,N2
+SYN-0053,tnm_m,M1c
+SYN-0053,egfr,pending
+SYN-0053,alk,positive
+SYN-0053,pdl1,80%
+SYN-0053,smoking_status,former
+SYN-0053,pack_years,12
+SYN-0053,treatment_intent,palliative
+SYN-0053,planned_treatment,best supportive care
+SYN-0054,diagnosis,keuhkon small cell lung cancer
+SYN-0054,histology,small cell lung cancer
+SYN-0054,stage,IIB
+SYN-0054,tnm_t,T3
+SYN-0054,tnm_n,N0
+SYN-0054,tnm_m,M0
+SYN-0054,egfr,negative
+SYN-0054,alk,not tested
+SYN-0054,pdl1,<1%
+SYN-0054,smoking_status,current
+SYN-0054,pack_years,12
+SYN-0054,treatment_intent,curative
+SYN-0054,planned_treatment,SABR
+SYN-0055,diagnosis,lung adenocarcinoma of the lung
+SYN-0055,histology,lung adenocarcinoma
+SYN-0055,stage,IIA
+SYN-0055,tnm_t,T2b
+SYN-0055,tnm_n,N0
+SYN-0055,tnm_m,M0
+SYN-0055,egfr,positive L858R
+SYN-0055,alk,positive
+SYN-0055,pdl1,80%
+SYN-0055,smoking_status,current
+SYN-0055,pack_years,5
+SYN-0055,treatment_intent,curative
+SYN-0055,planned_treatment,lobectomy
+SYN-0056,diagnosis,small cell lung cancer of the lung
+SYN-0056,histology,small cell lung cancer
+SYN-0056,stage,IIIC
+SYN-0056,tnm_t,T4
+SYN-0056,tnm_n,N3
+SYN-0056,tnm_m,M0
+SYN-0056,egfr,positive Ex19del
+SYN-0056,alk,positive
+SYN-0056,pdl1,80%
+SYN-0056,smoking_status,former
+SYN-0056,pack_years,50
+SYN-0056,treatment_intent,palliative
+SYN-0056,planned_treatment,targeted therapy
+SYN-0057,diagnosis,small cell lung cancer of the lung
+SYN-0057,histology,small cell lung cancer
+SYN-0057,stage,IVA
+SYN-0057,tnm_t,T2
+SYN-0057,tnm_n,N1
+SYN-0057,tnm_m,M1a
+SYN-0057,egfr,positive Ex19del
+SYN-0057,alk,pending
+SYN-0057,pdl1,50%
+SYN-0057,smoking_status,former
+SYN-0057,pack_years,50
+SYN-0057,treatment_intent,palliative
+SYN-0057,planned_treatment,chemoimmunotherapy
+SYN-0058,diagnosis,keuhkon squamous cell carcinoma
+SYN-0058,histology,squamous cell carcinoma
+SYN-0058,stage,IVA
+SYN-0058,tnm_t,T2
+SYN-0058,tnm_n,N1
+SYN-0058,tnm_m,M1a
+SYN-0058,egfr,positive L858R
+SYN-0058,alk,pending
+SYN-0058,pdl1,80%
+SYN-0058,smoking_status,former
+SYN-0058,pack_years,0
+SYN-0058,treatment_intent,palliative
+SYN-0058,planned_treatment,chemoimmunotherapy
+SYN-0059,diagnosis,keuhkon small cell lung cancer
+SYN-0059,histology,small cell lung cancer
+SYN-0059,stage,IIA
+SYN-0059,tnm_t,T2b
+SYN-0059,tnm_n,N0
+SYN-0059,tnm_m,M0
+SYN-0059,egfr,pending
+SYN-0059,alk,positive
+SYN-0059,pdl1,not available
+SYN-0059,smoking_status,current
+SYN-0059,pack_years,0
+SYN-0059,treatment_intent,curative
+SYN-0059,planned_treatment,concurrent chemoradiotherapy
+SYN-0060,diagnosis,small cell lung cancer of the lung
+SYN-0060,histology,small cell lung cancer
+SYN-0060,stage,IIA
+SYN-0060,tnm_t,T2b
+SYN-0060,tnm_n,N0
+SYN-0060,tnm_m,M0
+SYN-0060,egfr,pending
+SYN-0060,alk,positive
+SYN-0060,pdl1,<1%
+SYN-0060,smoking_status,former
+SYN-0060,pack_years,18
+SYN-0060,treatment_intent,curative
+SYN-0060,planned_treatment,concurrent chemoradiotherapy
+SYN-0061,diagnosis,small cell lung cancer of the lung
+SYN-0061,histology,small cell lung cancer
+SYN-0061,stage,IIIA
+SYN-0061,tnm_t,T2
+SYN-0061,tnm_n,N2
+SYN-0061,tnm_m,M0
+SYN-0061,egfr,pending
+SYN-0061,alk,pending
+SYN-0061,pdl1,<1%
+SYN-0061,smoking_status,former
+SYN-0061,pack_years,0
+SYN-0061,treatment_intent,curative
+SYN-0061,planned_treatment,concurrent chemoradiotherapy
+SYN-0062,diagnosis,squamous cell carcinoma i lunga
+SYN-0062,histology,squamous cell carcinoma
+SYN-0062,stage,IB
+SYN-0062,tnm_t,T2a
+SYN-0062,tnm_n,N0
+SYN-0062,tnm_m,M0
+SYN-0062,egfr,positive Ex19del
+SYN-0062,alk,negative
+SYN-0062,pdl1,1-49%
+SYN-0062,smoking_status,never
+SYN-0062,pack_years,0
+SYN-0062,treatment_intent,curative
+SYN-0062,planned_treatment,lobectomy
+SYN-0063,diagnosis,small cell lung cancer of the lung
+SYN-0063,histology,small cell lung cancer
+SYN-0063,stage,IB
+SYN-0063,tnm_t,T2a
+SYN-0063,tnm_n,N0
+SYN-0063,tnm_m,M0
+SYN-0063,egfr,not tested
+SYN-0063,alk,positive
+SYN-0063,pdl1,80%
+SYN-0063,smoking_status,current
+SYN-0063,pack_years,12
+SYN-0063,treatment_intent,curative
+SYN-0063,planned_treatment,concurrent chemoradiotherapy
+SYN-0064,diagnosis,keuhkon lung adenocarcinoma
+SYN-0064,histology,lung adenocarcinoma
+SYN-0064,stage,IIA
+SYN-0064,tnm_t,T2b
+SYN-0064,tnm_n,N0
+SYN-0064,tnm_m,M0
+SYN-0064,egfr,negative
+SYN-0064,alk,negative
+SYN-0064,pdl1,not available
+SYN-0064,smoking_status,never
+SYN-0064,pack_years,0
+SYN-0064,treatment_intent,curative
+SYN-0064,planned_treatment,concurrent chemoradiotherapy
+SYN-0065,diagnosis,small cell lung cancer i lunga
+SYN-0065,histology,small cell lung cancer
+SYN-0065,stage,IIIC
+SYN-0065,tnm_t,T4
+SYN-0065,tnm_n,N3
+SYN-0065,tnm_m,M0
+SYN-0065,egfr,positive L858R
+SYN-0065,alk,negative
+SYN-0065,pdl1,not available
+SYN-0065,smoking_status,current
+SYN-0065,pack_years,50
+SYN-0065,treatment_intent,palliative
+SYN-0065,planned_treatment,best supportive care
+SYN-0066,diagnosis,keuhkon NSCLC NOS
+SYN-0066,histology,NSCLC NOS
+SYN-0066,stage,IB
+SYN-0066,tnm_t,T2a
+SYN-0066,tnm_n,N0
+SYN-0066,tnm_m,M0
+SYN-0066,egfr,not tested
+SYN-0066,alk,negative
+SYN-0066,pdl1,50%
+SYN-0066,smoking_status,current
+SYN-0066,pack_years,18
+SYN-0066,treatment_intent,curative
+SYN-0066,planned_treatment,SABR
+SYN-0067,diagnosis,keuhkon lung adenocarcinoma
+SYN-0067,histology,lung adenocarcinoma
+SYN-0067,stage,IIIC
+SYN-0067,tnm_t,T4
+SYN-0067,tnm_n,N3
+SYN-0067,tnm_m,M0
+SYN-0067,egfr,pending
+SYN-0067,alk,negative
+SYN-0067,pdl1,80%
+SYN-0067,smoking_status,former
+SYN-0067,pack_years,35
+SYN-0067,treatment_intent,palliative
+SYN-0067,planned_treatment,chemoimmunotherapy
+SYN-0068,diagnosis,NSCLC NOS of the lung
+SYN-0068,histology,NSCLC NOS
+SYN-0068,stage,IVB
+SYN-0068,tnm_t,T4
+SYN-0068,tnm_n,N2
+SYN-0068,tnm_m,M1c
+SYN-0068,egfr,pending
+SYN-0068,alk,not tested
+SYN-0068,pdl1,80%
+SYN-0068,smoking_status,current
+SYN-0068,pack_years,25
+SYN-0068,treatment_intent,palliative
+SYN-0068,planned_treatment,targeted therapy
+SYN-0069,diagnosis,lung adenocarcinoma i lunga
+SYN-0069,histology,lung adenocarcinoma
+SYN-0069,stage,IIIA
+SYN-0069,tnm_t,T2
+SYN-0069,tnm_n,N2
+SYN-0069,tnm_m,M0
+SYN-0069,egfr,pending
+SYN-0069,alk,positive
+SYN-0069,pdl1,80%
+SYN-0069,smoking_status,current
+SYN-0069,pack_years,25
+SYN-0069,treatment_intent,curative
+SYN-0069,planned_treatment,SABR
+SYN-0070,diagnosis,NSCLC NOS of the lung
+SYN-0070,histology,NSCLC NOS
+SYN-0070,stage,IIA
+SYN-0070,tnm_t,T2b
+SYN-0070,tnm_n,N0
+SYN-0070,tnm_m,M0
+SYN-0070,egfr,pending
+SYN-0070,alk,positive
+SYN-0070,pdl1,50%
+SYN-0070,smoking_status,former
+SYN-0070,pack_years,12
+SYN-0070,treatment_intent,curative
+SYN-0070,planned_treatment,concurrent chemoradiotherapy
+SYN-0071,diagnosis,keuhkon NSCLC NOS
+SYN-0071,histology,NSCLC NOS
+SYN-0071,stage,IVB
+SYN-0071,tnm_t,T4
+SYN-0071,tnm_n,N2
+SYN-0071,tnm_m,M1c
+SYN-0071,egfr,positive Ex19del
+SYN-0071,alk,positive
+SYN-0071,pdl1,<1%
+SYN-0071,smoking_status,never
+SYN-0071,pack_years,0
+SYN-0071,treatment_intent,palliative
+SYN-0071,planned_treatment,best supportive care
+SYN-0072,diagnosis,keuhkon squamous cell carcinoma
+SYN-0072,histology,squamous cell carcinoma
+SYN-0072,stage,IVA
+SYN-0072,tnm_t,T2
+SYN-0072,tnm_n,N1
+SYN-0072,tnm_m,M1a
+SYN-0072,egfr,pending
+SYN-0072,alk,not tested
+SYN-0072,pdl1,<1%
+SYN-0072,smoking_status,never
+SYN-0072,pack_years,0
+SYN-0072,treatment_intent,palliative
+SYN-0072,planned_treatment,chemoimmunotherapy
+SYN-0073,diagnosis,NSCLC NOS of the lung
+SYN-0073,histology,NSCLC NOS
+SYN-0073,stage,IVA
+SYN-0073,tnm_t,T2
+SYN-0073,tnm_n,N1
+SYN-0073,tnm_m,M1a
+SYN-0073,egfr,not tested
+SYN-0073,alk,pending
+SYN-0073,pdl1,80%
+SYN-0073,smoking_status,current
+SYN-0073,pack_years,25
+SYN-0073,treatment_intent,palliative
+SYN-0073,planned_treatment,targeted therapy
+SYN-0074,diagnosis,NSCLC NOS of the lung
+SYN-0074,histology,NSCLC NOS
+SYN-0074,stage,IIB
+SYN-0074,tnm_t,T3
+SYN-0074,tnm_n,N0
+SYN-0074,tnm_m,M0
+SYN-0074,egfr,positive Ex19del
+SYN-0074,alk,positive
+SYN-0074,pdl1,50%
+SYN-0074,smoking_status,never
+SYN-0074,pack_years,0
+SYN-0074,treatment_intent,curative
+SYN-0074,planned_treatment,concurrent chemoradiotherapy
+SYN-0075,diagnosis,keuhkon squamous cell carcinoma
+SYN-0075,histology,squamous cell carcinoma
+SYN-0075,stage,IIB
+SYN-0075,tnm_t,T3
+SYN-0075,tnm_n,N0
+SYN-0075,tnm_m,M0
+SYN-0075,egfr,pending
+SYN-0075,alk,pending
+SYN-0075,pdl1,not available
+SYN-0075,smoking_status,current
+SYN-0075,pack_years,25
+SYN-0075,treatment_intent,curative
+SYN-0075,planned_treatment,concurrent chemoradiotherapy
+SYN-0076,diagnosis,NSCLC NOS i lunga
+SYN-0076,histology,NSCLC NOS
+SYN-0076,stage,IIB
+SYN-0076,tnm_t,T3
+SYN-0076,tnm_n,N0
+SYN-0076,tnm_m,M0
+SYN-0076,egfr,negative
+SYN-0076,alk,positive
+SYN-0076,pdl1,50%
+SYN-0076,smoking_status,never
+SYN-0076,pack_years,0
+SYN-0076,treatment_intent,curative
+SYN-0076,planned_treatment,concurrent chemoradiotherapy
+SYN-0077,diagnosis,lung adenocarcinoma of the lung
+SYN-0077,histology,lung adenocarcinoma
+SYN-0077,stage,IVB
+SYN-0077,tnm_t,T4
+SYN-0077,tnm_n,N2
+SYN-0077,tnm_m,M1c
+SYN-0077,egfr,negative
+SYN-0077,alk,positive
+SYN-0077,pdl1,80%
+SYN-0077,smoking_status,never
+SYN-0077,pack_years,0
+SYN-0077,treatment_intent,palliative
+SYN-0077,planned_treatment,best supportive care
+SYN-0078,diagnosis,NSCLC NOS of the lung
+SYN-0078,histology,NSCLC NOS
+SYN-0078,stage,IIA
+SYN-0078,tnm_t,T2b
+SYN-0078,tnm_n,N0
+SYN-0078,tnm_m,M0
+SYN-0078,egfr,positive Ex19del
+SYN-0078,alk,pending
+SYN-0078,pdl1,80%
+SYN-0078,smoking_status,never
+SYN-0078,pack_years,0
+SYN-0078,treatment_intent,curative
+SYN-0078,planned_treatment,lobectomy
+SYN-0079,diagnosis,lung adenocarcinoma of the lung
+SYN-0079,histology,lung adenocarcinoma
+SYN-0079,stage,IIA
+SYN-0079,tnm_t,T2b
+SYN-0079,tnm_n,N0
+SYN-0079,tnm_m,M0
+SYN-0079,egfr,positive L858R
+SYN-0079,alk,pending
+SYN-0079,pdl1,<1%
+SYN-0079,smoking_status,never
+SYN-0079,pack_years,0
+SYN-0079,treatment_intent,curative
+SYN-0079,planned_treatment,lobectomy
+SYN-0080,diagnosis,squamous cell carcinoma of the lung
+SYN-0080,histology,squamous cell carcinoma
+SYN-0080,stage,IVB
+SYN-0080,tnm_t,T4
+SYN-0080,tnm_n,N2
+SYN-0080,tnm_m,M1c
+SYN-0080,egfr,pending
+SYN-0080,alk,not tested
+SYN-0080,pdl1,80%
+SYN-0080,smoking_status,former
+SYN-0080,pack_years,50
+SYN-0080,treatment_intent,palliative
+SYN-0080,planned_treatment,targeted therapy
+SYN-0081,diagnosis,lung adenocarcinoma of the lung
+SYN-0081,histology,lung adenocarcinoma
+SYN-0081,stage,IB
+SYN-0081,tnm_t,T2a
+SYN-0081,tnm_n,N0
+SYN-0081,tnm_m,M0
+SYN-0081,egfr,positive L858R
+SYN-0081,alk,positive
+SYN-0081,pdl1,50%
+SYN-0081,smoking_status,current
+SYN-0081,pack_years,0
+SYN-0081,treatment_intent,curative
+SYN-0081,planned_treatment,SABR
+SYN-0082,diagnosis,keuhkon squamous cell carcinoma
+SYN-0082,histology,squamous cell carcinoma
+SYN-0082,stage,IA
+SYN-0082,tnm_t,T1
+SYN-0082,tnm_n,N0
+SYN-0082,tnm_m,M0
+SYN-0082,egfr,pending
+SYN-0082,alk,not tested
+SYN-0082,pdl1,not available
+SYN-0082,smoking_status,former
+SYN-0082,pack_years,12
+SYN-0082,treatment_intent,curative
+SYN-0082,planned_treatment,lobectomy
+SYN-0083,diagnosis,keuhkon small cell lung cancer
+SYN-0083,histology,small cell lung cancer
+SYN-0083,stage,IB
+SYN-0083,tnm_t,T2a
+SYN-0083,tnm_n,N0
+SYN-0083,tnm_m,M0
+SYN-0083,egfr,positive L858R
+SYN-0083,alk,pending
+SYN-0083,pdl1,not available
+SYN-0083,smoking_status,current
+SYN-0083,pack_years,50
+SYN-0083,treatment_intent,curative
+SYN-0083,planned_treatment,SABR
+SYN-0084,diagnosis,squamous cell carcinoma of the lung
+SYN-0084,histology,squamous cell carcinoma
+SYN-0084,stage,IIIA
+SYN-0084,tnm_t,T2
+SYN-0084,tnm_n,N2
+SYN-0084,tnm_m,M0
+SYN-0084,egfr,positive L858R
+SYN-0084,alk,negative
+SYN-0084,pdl1,<1%
+SYN-0084,smoking_status,never
+SYN-0084,pack_years,0
+SYN-0084,treatment_intent,curative
+SYN-0084,planned_treatment,concurrent chemoradiotherapy
+SYN-0085,diagnosis,NSCLC NOS i lunga
+SYN-0085,histology,NSCLC NOS
+SYN-0085,stage,IVA
+SYN-0085,tnm_t,T2
+SYN-0085,tnm_n,N1
+SYN-0085,tnm_m,M1a
+SYN-0085,egfr,positive Ex19del
+SYN-0085,alk,not tested
+SYN-0085,pdl1,50%
+SYN-0085,smoking_status,current
+SYN-0085,pack_years,18
+SYN-0085,treatment_intent,palliative
+SYN-0085,planned_treatment,best supportive care
+SYN-0086,diagnosis,lung adenocarcinoma of the lung
+SYN-0086,histology,lung adenocarcinoma
+SYN-0086,stage,IIIC
+SYN-0086,tnm_t,T4
+SYN-0086,tnm_n,N3
+SYN-0086,tnm_m,M0
+SYN-0086,egfr,negative
+SYN-0086,alk,pending
+SYN-0086,pdl1,<1%
+SYN-0086,smoking_status,never
+SYN-0086,pack_years,0
+SYN-0086,treatment_intent,palliative
+SYN-0086,planned_treatment,best supportive care
+SYN-0087,diagnosis,keuhkon lung adenocarcinoma
+SYN-0087,histology,lung adenocarcinoma
+SYN-0087,stage,IIIA
+SYN-0087,tnm_t,T2
+SYN-0087,tnm_n,N2
+SYN-0087,tnm_m,M0
+SYN-0087,egfr,not tested
+SYN-0087,alk,negative
+SYN-0087,pdl1,1-49%
+SYN-0087,smoking_status,former
+SYN-0087,pack_years,25
+SYN-0087,treatment_intent,curative
+SYN-0087,planned_treatment,SABR
+SYN-0088,diagnosis,small cell lung cancer of the lung
+SYN-0088,histology,small cell lung cancer
+SYN-0088,stage,IVA
+SYN-0088,tnm_t,T2
+SYN-0088,tnm_n,N1
+SYN-0088,tnm_m,M1a
+SYN-0088,egfr,positive Ex19del
+SYN-0088,alk,not tested
+SYN-0088,pdl1,50%
+SYN-0088,smoking_status,former
+SYN-0088,pack_years,12
+SYN-0088,treatment_intent,palliative
+SYN-0088,planned_treatment,best supportive care
+SYN-0089,diagnosis,small cell lung cancer of the lung
+SYN-0089,histology,small cell lung cancer
+SYN-0089,stage,IVA
+SYN-0089,tnm_t,T2
+SYN-0089,tnm_n,N1
+SYN-0089,tnm_m,M1a
+SYN-0089,egfr,negative
+SYN-0089,alk,not tested
+SYN-0089,pdl1,not available
+SYN-0089,smoking_status,never
+SYN-0089,pack_years,0
+SYN-0089,treatment_intent,palliative
+SYN-0089,planned_treatment,chemoimmunotherapy
+SYN-0090,diagnosis,lung adenocarcinoma of the lung
+SYN-0090,histology,lung adenocarcinoma
+SYN-0090,stage,IIIC
+SYN-0090,tnm_t,T4
+SYN-0090,tnm_n,N3
+SYN-0090,tnm_m,M0
+SYN-0090,egfr,not tested
+SYN-0090,alk,negative
+SYN-0090,pdl1,not available
+SYN-0090,smoking_status,former
+SYN-0090,pack_years,18
+SYN-0090,treatment_intent,palliative
+SYN-0090,planned_treatment,chemoimmunotherapy
+SYN-0091,diagnosis,keuhkon small cell lung cancer
+SYN-0091,histology,small cell lung cancer
+SYN-0091,stage,IVA
+SYN-0091,tnm_t,T2
+SYN-0091,tnm_n,N1
+SYN-0091,tnm_m,M1a
+SYN-0091,egfr,positive Ex19del
+SYN-0091,alk,positive
+SYN-0091,pdl1,50%
+SYN-0091,smoking_status,current
+SYN-0091,pack_years,5
+SYN-0091,treatment_intent,palliative
+SYN-0091,planned_treatment,targeted therapy
+SYN-0092,diagnosis,lung adenocarcinoma of the lung
+SYN-0092,histology,lung adenocarcinoma
+SYN-0092,stage,IIB
+SYN-0092,tnm_t,T3
+SYN-0092,tnm_n,N0
+SYN-0092,tnm_m,M0
+SYN-0092,egfr,positive L858R
+SYN-0092,alk,pending
+SYN-0092,pdl1,not available
+SYN-0092,smoking_status,never
+SYN-0092,pack_years,0
+SYN-0092,treatment_intent,curative
+SYN-0092,planned_treatment,SABR
+SYN-0093,diagnosis,lung adenocarcinoma i lunga
+SYN-0093,histology,lung adenocarcinoma
+SYN-0093,stage,IVA
+SYN-0093,tnm_t,T2
+SYN-0093,tnm_n,N1
+SYN-0093,tnm_m,M1a
+SYN-0093,egfr,positive Ex19del
+SYN-0093,alk,positive
+SYN-0093,pdl1,80%
+SYN-0093,smoking_status,current
+SYN-0093,pack_years,12
+SYN-0093,treatment_intent,palliative
+SYN-0093,planned_treatment,targeted therapy
+SYN-0094,diagnosis,small cell lung cancer of the lung
+SYN-0094,histology,small cell lung cancer
+SYN-0094,stage,IVA
+SYN-0094,tnm_t,T2
+SYN-0094,tnm_n,N1
+SYN-0094,tnm_m,M1a
+SYN-0094,egfr,positive L858R
+SYN-0094,alk,not tested
+SYN-0094,pdl1,not available
+SYN-0094,smoking_status,never
+SYN-0094,pack_years,0
+SYN-0094,treatment_intent,palliative
+SYN-0094,planned_treatment,chemoimmunotherapy
+SYN-0095,diagnosis,keuhkon squamous cell carcinoma
+SYN-0095,histology,squamous cell carcinoma
+SYN-0095,stage,IB
+SYN-0095,tnm_t,T2a
+SYN-0095,tnm_n,N0
+SYN-0095,tnm_m,M0
+SYN-0095,egfr,negative
+SYN-0095,alk,not tested
+SYN-0095,pdl1,50%
+SYN-0095,smoking_status,current
+SYN-0095,pack_years,12
+SYN-0095,treatment_intent,curative
+SYN-0095,planned_treatment,lobectomy
+SYN-0096,diagnosis,small cell lung cancer of the lung
+SYN-0096,histology,small cell lung cancer
+SYN-0096,stage,IIA
+SYN-0096,tnm_t,T2b
+SYN-0096,tnm_n,N0
+SYN-0096,tnm_m,M0
+SYN-0096,egfr,pending
+SYN-0096,alk,not tested
+SYN-0096,pdl1,50%
+SYN-0096,smoking_status,former
+SYN-0096,pack_years,25
+SYN-0096,treatment_intent,curative
+SYN-0096,planned_treatment,SABR
+SYN-0097,diagnosis,squamous cell carcinoma of the lung
+SYN-0097,histology,squamous cell carcinoma
+SYN-0097,stage,IIB
+SYN-0097,tnm_t,T3
+SYN-0097,tnm_n,N0
+SYN-0097,tnm_m,M0
+SYN-0097,egfr,not tested
+SYN-0097,alk,not tested
+SYN-0097,pdl1,1-49%
+SYN-0097,smoking_status,former
+SYN-0097,pack_years,0
+SYN-0097,treatment_intent,curative
+SYN-0097,planned_treatment,concurrent chemoradiotherapy
+SYN-0098,diagnosis,keuhkon small cell lung cancer
+SYN-0098,histology,small cell lung cancer
+SYN-0098,stage,IIIC
+SYN-0098,tnm_t,T4
+SYN-0098,tnm_n,N3
+SYN-0098,tnm_m,M0
+SYN-0098,egfr,positive L858R
+SYN-0098,alk,not tested
+SYN-0098,pdl1,<1%
+SYN-0098,smoking_status,never
+SYN-0098,pack_years,0
+SYN-0098,treatment_intent,palliative
+SYN-0098,planned_treatment,targeted therapy
+SYN-0099,diagnosis,lung adenocarcinoma of the lung
+SYN-0099,histology,lung adenocarcinoma
+SYN-0099,stage,IVA
+SYN-0099,tnm_t,T2
+SYN-0099,tnm_n,N1
+SYN-0099,tnm_m,M1a
+SYN-0099,egfr,positive Ex19del
+SYN-0099,alk,not tested
+SYN-0099,pdl1,<1%
+SYN-0099,smoking_status,current
+SYN-0099,pack_years,5
+SYN-0099,treatment_intent,palliative
+SYN-0099,planned_treatment,chemoimmunotherapy
+SYN-0100,diagnosis,lung adenocarcinoma i lunga
+SYN-0100,histology,lung adenocarcinoma
+SYN-0100,stage,IVA
+SYN-0100,tnm_t,T2
+SYN-0100,tnm_n,N1
+SYN-0100,tnm_m,M1a
+SYN-0100,egfr,negative
+SYN-0100,alk,pending
+SYN-0100,pdl1,not available
+SYN-0100,smoking_status,current
+SYN-0100,pack_years,18
+SYN-0100,treatment_intent,palliative
+SYN-0100,planned_treatment,best supportive care
+SYN-0101,diagnosis,small cell lung cancer of the lung
+SYN-0101,histology,small cell lung cancer
+SYN-0101,stage,IIIB
+SYN-0101,tnm_t,T3
+SYN-0101,tnm_n,N2
+SYN-0101,tnm_m,M0
+SYN-0101,egfr,pending
+SYN-0101,alk,negative
+SYN-0101,pdl1,not available
+SYN-0101,smoking_status,never
+SYN-0101,pack_years,0
+SYN-0101,treatment_intent,palliative
+SYN-0101,planned_treatment,best supportive care
+SYN-0102,diagnosis,squamous cell carcinoma of the lung
+SYN-0102,histology,squamous cell carcinoma
+SYN-0102,stage,IB
+SYN-0102,tnm_t,T2a
+SYN-0102,tnm_n,N0
+SYN-0102,tnm_m,M0
+SYN-0102,egfr,pending
+SYN-0102,alk,negative
+SYN-0102,pdl1,<1%
+SYN-0102,smoking_status,former
+SYN-0102,pack_years,5
+SYN-0102,treatment_intent,curative
+SYN-0102,planned_treatment,SABR
+SYN-0103,diagnosis,lung adenocarcinoma of the lung
+SYN-0103,histology,lung adenocarcinoma
+SYN-0103,stage,IIIA
+SYN-0103,tnm_t,T2
+SYN-0103,tnm_n,N2
+SYN-0103,tnm_m,M0
+SYN-0103,egfr,negative
+SYN-0103,alk,pending
+SYN-0103,pdl1,80%
+SYN-0103,smoking_status,never
+SYN-0103,pack_years,0
+SYN-0103,treatment_intent,curative
+SYN-0103,planned_treatment,SABR
+SYN-0104,diagnosis,keuhkon squamous cell carcinoma
+SYN-0104,histology,squamous cell carcinoma
+SYN-0104,stage,IIA
+SYN-0104,tnm_t,T2b
+SYN-0104,tnm_n,N0
+SYN-0104,tnm_m,M0
+SYN-0104,egfr,positive L858R
+SYN-0104,alk,negative
+SYN-0104,pdl1,not available
+SYN-0104,smoking_status,former
+SYN-0104,pack_years,25
+SYN-0104,treatment_intent,curative
+SYN-0104,planned_treatment,lobectomy
+SYN-0105,diagnosis,keuhkon squamous cell carcinoma
+SYN-0105,histology,squamous cell carcinoma
+SYN-0105,stage,IVA
+SYN-0105,tnm_t,T2
+SYN-0105,tnm_n,N1
+SYN-0105,tnm_m,M1a
+SYN-0105,egfr,negative
+SYN-0105,alk,not tested
+SYN-0105,pdl1,50%
+SYN-0105,smoking_status,current
+SYN-0105,pack_years,0
+SYN-0105,treatment_intent,palliative
+SYN-0105,planned_treatment,chemoimmunotherapy
+SYN-0106,diagnosis,keuhkon squamous cell carcinoma
+SYN-0106,histology,squamous cell carcinoma
+SYN-0106,stage,IB
+SYN-0106,tnm_t,T2a
+SYN-0106,tnm_n,N0
+SYN-0106,tnm_m,M0
+SYN-0106,egfr,pending
+SYN-0106,alk,pending
+SYN-0106,pdl1,not available
+SYN-0106,smoking_status,former
+SYN-0106,pack_years,35
+SYN-0106,treatment_intent,curative
+SYN-0106,planned_treatment,concurrent chemoradiotherapy
+SYN-0107,diagnosis,squamous cell carcinoma i lunga
+SYN-0107,histology,squamous cell carcinoma
+SYN-0107,stage,IIIC
+SYN-0107,tnm_t,T4
+SYN-0107,tnm_n,N3
+SYN-0107,tnm_m,M0
+SYN-0107,egfr,pending
+SYN-0107,alk,negative
+SYN-0107,pdl1,1-49%
+SYN-0107,smoking_status,former
+SYN-0107,pack_years,25
+SYN-0107,treatment_intent,palliative
+SYN-0107,planned_treatment,best supportive care
+SYN-0108,diagnosis,keuhkon lung adenocarcinoma
+SYN-0108,histology,lung adenocarcinoma
+SYN-0108,stage,IIIC
+SYN-0108,tnm_t,T4
+SYN-0108,tnm_n,N3
+SYN-0108,tnm_m,M0
+SYN-0108,egfr,negative
+SYN-0108,alk,negative
+SYN-0108,pdl1,not available
+SYN-0108,smoking_status,current
+SYN-0108,pack_years,50
+SYN-0108,treatment_intent,palliative
+SYN-0108,planned_treatment,best supportive care
+SYN-0109,diagnosis,small cell lung cancer i lunga
+SYN-0109,histology,small cell lung cancer
+SYN-0109,stage,IIIA
+SYN-0109,tnm_t,T2
+SYN-0109,tnm_n,N2
+SYN-0109,tnm_m,M0
+SYN-0109,egfr,positive L858R
+SYN-0109,alk,pending
+SYN-0109,pdl1,1-49%
+SYN-0109,smoking_status,current
+SYN-0109,pack_years,5
+SYN-0109,treatment_intent,curative
+SYN-0109,planned_treatment,SABR
+SYN-0110,diagnosis,keuhkon squamous cell carcinoma
+SYN-0110,histology,squamous cell carcinoma
+SYN-0110,stage,IB
+SYN-0110,tnm_t,T2a
+SYN-0110,tnm_n,N0
+SYN-0110,tnm_m,M0
+SYN-0110,egfr,positive Ex19del
+SYN-0110,alk,pending
+SYN-0110,pdl1,80%
+SYN-0110,smoking_status,never
+SYN-0110,pack_years,0
+SYN-0110,treatment_intent,curative
+SYN-0110,planned_treatment,SABR
+SYN-0111,diagnosis,NSCLC NOS of the lung
+SYN-0111,histology,NSCLC NOS
+SYN-0111,stage,IIIB
+SYN-0111,tnm_t,T3
+SYN-0111,tnm_n,N2
+SYN-0111,tnm_m,M0
+SYN-0111,egfr,pending
+SYN-0111,alk,positive
+SYN-0111,pdl1,1-49%
+SYN-0111,smoking_status,never
+SYN-0111,pack_years,0
+SYN-0111,treatment_intent,palliative
+SYN-0111,planned_treatment,targeted therapy
+SYN-0112,diagnosis,NSCLC NOS of the lung
+SYN-0112,histology,NSCLC NOS
+SYN-0112,stage,IIA
+SYN-0112,tnm_t,T2b
+SYN-0112,tnm_n,N0
+SYN-0112,tnm_m,M0
+SYN-0112,egfr,negative
+SYN-0112,alk,not tested
+SYN-0112,pdl1,50%
+SYN-0112,smoking_status,current
+SYN-0112,pack_years,50
+SYN-0112,treatment_intent,curative
+SYN-0112,planned_treatment,concurrent chemoradiotherapy
+SYN-0113,diagnosis,lung adenocarcinoma of the lung
+SYN-0113,histology,lung adenocarcinoma
+SYN-0113,stage,IIA
+SYN-0113,tnm_t,T2b
+SYN-0113,tnm_n,N0
+SYN-0113,tnm_m,M0
+SYN-0113,egfr,positive L858R
+SYN-0113,alk,not tested
+SYN-0113,pdl1,not available
+SYN-0113,smoking_status,former
+SYN-0113,pack_years,0
+SYN-0113,treatment_intent,curative
+SYN-0113,planned_treatment,lobectomy
+SYN-0114,diagnosis,NSCLC NOS of the lung
+SYN-0114,histology,NSCLC NOS
+SYN-0114,stage,IIIA
+SYN-0114,tnm_t,T2
+SYN-0114,tnm_n,N2
+SYN-0114,tnm_m,M0
+SYN-0114,egfr,not tested
+SYN-0114,alk,not tested
+SYN-0114,pdl1,50%
+SYN-0114,smoking_status,never
+SYN-0114,pack_years,0
+SYN-0114,treatment_intent,curative
+SYN-0114,planned_treatment,lobectomy
+SYN-0115,diagnosis,keuhkon NSCLC NOS
+SYN-0115,histology,NSCLC NOS
+SYN-0115,stage,IIB
+SYN-0115,tnm_t,T3
+SYN-0115,tnm_n,N0
+SYN-0115,tnm_m,M0
+SYN-0115,egfr,positive Ex19del
+SYN-0115,alk,not tested
+SYN-0115,pdl1,50%
+SYN-0115,smoking_status,current
+SYN-0115,pack_years,18
+SYN-0115,treatment_intent,curative
+SYN-0115,planned_treatment,lobectomy
+SYN-0116,diagnosis,NSCLC NOS i lunga
+SYN-0116,histology,NSCLC NOS
+SYN-0116,stage,IVA
+SYN-0116,tnm_t,T2
+SYN-0116,tnm_n,N1
+SYN-0116,tnm_m,M1a
+SYN-0116,egfr,positive Ex19del
+SYN-0116,alk,negative
+SYN-0116,pdl1,1-49%
+SYN-0116,smoking_status,current
+SYN-0116,pack_years,5
+SYN-0116,treatment_intent,palliative
+SYN-0116,planned_treatment,chemoimmunotherapy
+SYN-0117,diagnosis,keuhkon small cell lung cancer
+SYN-0117,histology,small cell lung cancer
+SYN-0117,stage,IIA
+SYN-0117,tnm_t,T2b
+SYN-0117,tnm_n,N0
+SYN-0117,tnm_m,M0
+SYN-0117,egfr,pending
+SYN-0117,alk,negative
+SYN-0117,pdl1,80%
+SYN-0117,smoking_status,current
+SYN-0117,pack_years,18
+SYN-0117,treatment_intent,curative
+SYN-0117,planned_treatment,concurrent chemoradiotherapy
+SYN-0118,diagnosis,small cell lung cancer of the lung
+SYN-0118,histology,small cell lung cancer
+SYN-0118,stage,IVA
+SYN-0118,tnm_t,T2
+SYN-0118,tnm_n,N1
+SYN-0118,tnm_m,M1a
+SYN-0118,egfr,positive L858R
+SYN-0118,alk,pending
+SYN-0118,pdl1,<1%
+SYN-0118,smoking_status,current
+SYN-0118,pack_years,12
+SYN-0118,treatment_intent,palliative
+SYN-0118,planned_treatment,targeted therapy
+SYN-0119,diagnosis,keuhkon lung adenocarcinoma
+SYN-0119,histology,lung adenocarcinoma
+SYN-0119,stage,IIIC
+SYN-0119,tnm_t,T4
+SYN-0119,tnm_n,N3
+SYN-0119,tnm_m,M0
+SYN-0119,egfr,negative
+SYN-0119,alk,positive
+SYN-0119,pdl1,<1%
+SYN-0119,smoking_status,former
+SYN-0119,pack_years,0
+SYN-0119,treatment_intent,palliative
+SYN-0119,planned_treatment,best supportive care
+SYN-0120,diagnosis,keuhkon lung adenocarcinoma
+SYN-0120,histology,lung adenocarcinoma
+SYN-0120,stage,IA
+SYN-0120,tnm_t,T1
+SYN-0120,tnm_n,N0
+SYN-0120,tnm_m,M0
+SYN-0120,egfr,negative
+SYN-0120,alk,positive
+SYN-0120,pdl1,1-49%
+SYN-0120,smoking_status,current
+SYN-0120,pack_years,5
+SYN-0120,treatment_intent,curative
+SYN-0120,planned_treatment,lobectomy
+SYN-0121,diagnosis,keuhkon squamous cell carcinoma
+SYN-0121,histology,squamous cell carcinoma
+SYN-0121,stage,IIB
+SYN-0121,tnm_t,T3
+SYN-0121,tnm_n,N0
+SYN-0121,tnm_m,M0
+SYN-0121,egfr,negative
+SYN-0121,alk,positive
+SYN-0121,pdl1,not available
+SYN-0121,smoking_status,never
+SYN-0121,pack_years,0
+SYN-0121,treatment_intent,curative
+SYN-0121,planned_treatment,concurrent chemoradiotherapy
+SYN-0122,diagnosis,squamous cell carcinoma of the lung
+SYN-0122,histology,squamous cell carcinoma
+SYN-0122,stage,IVB
+SYN-0122,tnm_t,T4
+SYN-0122,tnm_n,N2
+SYN-0122,tnm_m,M1c
+SYN-0122,egfr,negative
+SYN-0122,alk,positive
+SYN-0122,pdl1,<1%
+SYN-0122,smoking_status,current
+SYN-0122,pack_years,50
+SYN-0122,treatment_intent,palliative
+SYN-0122,planned_treatment,chemoimmunotherapy
+SYN-0123,diagnosis,keuhkon squamous cell carcinoma
+SYN-0123,histology,squamous cell carcinoma
+SYN-0123,stage,IIIB
+SYN-0123,tnm_t,T3
+SYN-0123,tnm_n,N2
+SYN-0123,tnm_m,M0
+SYN-0123,egfr,positive Ex19del
+SYN-0123,alk,positive
+SYN-0123,pdl1,50%
+SYN-0123,smoking_status,never
+SYN-0123,pack_years,0
+SYN-0123,treatment_intent,palliative
+SYN-0123,planned_treatment,best supportive care
+SYN-0124,diagnosis,lung adenocarcinoma of the lung
+SYN-0124,histology,lung adenocarcinoma
+SYN-0124,stage,IVA
+SYN-0124,tnm_t,T2
+SYN-0124,tnm_n,N1
+SYN-0124,tnm_m,M1a
+SYN-0124,egfr,pending
+SYN-0124,alk,pending
+SYN-0124,pdl1,not available
+SYN-0124,smoking_status,current
+SYN-0124,pack_years,0
+SYN-0124,treatment_intent,palliative
+SYN-0124,planned_treatment,chemoimmunotherapy
+SYN-0125,diagnosis,lung adenocarcinoma i lunga
+SYN-0125,histology,lung adenocarcinoma
+SYN-0125,stage,IVB
+SYN-0125,tnm_t,T4
+SYN-0125,tnm_n,N2
+SYN-0125,tnm_m,M1c
+SYN-0125,egfr,negative
+SYN-0125,alk,not tested
+SYN-0125,pdl1,<1%
+SYN-0125,smoking_status,never
+SYN-0125,pack_years,0
+SYN-0125,treatment_intent,palliative
+SYN-0125,planned_treatment,chemoimmunotherapy
+SYN-0126,diagnosis,lung adenocarcinoma of the lung
+SYN-0126,histology,lung adenocarcinoma
+SYN-0126,stage,IVA
+SYN-0126,tnm_t,T2
+SYN-0126,tnm_n,N1
+SYN-0126,tnm_m,M1a
+SYN-0126,egfr,pending
+SYN-0126,alk,negative
+SYN-0126,pdl1,<1%
+SYN-0126,smoking_status,former
+SYN-0126,pack_years,25
+SYN-0126,treatment_intent,palliative
+SYN-0126,planned_treatment,chemoimmunotherapy
+SYN-0127,diagnosis,keuhkon NSCLC NOS
+SYN-0127,histology,NSCLC NOS
+SYN-0127,stage,IIIC
+SYN-0127,tnm_t,T4
+SYN-0127,tnm_n,N3
+SYN-0127,tnm_m,M0
+SYN-0127,egfr,not tested
+SYN-0127,alk,pending
+SYN-0127,pdl1,80%
+SYN-0127,smoking_status,current
+SYN-0127,pack_years,25
+SYN-0127,treatment_intent,palliative
+SYN-0127,planned_treatment,chemoimmunotherapy
+SYN-0128,diagnosis,keuhkon squamous cell carcinoma
+SYN-0128,histology,squamous cell carcinoma
+SYN-0128,stage,IIIC
+SYN-0128,tnm_t,T4
+SYN-0128,tnm_n,N3
+SYN-0128,tnm_m,M0
+SYN-0128,egfr,pending
+SYN-0128,alk,positive
+SYN-0128,pdl1,80%
+SYN-0128,smoking_status,former
+SYN-0128,pack_years,50
+SYN-0128,treatment_intent,palliative
+SYN-0128,planned_treatment,chemoimmunotherapy
+SYN-0129,diagnosis,keuhkon NSCLC NOS
+SYN-0129,histology,NSCLC NOS
+SYN-0129,stage,IIIC
+SYN-0129,tnm_t,T4
+SYN-0129,tnm_n,N3
+SYN-0129,tnm_m,M0
+SYN-0129,egfr,negative
+SYN-0129,alk,pending
+SYN-0129,pdl1,50%
+SYN-0129,smoking_status,never
+SYN-0129,pack_years,0
+SYN-0129,treatment_intent,palliative
+SYN-0129,planned_treatment,best supportive care
+SYN-0130,diagnosis,lung adenocarcinoma of the lung
+SYN-0130,histology,lung adenocarcinoma
+SYN-0130,stage,IB
+SYN-0130,tnm_t,T2a
+SYN-0130,tnm_n,N0
+SYN-0130,tnm_m,M0
+SYN-0130,egfr,pending
+SYN-0130,alk,negative
+SYN-0130,pdl1,50%
+SYN-0130,smoking_status,never
+SYN-0130,pack_years,0
+SYN-0130,treatment_intent,curative
+SYN-0130,planned_treatment,lobectomy
+SYN-0131,diagnosis,keuhkon NSCLC NOS
+SYN-0131,histology,NSCLC NOS
+SYN-0131,stage,IB
+SYN-0131,tnm_t,T2a
+SYN-0131,tnm_n,N0
+SYN-0131,tnm_m,M0
+SYN-0131,egfr,pending
+SYN-0131,alk,pending
+SYN-0131,pdl1,80%
+SYN-0131,smoking_status,current
+SYN-0131,pack_years,0
+SYN-0131,treatment_intent,curative
+SYN-0131,planned_treatment,concurrent chemoradiotherapy
+SYN-0132,diagnosis,squamous cell carcinoma of the lung
+SYN-0132,histology,squamous cell carcinoma
+SYN-0132,stage,IIA
+SYN-0132,tnm_t,T2b
+SYN-0132,tnm_n,N0
+SYN-0132,tnm_m,M0
+SYN-0132,egfr,pending
+SYN-0132,alk,positive
+SYN-0132,pdl1,<1%
+SYN-0132,smoking_status,former
+SYN-0132,pack_years,50
+SYN-0132,treatment_intent,curative
+SYN-0132,planned_treatment,SABR
+SYN-0133,diagnosis,squamous cell carcinoma of the lung
+SYN-0133,histology,squamous cell carcinoma
+SYN-0133,stage,IIIC
+SYN-0133,tnm_t,T4
+SYN-0133,tnm_n,N3
+SYN-0133,tnm_m,M0
+SYN-0133,egfr,not tested
+SYN-0133,alk,negative
+SYN-0133,pdl1,not available
+SYN-0133,smoking_status,current
+SYN-0133,pack_years,50
+SYN-0133,treatment_intent,palliative
+SYN-0133,planned_treatment,best supportive care
+SYN-0134,diagnosis,NSCLC NOS of the lung
+SYN-0134,histology,NSCLC NOS
+SYN-0134,stage,IIIB
+SYN-0134,tnm_t,T3
+SYN-0134,tnm_n,N2
+SYN-0134,tnm_m,M0
+SYN-0134,egfr,negative
+SYN-0134,alk,negative
+SYN-0134,pdl1,1-49%
+SYN-0134,smoking_status,never
+SYN-0134,pack_years,0
+SYN-0134,treatment_intent,palliative
+SYN-0134,planned_treatment,targeted therapy
+SYN-0135,diagnosis,lung adenocarcinoma of the lung
+SYN-0135,histology,lung adenocarcinoma
+SYN-0135,stage,IB
+SYN-0135,tnm_t,T2a
+SYN-0135,tnm_n,N0
+SYN-0135,tnm_m,M0
+SYN-0135,egfr,not tested
+SYN-0135,alk,positive
+SYN-0135,pdl1,80%
+SYN-0135,smoking_status,former
+SYN-0135,pack_years,18
+SYN-0135,treatment_intent,curative
+SYN-0135,planned_treatment,concurrent chemoradiotherapy
+SYN-0136,diagnosis,NSCLC NOS of the lung
+SYN-0136,histology,NSCLC NOS
+SYN-0136,stage,IB
+SYN-0136,tnm_t,T2a
+SYN-0136,tnm_n,N0
+SYN-0136,tnm_m,M0
+SYN-0136,egfr,positive Ex19del
+SYN-0136,alk,positive
+SYN-0136,pdl1,1-49%
+SYN-0136,smoking_status,current
+SYN-0136,pack_years,0
+SYN-0136,treatment_intent,curative
+SYN-0136,planned_treatment,lobectomy
+SYN-0137,diagnosis,keuhkon small cell lung cancer
+SYN-0137,histology,small cell lung cancer
+SYN-0137,stage,IVA
+SYN-0137,tnm_t,T2
+SYN-0137,tnm_n,N1
+SYN-0137,tnm_m,M1a
+SYN-0137,egfr,pending
+SYN-0137,alk,pending
+SYN-0137,pdl1,1-49%
+SYN-0137,smoking_status,current
+SYN-0137,pack_years,0
+SYN-0137,treatment_intent,palliative
+SYN-0137,planned_treatment,targeted therapy
+SYN-0138,diagnosis,keuhkon small cell lung cancer
+SYN-0138,histology,small cell lung cancer
+SYN-0138,stage,IVB
+SYN-0138,tnm_t,T4
+SYN-0138,tnm_n,N2
+SYN-0138,tnm_m,M1c
+SYN-0138,egfr,negative
+SYN-0138,alk,negative
+SYN-0138,pdl1,1-49%
+SYN-0138,smoking_status,former
+SYN-0138,pack_years,25
+SYN-0138,treatment_intent,palliative
+SYN-0138,planned_treatment,chemoimmunotherapy
+SYN-0139,diagnosis,squamous cell carcinoma i lunga
+SYN-0139,histology,squamous cell carcinoma
+SYN-0139,stage,IIIA
+SYN-0139,tnm_t,T2
+SYN-0139,tnm_n,N2
+SYN-0139,tnm_m,M0
+SYN-0139,egfr,negative
+SYN-0139,alk,pending
+SYN-0139,pdl1,<1%
+SYN-0139,smoking_status,never
+SYN-0139,pack_years,0
+SYN-0139,treatment_intent,curative
+SYN-0139,planned_treatment,concurrent chemoradiotherapy
+SYN-0140,diagnosis,squamous cell carcinoma of the lung
+SYN-0140,histology,squamous cell carcinoma
+SYN-0140,stage,IVB
+SYN-0140,tnm_t,T4
+SYN-0140,tnm_n,N2
+SYN-0140,tnm_m,M1c
+SYN-0140,egfr,not tested
+SYN-0140,alk,pending
+SYN-0140,pdl1,<1%
+SYN-0140,smoking_status,former
+SYN-0140,pack_years,50
+SYN-0140,treatment_intent,palliative
+SYN-0140,planned_treatment,best supportive care
+SYN-0141,diagnosis,lung adenocarcinoma of the lung
+SYN-0141,histology,lung adenocarcinoma
+SYN-0141,stage,IIIB
+SYN-0141,tnm_t,T3
+SYN-0141,tnm_n,N2
+SYN-0141,tnm_m,M0
+SYN-0141,egfr,not tested
+SYN-0141,alk,not tested
+SYN-0141,pdl1,not available
+SYN-0141,smoking_status,former
+SYN-0141,pack_years,35
+SYN-0141,treatment_intent,palliative
+SYN-0141,planned_treatment,best supportive care
+SYN-0142,diagnosis,lung adenocarcinoma of the lung
+SYN-0142,histology,lung adenocarcinoma
+SYN-0142,stage,IIIB
+SYN-0142,tnm_t,T3
+SYN-0142,tnm_n,N2
+SYN-0142,tnm_m,M0
+SYN-0142,egfr,positive L858R
+SYN-0142,alk,not tested
+SYN-0142,pdl1,50%
+SYN-0142,smoking_status,never
+SYN-0142,pack_years,0
+SYN-0142,treatment_intent,palliative
+SYN-0142,planned_treatment,chemoimmunotherapy
+SYN-0143,diagnosis,small cell lung cancer of the lung
+SYN-0143,histology,small cell lung cancer
+SYN-0143,stage,IVB
+SYN-0143,tnm_t,T4
+SYN-0143,tnm_n,N2
+SYN-0143,tnm_m,M1c
+SYN-0143,egfr,positive Ex19del
+SYN-0143,alk,not tested
+SYN-0143,pdl1,50%
+SYN-0143,smoking_status,current
+SYN-0143,pack_years,12
+SYN-0143,treatment_intent,palliative
+SYN-0143,planned_treatment,targeted therapy
+SYN-0144,diagnosis,lung adenocarcinoma of the lung
+SYN-0144,histology,lung adenocarcinoma
+SYN-0144,stage,IVB
+SYN-0144,tnm_t,T4
+SYN-0144,tnm_n,N2
+SYN-0144,tnm_m,M1c
+SYN-0144,egfr,not tested
+SYN-0144,alk,positive
+SYN-0144,pdl1,50%
+SYN-0144,smoking_status,former
+SYN-0144,pack_years,35
+SYN-0144,treatment_intent,palliative
+SYN-0144,planned_treatment,best supportive care
+SYN-0145,diagnosis,squamous cell carcinoma of the lung
+SYN-0145,histology,squamous cell carcinoma
+SYN-0145,stage,IIIA
+SYN-0145,tnm_t,T2
+SYN-0145,tnm_n,N2
+SYN-0145,tnm_m,M0
+SYN-0145,egfr,positive L858R
+SYN-0145,alk,positive
+SYN-0145,pdl1,not available
+SYN-0145,smoking_status,never
+SYN-0145,pack_years,0
+SYN-0145,treatment_intent,curative
+SYN-0145,planned_treatment,lobectomy
+SYN-0146,diagnosis,keuhkon small cell lung cancer
+SYN-0146,histology,small cell lung cancer
+SYN-0146,stage,IVA
+SYN-0146,tnm_t,T2
+SYN-0146,tnm_n,N1
+SYN-0146,tnm_m,M1a
+SYN-0146,egfr,not tested
+SYN-0146,alk,not tested
+SYN-0146,pdl1,not available
+SYN-0146,smoking_status,current
+SYN-0146,pack_years,35
+SYN-0146,treatment_intent,palliative
+SYN-0146,planned_treatment,targeted therapy
+SYN-0147,diagnosis,NSCLC NOS i lunga
+SYN-0147,histology,NSCLC NOS
+SYN-0147,stage,IIA
+SYN-0147,tnm_t,T2b
+SYN-0147,tnm_n,N0
+SYN-0147,tnm_m,M0
+SYN-0147,egfr,pending
+SYN-0147,alk,negative
+SYN-0147,pdl1,80%
+SYN-0147,smoking_status,former
+SYN-0147,pack_years,35
+SYN-0147,treatment_intent,curative
+SYN-0147,planned_treatment,concurrent chemoradiotherapy
+SYN-0148,diagnosis,keuhkon NSCLC NOS
+SYN-0148,histology,NSCLC NOS
+SYN-0148,stage,IVB
+SYN-0148,tnm_t,T4
+SYN-0148,tnm_n,N2
+SYN-0148,tnm_m,M1c
+SYN-0148,egfr,positive Ex19del
+SYN-0148,alk,pending
+SYN-0148,pdl1,80%
+SYN-0148,smoking_status,former
+SYN-0148,pack_years,0
+SYN-0148,treatment_intent,palliative
+SYN-0148,planned_treatment,targeted therapy
+SYN-0149,diagnosis,lung adenocarcinoma of the lung
+SYN-0149,histology,lung adenocarcinoma
+SYN-0149,stage,IVB
+SYN-0149,tnm_t,T4
+SYN-0149,tnm_n,N2
+SYN-0149,tnm_m,M1c
+SYN-0149,egfr,pending
+SYN-0149,alk,not tested
+SYN-0149,pdl1,not available
+SYN-0149,smoking_status,current
+SYN-0149,pack_years,50
+SYN-0149,treatment_intent,palliative
+SYN-0149,planned_treatment,best supportive care
+SYN-0150,diagnosis,squamous cell carcinoma of the lung
+SYN-0150,histology,squamous cell carcinoma
+SYN-0150,stage,IIIB
+SYN-0150,tnm_t,T3
+SYN-0150,tnm_n,N2
+SYN-0150,tnm_m,M0
+SYN-0150,egfr,not tested
+SYN-0150,alk,not tested
+SYN-0150,pdl1,not available
+SYN-0150,smoking_status,never
+SYN-0150,pack_years,0
+SYN-0150,treatment_intent,palliative
+SYN-0150,planned_treatment,targeted therapy
