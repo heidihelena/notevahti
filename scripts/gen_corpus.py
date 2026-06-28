@@ -638,10 +638,64 @@ def _seed(group: str, i: int) -> int:
     return zlib.adler32(f"notevahti::{group}::{i}".encode())
 
 
-def generate(n: int, out_dir: pathlib.Path) -> dict:
+def _wrong_value(fname, gold_value, case, lang, rng):
+    """A plausible WRONG extraction for a field, or None. Value-only corruption; the note is
+    unchanged. Errors are mostly absent-from-note (unsupported_value); clinical_stage uses the
+    pre-MDT stage, which IS in the note (a present-but-wrong copy-forward error)."""
+    if fname == "clinical_stage":
+        if case["stage_differs"]:
+            return case["ctnm_before"], "copy_forward_old_stage"
+        return None
+    if fname == "histology":
+        alt = rng.choice([h for h in HISTOLOGIES if h != case["histology"]])
+        return HISTOLOGY_L[alt][lang], "unsupported_value"
+    if fname == "treatment":
+        alt = rng.choice([t for t in TREATMENT_L if t != case["treatment"]])
+        return TREATMENT_L[alt][lang], "unsupported_value"
+    if fname == "intent":
+        alt = rng.choice([i for i in INTENT_L if i != case["intent"]])
+        return INTENT_L[alt][lang], "unsupported_value"
+    if fname == "driver":
+        alt = rng.choice([d for d in DRIVERS if d not in (case["driver"], "none")])
+        return alt, "unsupported_value"
+    if fname == "pdl1":
+        p = rng.choice([x for x in PDL1_TPS if x != case["pdl1"]])
+        return gold_value.replace(str(case["pdl1"]), str(p), 1), "unsupported_value"
+    return None
+
+
+def inject_errors(case, fields, lang, rng, error_rate):
+    """Per gold field, emit a labelled extraction: the gold value (correct) or a seeded corruption.
+
+    Deterministic given ``rng``. A separate rng stream must be used so the note text is byte-identical
+    regardless of ``error_rate``. This is a dev/CI/methodology instrument, NOT validation evidence.
+    """
+    out = []
+    for fname, f in fields.items():
+        gold = f["value"]
+        extracted, etype, is_err = gold, "none", False
+        if rng.random() < error_rate:
+            wrong = _wrong_value(fname, gold, case, lang, rng)
+            if wrong is not None and wrong[0] != gold:
+                extracted, etype, is_err = wrong[0], wrong[1], True
+        out.append(
+            {
+                "field": fname,
+                "gold": gold,
+                "canonical": f["canonical"],
+                "extracted": extracted,
+                "error_type": etype,
+                "is_error": is_err,
+            }
+        )
+    return out
+
+
+def generate(n: int, out_dir: pathlib.Path, *, error_rate: float = 0.0) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     manifest = {
         "n_per_group": n,
+        "error_rate": error_rate,
         "groups": {},
         "gold_fields": GOLD_FIELDS,
         "tools": {
@@ -674,6 +728,10 @@ def generate(n: int, out_dir: pathlib.Path) -> dict:
                     "fields": fields,
                     "challenges": build_challenges(case, fields),
                 }
+                if error_rate > 0.0:
+                    # separate rng stream so the note text is identical regardless of error_rate
+                    err_rng = random.Random(_seed(group, i) + 1_000_003)
+                    rec["extractions"] = inject_errors(case, fields, lang, err_rng, error_rate)
                 fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
         manifest["groups"][group] = {"kind": kind, "language": lang, "n": n, "file": path.name}
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False))
@@ -684,8 +742,14 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Generate the synthetic lung-cancer MDT corpus.")
     ap.add_argument("--n", type=int, default=500, help="cases per group (default 500)")
     ap.add_argument("--out", default="corpus", help="output directory (default ./corpus)")
+    ap.add_argument(
+        "--errors",
+        type=float,
+        default=0.0,
+        help="per-field error-injection rate (0..1); default 0.0 leaves notes unchanged",
+    )
     args = ap.parse_args(argv)
-    manifest = generate(args.n, pathlib.Path(args.out))
+    manifest = generate(args.n, pathlib.Path(args.out), error_rate=args.errors)
     total = sum(g["n"] for g in manifest["groups"].values())
     print(f"generated {total} cases across {len(manifest['groups'])} groups -> {args.out}/")
     for name, g in manifest["groups"].items():
