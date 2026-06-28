@@ -39,6 +39,12 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   κ, Gwet's AC2 (paradox-resistant), per-category prevalence, a kappa-paradox flag, and optional
   deterministic (seeded) percentile bootstrap CIs. Separate from the deterministic core. Hand-verified
   against worked examples (κ 0.644 → weighted 0.804 → AC2 0.833; paradox case κ −0.05 vs AC2 0.89).
+- **TNM / stage-group normaliser** (`notevahti.normalize`, audit priority #2): canonicalises stage
+  *surface form* for agreement/eval — `normalize_tnm` ("cT2a N0 M0" / "cT2aN0M0" / "ct2a n0 m0" /
+  "pT3N1M0" → canonical components + compact key), `normalize_stage_group` ("stage 3a" → "IIIA"), and
+  `canonical_stage`. Deterministic, stdlib, offline; returns `None` rather than guessing. Explicit
+  non-goals: no edition conversion (8th/9th sub-categories preserved), no staging inference. The
+  deterministic validation core is unchanged.
 
 ### Changed (engineering)
 - The codebase is now **`mypy --strict` clean** (13 modules); strict config added to `pyproject.toml`
