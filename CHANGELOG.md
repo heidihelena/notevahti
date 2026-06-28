@@ -47,6 +47,19 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   negation_trap: all caught) but — as a recorded limitation (audit #2/#3) — misses present-but-wrong
   errors (temporal_trap, copy_forward_old_stage, source_conflict: 0 caught), which need temporality
   and independent-anchor signals. Characterized by `tests/test_external_clinical_notes.py`.
+- **TNM / stage-group normaliser** (`notevahti.normalize`, audit priority #2): canonicalises stage
+  *surface form* for agreement/eval — `normalize_tnm` ("cT2a N0 M0" / "cT2aN0M0" / "ct2a n0 m0" /
+  "pT3N1M0" → canonical components + compact key), `normalize_stage_group` ("stage 3a" → "IIIA"), and
+  `canonical_stage`. Deterministic, stdlib, offline; returns `None` rather than guessing. Explicit
+  non-goals: no edition conversion (8th/9th sub-categories preserved), no staging inference. The
+  deterministic validation core is unchanged.
+
+### Fixed
+- **Batch agreement is no longer pooled across fields** (audit priority #1): `validate_batch` now
+  computes agreement **per `(field_name, field_type)` group**, each using its own field type. A new
+  `BatchResult.agreements_by_field` holds the per-group results; the top-level `agreement` is reported
+  only for a single group and is `not_available` (with a pointer) when fields are mixed — a pooled κ
+  across staging/date/text was incorrect.
 
 ### Changed (engineering)
 - The codebase is now **`mypy --strict` clean** (13 modules); strict config added to `pyproject.toml`
