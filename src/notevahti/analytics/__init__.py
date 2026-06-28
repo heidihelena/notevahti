@@ -16,12 +16,29 @@ from .discrimination import (
     flag_discrimination,
     score_discrimination,
 )
+from .evidence_pack import (
+    EvidencePack,
+    HeuristicCard,
+    Observation,
+    build_evidence_pack,
+    default_heuristic_card,
+    to_markdown,
+)
+from .preregistration import PreregSpec, preregistration_markdown
 
 __all__ = [
+    "EvidencePack",
     "FlagDiscrimination",
+    "HeuristicCard",
+    "Observation",
     "OrdinalAgreement",
+    "PreregSpec",
     "ScoreDiscrimination",
+    "build_evidence_pack",
+    "default_heuristic_card",
     "flag_discrimination",
     "ordinal_agreement",
+    "preregistration_markdown",
     "score_discrimination",
+    "to_markdown",
 ]

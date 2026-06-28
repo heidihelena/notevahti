@@ -60,6 +60,17 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   `scripts/eval_clinical_notes.py`: on the synthetic clinical-note dataset the flag reaches
   specificity 1.0, sensitivity 0.60, enrichment ~66× (95% CI ~48–101); the validity score scores
   AUROC 0.80 (CI 0.74–0.86) and AUPRC 0.62 vs a 0.037 baseline — gold never fed to the validator.
+- **Stage-1 evidence pack + preregistration** (`notevahti.analytics.evidence_pack`,
+  `notevahti.analytics.preregistration`, §5.6/§5.7 — the audit-#5 gate). `build_evidence_pack` →
+  `to_markdown` assembles the machine-computable TRIPOD+AI sections from a reference run: a heuristic
+  card (version, weights, threshold, routes, `config_hash`) pinning the frozen configuration, data
+  summary, overall discrimination, and **mandatory subgroup** discrimination (e.g. by language and
+  field); narrative sections are left to a human. `preregistration_markdown` emits an OSF-style
+  analysis-plan skeleton (primary metrics, hypotheses with CI conditions, reference-standard
+  independence, calibration/DCA plan, explicit kill criterion) to register **before** unblinding and
+  **before** any weight tuning. `scripts/stage1_report.py` demonstrates the whole pipeline on the
+  synthetic dataset — a synthetic-only methodology demo, explicitly not validation evidence. See
+  `docs/design/stage1_protocol.md`.
 
 ### Fixed
 - **Batch agreement is no longer pooled across fields** (audit priority #1): `validate_batch` now
