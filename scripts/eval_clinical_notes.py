@@ -15,6 +15,12 @@ import csv
 from dataclasses import dataclass
 from pathlib import Path
 
+from notevahti.analytics.discrimination import (
+    FlagDiscrimination,
+    ScoreDiscrimination,
+    flag_discrimination,
+    score_discrimination,
+)
 from notevahti.types import FieldType, Lineage, ProvenanceStatus
 from notevahti.validate import validate_field
 
@@ -134,9 +140,44 @@ def evaluate(dataset_dir: Path = _DEFAULT_DIR) -> EnrichmentResult:
     )
 
 
+def discrimination(
+    dataset_dir: Path = _DEFAULT_DIR, *, deployment_prevalence: float = 0.05
+) -> tuple[FlagDiscrimination, ScoreDiscrimination]:
+    """TRIPOD+AI-style discrimination of the flag/validity score over the dataset.
+
+    Honest: the gold value is never fed to the validator. ``deployment_prevalence`` is the assumed
+    registry error base-rate at which PPV/NPV are reported (a pilot's PPV does not transfer).
+    """
+    notes = {n["note_id"]: n for n in _read_csv(dataset_dir / "notes.csv")}
+    flags: list[bool] = []
+    scores: list[float] = []
+    errors: list[bool] = []
+    for e in _read_csv(dataset_dir / "extractions.csv"):
+        note = notes[e["note_id"]]
+        rec = validate_field(
+            e["extracted_value"],
+            note["note_text"],
+            field_type=field_type_for(e["field_name"]),
+            field_name=e["field_name"],
+            value_lineage=Lineage(source_id=e["note_id"], model_id=e["extractor_id"]),
+        )
+        flags.append(rec.validity.flag_for_human_review)
+        scores.append(rec.validity.score)
+        errors.append(e["is_correct_against_gold"] == "False")
+    flag = flag_discrimination(
+        flags, errors, deployment_prevalence=deployment_prevalence, bootstrap=1000, seed=20260628
+    )
+    # validity score: HIGHER means LESS likely an error
+    score = score_discrimination(
+        scores, errors, higher_is_error=False, bootstrap=1000, seed=20260628
+    )
+    return flag, score
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--dir", type=Path, default=_DEFAULT_DIR)
+    ap.add_argument("--deployment-prevalence", type=float, default=0.05)
     args = ap.parse_args(argv)
     r = evaluate(args.dir)
     print(f"rows={r.n}  provenance_found={r.provenance_found}/{r.n}  true_errors={r.true_errors}")
@@ -149,6 +190,20 @@ def main(argv: list[str] | None = None) -> int:
             f"  {s.seeded_type:22}{s.n:4} {s.errors:4} {s.flagged:8} "
             f"{s.errors_caught:7} {s.provenance_found:9}"
         )
+
+    fd, sd = discrimination(args.dir, deployment_prevalence=args.deployment_prevalence)
+    print("\nTRIPOD+AI discrimination (flag):")
+    print(
+        f"  sensitivity={fd.sensitivity}  specificity={fd.specificity}  "
+        f"PPV(sample)={fd.ppv_sample}  NPV(sample)={fd.npv_sample}"
+    )
+    print(
+        f"  at deployment prevalence {fd.deployment_prevalence}: "
+        f"PPV={fd.ppv_at_deployment}  NPV={fd.npv_at_deployment}"
+    )
+    print(f"  enrichment={fd.enrichment}  95% CI={fd.enrichment_ci}")
+    print("validity score:")
+    print(f"  AUROC={sd.auroc} CI={sd.auroc_ci}  AUPRC={sd.auprc} (baseline={sd.auprc_baseline})")
     return 0
 
 
