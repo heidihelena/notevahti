@@ -88,6 +88,10 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   routing rules are a transparent, configurable policy (frozen before Stage-1 calibration, like the
   validity weights), not calibrated thresholds. Named-regression + Hypothesis property tests; see
   `docs/design/validation_routing.md`.
+- **The review route is recorded in the audit trail**: `ReviewRoute.to_dict()` plus a `routing=`
+  argument to `audit_payload` embed the route, triggers, blocking flags and rationale in the
+  tamper-evident, hash-chained entry (routing carries no PHI). `audit` stays decoupled from `routing`
+  (it accepts a plain mapping). A tampered route now breaks the chain like any other edit.
 ### Added (opt-in provenance)
 - **Word-boundary matching and a clinical synonym table** for `verify_span`, both **opt-in and
   default-off** so the deterministic default is unchanged. `word_boundary=True` rejects matches

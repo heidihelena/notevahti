@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from collections.abc import Mapping
 from typing import Any
 
 from .types import AuditEntry, ValidationRecord
@@ -61,12 +62,15 @@ def audit_payload(
     record: ValidationRecord,
     note: str | None = None,
     retain_text: bool = False,
+    routing: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a PHI-aware payload from a ValidationRecord.
 
     The note and any matched snippet are hashed unless ``retain_text`` is set. The registry value
     and span offsets are kept (they are the attributable subject of the audit, and offsets are not
-    text).
+    text). If a ``routing`` mapping is given (e.g. ``ReviewRoute.to_dict()``), the routing decision
+    -- route, triggers, blocking flags and rationale -- is recorded under ``routing`` so the review
+    route is part of the tamper-evident trail. Routing carries no PHI and is stored as-is.
     """
     d = record.to_dict()
     prov = d.get("provenance", {})
@@ -81,6 +85,9 @@ def audit_payload(
         d["note_sha256"] = hash_text(note)
         if retain_text:
             d["note_text"] = note
+
+    if routing is not None:
+        d["routing"] = dict(routing)
 
     return d
 
