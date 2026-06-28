@@ -2,7 +2,7 @@
 
 import json
 
-from notevahti.audit import AuditLog, GENESIS_HASH, audit_payload, hash_text
+from notevahti.audit import GENESIS_HASH, AuditLog, audit_payload, hash_text
 from notevahti.types import (
     Agreement,
     AgreementStatus,
@@ -13,8 +13,8 @@ from notevahti.types import (
     MatchKind,
     Provenance,
     ProvenanceStatus,
-    Validity,
     ValidationRecord,
+    Validity,
 )
 
 
@@ -23,8 +23,12 @@ def _record():
         value="cT2aN0M0",
         field=FieldSpec(name="clinical_stage", field_type=FieldType.STAGING),
         provenance=Provenance(
-            status=ProvenanceStatus.SPAN_FOUND, claimed_span=(14, 24), matched_span=(14, 24),
-            matched_text="cT2a N0 M0", match_kind=MatchKind.NORMALIZED, hallucination_flag=False,
+            status=ProvenanceStatus.SPAN_FOUND,
+            claimed_span=(14, 24),
+            matched_span=(14, 24),
+            matched_text="cT2a N0 M0",
+            match_kind=MatchKind.NORMALIZED,
+            hallucination_flag=False,
         ),
         validity=Validity(score=0.9, flag_for_human_review=False, threshold=0.8),
         agreement=Agreement(status=AgreementStatus.NOT_AVAILABLE),

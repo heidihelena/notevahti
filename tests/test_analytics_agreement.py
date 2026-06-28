@@ -37,7 +37,7 @@ def test_kappa_paradox_detected_and_ac2_resists():
     a, b = _expand([[45, 3], [2, 0]], cats)
     r = ordinal_agreement(a, b, cats)
     assert r.observed_agreement == pytest.approx(0.90, abs=1e-6)
-    assert r.cohen_kappa < 0.0          # the paradox: high agreement, negative kappa
+    assert r.cohen_kappa < 0.0  # the paradox: high agreement, negative kappa
     assert r.gwet_ac2 == pytest.approx(0.889503, abs=1e-5)  # paradox-resistant
     assert r.paradox_suspected is True
 
@@ -70,8 +70,8 @@ def test_bootstrap_is_deterministic_and_requires_seed():
 
 def test_input_validation():
     with pytest.raises(ValueError):
-        ordinal_agreement(["a"], ["a", "b"], ["a", "b"])      # length mismatch
+        ordinal_agreement(["a"], ["a", "b"], ["a", "b"])  # length mismatch
     with pytest.raises(ValueError):
-        ordinal_agreement([], [], ["a"])                       # empty
+        ordinal_agreement([], [], ["a"])  # empty
     with pytest.raises(ValueError):
-        ordinal_agreement(["x"], ["a"], ["a", "b"])            # value not in categories
+        ordinal_agreement(["x"], ["a"], ["a", "b"])  # value not in categories

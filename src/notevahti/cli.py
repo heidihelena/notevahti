@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from typing import Any, Optional
+from typing import Any
 
 from . import __version__
 from .audit import AuditLog
@@ -18,7 +18,7 @@ from .batch import validate_batch
 from .types import Agreement, FieldType, Lineage, Signal, SignalKind
 
 
-def _lineage(d: Optional[dict[str, Any]]) -> Lineage:
+def _lineage(d: dict[str, Any] | None) -> Lineage:
     d = d or {}
     return Lineage(
         source_id=d.get("source_id"), model_id=d.get("model_id"), human_id=d.get("human_id")
@@ -30,8 +30,9 @@ def _signal(d: dict[str, Any]) -> Signal:
     return Signal(value=d["value"], lineage=_lineage(d.get("lineage")), kind=SignalKind(kind))
 
 
-def _item_to_kwargs(item: dict[str, Any], default_field_type: FieldType,
-                    threshold: float) -> dict[str, Any]:
+def _item_to_kwargs(
+    item: dict[str, Any], default_field_type: FieldType, threshold: float
+) -> dict[str, Any]:
     kw: dict[str, Any] = {
         "value": item["value"],
         "note": item["note"],
@@ -55,7 +56,7 @@ def _item_to_kwargs(item: dict[str, Any], default_field_type: FieldType,
     return kw
 
 
-def main(argv: Optional[list[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="notevahti", description=__doc__)
     parser.add_argument("--version", action="version", version=f"notevahti {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -70,7 +71,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "validate":
-        with open(args.items, "r", encoding="utf-8") as fh:
+        with open(args.items, encoding="utf-8") as fh:
             items = json.load(fh)
         if not isinstance(items, list):
             parser.error("input JSON must be an array of field inputs")

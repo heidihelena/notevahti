@@ -1,13 +1,13 @@
 """The orchestrator: ``validate_field`` wires the five outputs into one ValidationRecord.
 
-This is the contract. Everything above it (batch, CLI) is convenience. The function is deterministic:
-all non-determinism (record id, timestamp, actor) is supplied by the caller, and the audit log is the
-only thing that touches disk.
+This is the contract. Everything above it (batch, CLI) is convenience. The function is
+deterministic: all non-determinism (record id, timestamp, actor) is supplied by the caller, and the
+audit log is the only thing that touches disk.
 """
 
 from __future__ import annotations
 
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 from . import __version__
 from .agreement import agreement as _agreement
@@ -30,20 +30,20 @@ def validate_field(
     value: str,
     note: str,
     *,
-    claimed_span: Optional[tuple[int, int]] = None,
-    field: Optional[FieldSpec] = None,
+    claimed_span: tuple[int, int] | None = None,
+    field: FieldSpec | None = None,
     field_type: FieldType = FieldType.TEXT,
     field_name: str = "field",
     value_lineage: Lineage = Lineage(),
-    anchors: Optional[Iterable[Signal]] = None,
-    reference: Optional[str] = None,
+    anchors: Iterable[Signal] | None = None,
+    reference: str | None = None,
     review_threshold: float = DEFAULT_THRESHOLD,
-    weights: Optional[dict[str, float]] = None,
+    weights: dict[str, float] | None = None,
     # audit (optional; all deterministic inputs supplied by the caller)
-    audit_log: Optional[AuditLog] = None,
-    record_id: Optional[str] = None,
-    timestamp: Optional[str] = None,
-    actor: Optional[str] = None,
+    audit_log: AuditLog | None = None,
+    record_id: str | None = None,
+    timestamp: str | None = None,
+    actor: str | None = None,
     retain_text: bool = False,
 ) -> ValidationRecord:
     """Validate one extracted field value against its source note.
@@ -63,15 +63,23 @@ def validate_field(
     provenance = verify_span(value, note, claimed_span=claimed_span, field_type=ftype)
     independence = check_independence(value_lineage, anchor_list)
     validity = score_validity(
-        value, value_lineage, provenance, anchor_list, independence,
-        field_type=ftype, weights=weights, threshold=review_threshold,
+        value,
+        value_lineage,
+        provenance,
+        anchor_list,
+        independence,
+        field_type=ftype,
+        weights=weights,
+        threshold=review_threshold,
     )
     if reference is None:
         agreement = Agreement(status=AgreementStatus.NOT_AVAILABLE, detail="no reference supplied")
     else:
         agreement = _agreement([value], [reference], ftype)
         agreement = Agreement(
-            status=agreement.status, n=agreement.n, accuracy=agreement.accuracy,
+            status=agreement.status,
+            n=agreement.n,
+            accuracy=agreement.accuracy,
             kappa=None,  # κ is not meaningful for a single pair
             detail="single-item reference (n=1); use validate_batch for kappa",
         )
@@ -96,9 +104,13 @@ def validate_field(
         else:
             entry = make_entry(record_id, timestamp, actor, GENESIS_HASH, payload)
         record = ValidationRecord(
-            value=record.value, field=record.field, provenance=record.provenance,
-            validity=record.validity, agreement=record.agreement,
-            independence=record.independence, audit=entry,
+            value=record.value,
+            field=record.field,
+            provenance=record.provenance,
+            validity=record.validity,
+            agreement=record.agreement,
+            independence=record.independence,
+            audit=entry,
             notevahti_version=record.notevahti_version,
         )
 

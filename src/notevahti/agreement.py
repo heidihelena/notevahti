@@ -2,9 +2,9 @@
 
 This is the only output that needs more than a single field. When a reference set is supplied,
 NoteVahti reports Cohen's κ and accuracy over the aligned values; when it is not, it reports
-``not_available`` rather than fabricating a number. Agreement is reported *because the design forbids
-treating it as validity on its own* — it is one signal among the five, meaningful only alongside the
-independence check.
+``not_available`` rather than fabricating a number. Agreement is reported *because the design
+forbids treating it as validity on its own* — it is one signal among the five, meaningful only
+alongside the independence check.
 
 Note: κ and accuracy here are standard statistics, not a NoteVahti contribution. Per-class F1 is
 deferred to a later step.
@@ -13,7 +13,7 @@ deferred to a later step.
 from __future__ import annotations
 
 from collections import Counter
-from typing import Sequence
+from collections.abc import Sequence
 
 from .provenance import canonical_value
 from .types import Agreement, AgreementStatus, FieldType
@@ -40,7 +40,7 @@ def agreement(
     ref = [canonical_value(r, field_type) for r in reference]
     n = len(pred)
 
-    matches = sum(1 for p, r in zip(pred, ref) if p == r)
+    matches = sum(1 for p, r in zip(pred, ref, strict=True) if p == r)
     po = matches / n  # observed agreement == accuracy
 
     # Cohen's kappa: chance agreement from the marginal category distributions.
@@ -52,7 +52,9 @@ def agreement(
     if abs(1.0 - pe) < 1e-12:
         # Degenerate: a single category dominates both marginals; kappa is undefined.
         kappa = 1.0 if po >= 1.0 - 1e-12 else 0.0
-        detail = f"n={n}; single-category marginals (kappa degenerate); categories={len(categories)}"
+        detail = (
+            f"n={n}; single-category marginals (kappa degenerate); categories={len(categories)}"
+        )
     else:
         kappa = (po - pe) / (1.0 - pe)
         detail = f"n={n}; categories={len(categories)}; pe={pe:.4f}"

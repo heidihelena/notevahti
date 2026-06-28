@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from typing import Any, Optional
+from typing import Any
 
 from .types import AuditEntry, ValidationRecord
 
@@ -59,13 +59,14 @@ def make_entry(
 
 def audit_payload(
     record: ValidationRecord,
-    note: Optional[str] = None,
+    note: str | None = None,
     retain_text: bool = False,
 ) -> dict[str, Any]:
     """Build a PHI-aware payload from a ValidationRecord.
 
-    The note and any matched snippet are hashed unless ``retain_text`` is set. The registry value and
-    span offsets are kept (they are the attributable subject of the audit, and offsets are not text).
+    The note and any matched snippet are hashed unless ``retain_text`` is set. The registry value
+    and span offsets are kept (they are the attributable subject of the audit, and offsets are not
+    text).
     """
     d = record.to_dict()
     prov = d.get("provenance", {})
@@ -94,7 +95,7 @@ class AuditLog:
         if not os.path.exists(self.path):
             return GENESIS_HASH
         last = None
-        with open(self.path, "r", encoding="utf-8") as fh:
+        with open(self.path, encoding="utf-8") as fh:
             for line in fh:
                 line = line.strip()
                 if line:
@@ -116,7 +117,7 @@ class AuditLog:
         if not os.path.exists(self.path):
             return []
         out: list[dict[str, Any]] = []
-        with open(self.path, "r", encoding="utf-8") as fh:
+        with open(self.path, encoding="utf-8") as fh:
             for line in fh:
                 line = line.strip()
                 if line:
@@ -132,7 +133,10 @@ class AuditLog:
                 e["record_id"], e["timestamp"], e["actor"], e["prev_hash"], e["payload"]
             )
             if recomputed != e["entry_hash"]:
-                return False, f"entry {i} (record_id={e.get('record_id')!r}) hash mismatch — tampered"
+                return (
+                    False,
+                    f"entry {i} (record_id={e.get('record_id')!r}) hash mismatch — tampered",
+                )
             if e["prev_hash"] != prev:
                 return False, f"entry {i} (record_id={e.get('record_id')!r}) broken chain link"
             prev = e["entry_hash"]

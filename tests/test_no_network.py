@@ -9,8 +9,8 @@ import socket
 import pytest
 
 from notevahti.audit import AuditLog
-from notevahti.validate import validate_field
 from notevahti.types import FieldType, Lineage, Signal, SignalKind
+from notevahti.validate import validate_field
 
 
 @pytest.fixture
@@ -44,14 +44,20 @@ def test_validate_field_makes_no_network_calls(no_network, tmp_path):
 
 
 def test_core_modules_do_not_import_network_libs():
-    # The core must not pull in network stacks at import time.
-    import importlib
+    # The core must not pull in network stacks at import time. We check in a FRESH interpreter
+    # subprocess: inspecting this process's sys.modules would be contaminated by the test stack
+    # itself (pytest plugins, Hypothesis, etc. import urllib/http on their own).
+    import subprocess
     import sys
 
-    for mod in ["notevahti.provenance", "notevahti.validity", "notevahti.independence",
-                "notevahti.agreement", "notevahti.audit", "notevahti.validate", "notevahti.types"]:
-        importlib.import_module(mod)
-    forbidden = {"urllib.request", "http.client", "requests", "httpx", "aiohttp"}
-    assert forbidden.isdisjoint(sys.modules.keys()), (
-        f"core imported a network library: {forbidden & set(sys.modules)}"
+    probe = (
+        "import sys\n"
+        "for m in ['notevahti.provenance','notevahti.validity','notevahti.independence',"
+        "'notevahti.agreement','notevahti.audit','notevahti.validate','notevahti.types']:\n"
+        "    __import__(m)\n"
+        "forbidden = {'urllib.request','http.client','requests','httpx','aiohttp'}\n"
+        "hit = forbidden & set(sys.modules)\n"
+        "assert not hit, f'core imported a network library: {hit}'\n"
     )
+    proc = subprocess.run([sys.executable, "-c", probe], capture_output=True, text=True)
+    assert proc.returncode == 0, proc.stderr

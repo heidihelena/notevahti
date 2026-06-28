@@ -15,7 +15,7 @@ The score's job is to drive ONE decision: ``flag_for_human_review``. Components,
 
 from __future__ import annotations
 
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 from .provenance import values_equivalent
 from .types import (
@@ -85,7 +85,7 @@ def score_validity(
     anchors: Iterable[Signal],
     independence: Independence,
     field_type: FieldType = FieldType.TEXT,
-    weights: Optional[dict[str, float]] = None,
+    weights: dict[str, float] | None = None,
     threshold: float = DEFAULT_THRESHOLD,
 ) -> Validity:
     weights = weights or DEFAULT_WEIGHTS

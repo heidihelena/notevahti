@@ -1,8 +1,9 @@
 """Independence: refuse to let a source validate itself.
 
 The failure mode this prevents is *shared-reference bias* — an extractor graded against a reference
-that is not truly independent of it looks excellent and is wrong (agreement is not validity). A
-validation signal (anchor) counts only if its declared lineage is disjoint from the value-under-test.
+that is not truly independent of it looks excellent and is wrong (agreement is not validity).
+A validation signal (anchor) counts only if its declared lineage is disjoint from the
+value-under-test.
 NoteVahti does not infer independence; the caller declares lineage and NoteVahti enforces it.
 
 Outcomes:
@@ -14,7 +15,7 @@ Outcomes:
 
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from .types import Independence, IndependenceStatus, Lineage, Signal
 

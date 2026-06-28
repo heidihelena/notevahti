@@ -26,8 +26,16 @@ def test_generates_all_groups(tmp_path):
     manifest = gen.generate(n=4, out_dir=tmp_path)
     # 6 free-text languages + 2 structured English groups
     assert len(manifest["groups"]) == 8
-    assert {"free_fi", "free_sv", "free_nb", "free_da", "free_is", "free_en",
-            "semistructured_en", "structured_en"} == set(manifest["groups"])
+    assert {
+        "free_fi",
+        "free_sv",
+        "free_nb",
+        "free_da",
+        "free_is",
+        "free_en",
+        "semistructured_en",
+        "structured_en",
+    } == set(manifest["groups"])
     assert (tmp_path / "manifest.json").exists()
 
 
@@ -40,8 +48,12 @@ def test_all_gold_spans_resolve_and_six_fields(tmp_path):
             rec = json.loads(line)
             assert len(rec["fields"]) == 6, rec["case_id"]
             for f in rec["fields"].values():
-                p = verify_span(f["value"], rec["note"], claimed_span=tuple(f["span"]),
-                                field_type=FieldType(f["field_type"]))
+                p = verify_span(
+                    f["value"],
+                    rec["note"],
+                    claimed_span=tuple(f["span"]),
+                    field_type=FieldType(f["field_type"]),
+                )
                 assert p.status is ProvenanceStatus.SPAN_FOUND, (rec["case_id"], f)
                 assert list(p.matched_span) == f["span"]
                 checked += 1
@@ -59,8 +71,11 @@ def test_no_unrendered_template_tokens(tmp_path):
 def test_challenges_present_and_resolvable(tmp_path):
     gen = _load_generator()
     gen.generate(n=12, out_dir=tmp_path)
-    ft = {"clinical_stage": FieldType.STAGING, "histology": FieldType.CATEGORICAL,
-          "pdl1": FieldType.CATEGORICAL}
+    ft = {
+        "clinical_stage": FieldType.STAGING,
+        "histology": FieldType.CATEGORICAL,
+        "pdl1": FieldType.CATEGORICAL,
+    }
     saw_sv = saw_pw = 0
     for path in tmp_path.glob("*.jsonl"):
         for line in path.read_text(encoding="utf-8").splitlines():

@@ -9,10 +9,9 @@ Enums subclass ``str`` so that ``to_dict`` output is directly JSON-serializable.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Any, Optional, cast
-
+from typing import Any, cast
 
 # --------------------------------------------------------------------------- enums
 
@@ -68,14 +67,14 @@ class Lineage:
     it and NoteVahti enforces disjointness and records the declaration.
     """
 
-    source_id: Optional[str] = None  # the note / document the value was read from
-    model_id: Optional[str] = None  # the model/regex/pipeline that produced it
-    human_id: Optional[str] = None  # the person who produced/adjudicated it
+    source_id: str | None = None  # the note / document the value was read from
+    model_id: str | None = None  # the model/regex/pipeline that produced it
+    human_id: str | None = None  # the person who produced/adjudicated it
 
     def is_empty(self) -> bool:
         return not (self.source_id or self.model_id or self.human_id)
 
-    def shares_with(self, other: "Lineage") -> Optional[str]:
+    def shares_with(self, other: Lineage) -> str | None:
         """Return the name of the first shared, populated axis, or None if disjoint."""
         for axis in ("source_id", "model_id", "human_id"):
             a = getattr(self, axis)
@@ -91,7 +90,7 @@ class FieldSpec:
 
     name: str
     field_type: FieldType = FieldType.TEXT
-    allowed_values: Optional[tuple[str, ...]] = None
+    allowed_values: tuple[str, ...] | None = None
 
 
 @dataclass(frozen=True)
@@ -108,7 +107,7 @@ class ExtractionResult:
     """What a (pluggable) extractor returns. NoteVahti never trusts this as truth."""
 
     value: str
-    source_span: Optional[tuple[int, int]] = None  # char offsets [start, end) into the note
+    source_span: tuple[int, int] | None = None  # char offsets [start, end) into the note
     extractor_id: str = "unknown"
     version: str = "0"
 
@@ -119,9 +118,9 @@ class ExtractionResult:
 @dataclass(frozen=True)
 class Provenance:
     status: ProvenanceStatus
-    claimed_span: Optional[tuple[int, int]]
-    matched_span: Optional[tuple[int, int]]
-    matched_text: Optional[str]
+    claimed_span: tuple[int, int] | None
+    matched_span: tuple[int, int] | None
+    matched_text: str | None
     match_kind: MatchKind
     hallucination_flag: bool
     detail: str = ""
@@ -140,8 +139,8 @@ class Validity:
 class Agreement:
     status: AgreementStatus
     n: int = 0
-    accuracy: Optional[float] = None
-    kappa: Optional[float] = None
+    accuracy: float | None = None
+    kappa: float | None = None
     detail: str = ""
 
 
@@ -175,7 +174,7 @@ class ValidationRecord:
     validity: Validity
     agreement: Agreement
     independence: Independence
-    audit: Optional[AuditEntry] = None
+    audit: AuditEntry | None = None
     notevahti_version: str = ""
 
     def to_dict(self) -> dict[str, Any]:

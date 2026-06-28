@@ -14,17 +14,18 @@ def _write_items(tmp_path) -> str:
             "field_type": "staging",
             "field_name": "clinical_stage",
             "value_lineage": {"source_id": "n1", "model_id": "m"},
-            "anchors": [{"value": "cT2aN0M0", "lineage": {"human_id": "B"},
-                         "kind": "independent_human"}],
-            "reference": "cT2aN0M0"
+            "anchors": [
+                {"value": "cT2aN0M0", "lineage": {"human_id": "B"}, "kind": "independent_human"}
+            ],
+            "reference": "cT2aN0M0",
         },
         {
             "value": "pneumonectomy",
             "note": "Clinical stage cT2a N0 M0. Plan: SABR.",
             "field_type": "categorical",
             "field_name": "treatment",
-            "value_lineage": {"source_id": "n1", "model_id": "m"}
-        }
+            "value_lineage": {"source_id": "n1", "model_id": "m"},
+        },
     ]
     p = tmp_path / "items.json"
     p.write_text(json.dumps(items))
@@ -39,7 +40,7 @@ def test_cli_validate_outputs_json(tmp_path, capsys):
     assert out["summary"]["flagged_for_review"] >= 1  # the hallucinated one
     assert len(out["records"]) == 2
     # the hallucinated value is flagged
-    hall = [r for r in out["records"] if r["value"] == "pneumonectomy"][0]
+    hall = next(r for r in out["records"] if r["value"] == "pneumonectomy")
     assert hall["provenance"]["hallucination_flag"] is True
 
 
@@ -57,5 +58,6 @@ def test_cli_writes_audit_and_out_file(tmp_path):
     assert rc == 0
     assert Path(out).exists()
     from notevahti.audit import AuditLog
+
     ok, _ = AuditLog(audit).verify()
     assert ok
