@@ -76,6 +76,19 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   single-token values (ECOG "1" → the "1" in "4.1 cm"). Lesson recorded in tests: NoteVahti validates
   spans an extractor supplies; it is not a re-locator, and inferred values correctly get no support.
 
+### Added (review routing)
+- **Trigger-gated validation routing** (`notevahti.routing.route_validation` → `ReviewRoute`): an
+  optional, deterministic layer on top of `ValidationRecord` that integrates provenance, validity,
+  independence, agreement and a declared `field_impact` into one auditable route — `accept`,
+  `review`, `specialist_review`, or `blocked` — with active triggers, blocking flags and a
+  human-readable rationale. The routes are **validation routes, not truth labels**: `accept` ≠
+  correct, `blocked` ≠ wrong (`blocked` = the evidence cannot support auto-acceptance; advisory, not
+  enforcement, not a clinical recommendation). The two blocking triggers (`no_source_span_found`,
+  `independence_violated`) map to the existing non-negotiables. `validate_field` is unchanged; the
+  routing rules are a transparent, configurable policy (frozen before Stage-1 calibration, like the
+  validity weights), not calibrated thresholds. Named-regression + Hypothesis property tests; see
+  `docs/design/validation_routing.md`.
+
 ### Changed (engineering)
 - The codebase is now **`mypy --strict` clean** (13 modules); strict config added to `pyproject.toml`
   and `mypy` added to the dev extra. (Further WP-A tooling — ruff, Hypothesis, pytest-socket, CI —
