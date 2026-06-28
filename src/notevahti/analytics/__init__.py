@@ -10,5 +10,18 @@ guarantee. Functions are deterministic: any resampling takes an explicit integer
 """
 
 from .agreement import OrdinalAgreement, ordinal_agreement
+from .discrimination import (
+    FlagDiscrimination,
+    ScoreDiscrimination,
+    flag_discrimination,
+    score_discrimination,
+)
 
-__all__ = ["OrdinalAgreement", "ordinal_agreement"]
+__all__ = [
+    "FlagDiscrimination",
+    "OrdinalAgreement",
+    "ScoreDiscrimination",
+    "flag_discrimination",
+    "ordinal_agreement",
+    "score_discrimination",
+]

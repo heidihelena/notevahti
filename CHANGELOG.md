@@ -53,6 +53,13 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   `canonical_stage`. Deterministic, stdlib, offline; returns `None` rather than guessing. Explicit
   non-goals: no edition conversion (8th/9th sub-categories preserved), no staging inference. The
   deterministic validation core is unchanged.
+- **Discrimination metrics** (`notevahti.analytics.discrimination`, §5.2 / TRIPOD+AI model
+  performance): `flag_discrimination` (sensitivity, specificity, PPV/NPV at sample *and* a stated
+  deployment prevalence, error enrichment) and `score_discrimination` (AUROC, AUPRC with its
+  error-prevalence baseline), both with optional seeded bootstrap CIs. Applied in
+  `scripts/eval_clinical_notes.py`: on the synthetic clinical-note dataset the flag reaches
+  specificity 1.0, sensitivity 0.60, enrichment ~66× (95% CI ~48–101); the validity score scores
+  AUROC 0.80 (CI 0.74–0.86) and AUPRC 0.62 vs a 0.037 baseline — gold never fed to the validator.
 
 ### Fixed
 - **Batch agreement is no longer pooled across fields** (audit priority #1): `validate_batch` now

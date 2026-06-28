@@ -13,7 +13,7 @@ from pathlib import Path
 from notevahti.audit import hash_text
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
-from eval_clinical_notes import evaluate
+from eval_clinical_notes import discrimination, evaluate
 
 DATA = Path(__file__).resolve().parent.parent / "corpus" / "synthetic_clinical_notes"
 
@@ -73,6 +73,16 @@ def test_known_gap_present_but_wrong_currently_missed():
         s = r[kind]
         assert s.errors > 0
         assert s.errors_caught == 0, (kind, s)
+
+
+def test_discrimination_metrics_on_dataset():
+    # TRIPOD+AI discrimination of the flag/score on real data (gold never fed to the validator).
+    fd, sd = discrimination(DATA, deployment_prevalence=0.05)
+    assert fd.specificity == 1.0  # no false positives on this dataset
+    assert fd.ppv_at_deployment == 1.0  # follows from spec=1.0 at any prevalence
+    assert fd.enrichment >= 5.0
+    assert sd.auroc >= 0.7
+    assert sd.auprc > sd.auprc_baseline  # better than chance vs the rare-error baseline
 
 
 def test_clean_notes_are_not_flagged_as_errors():
