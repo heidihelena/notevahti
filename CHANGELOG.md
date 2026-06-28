@@ -61,6 +61,14 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   only for a single group and is `not_available` (with a pointer) when fields are mixed — a pooled κ
   across staging/date/text was incorrect.
 
+- **Messy MDT boundary cases** (`corpus/messy_mdt/cases.jsonl`, 5 deliberately hard notes:
+  implicit staging, abbreviation, copy-forward, distractor, typo) plus a binding eval
+  (`scripts/eval_messy_mdt.py`). Honest boundary result: search-based provenance binds **0/18**
+  canonical staging values (cT/cN/cM/stage_group are inferred, never verbatim), misses abbreviated
+  values ("neg"≠"negative", "adenoCa"≠"adenocarcinoma"), and can **spuriously** bind trivial
+  single-token values (ECOG "1" → the "1" in "4.1 cm"). Lesson recorded in tests: NoteVahti validates
+  spans an extractor supplies; it is not a re-locator, and inferred values correctly get no support.
+
 ### Changed (engineering)
 - The codebase is now **`mypy --strict` clean** (13 modules); strict config added to `pyproject.toml`
   and `mypy` added to the dev extra. (Further WP-A tooling — ruff, Hypothesis, pytest-socket, CI —
