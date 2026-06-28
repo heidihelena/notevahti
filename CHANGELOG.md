@@ -32,6 +32,11 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   as the pre-MDT cTNM — found by provenance, not a hallucination). The present-but-wrong cases
   surfaced a real weighting issue (a disagreeing independent anchor originally flagged only ~13% of
   them), now fixed by the validity rule below.
+  Opt-in **error-injection mode** (`--errors RATE`, default 0.0): emits, per gold field, a labelled
+  `extractions` list (gold or a seeded corruption — `unsupported_value` absent-type, or
+  `copy_forward_old_stage` present-but-wrong) at a controllable rate, on a separate rng stream so the
+  notes stay byte-identical regardless of rate. A dev/CI/methodology instrument to scale the
+  analytics — **not** validation evidence; the committed corpus is unaffected.
 
 ### Added (Stage-1 evidence machinery)
 - **Ordinal agreement analytics** (`notevahti.analytics.agreement.ordinal_agreement`): for ordered
