@@ -22,6 +22,16 @@ For each field it produces one auditable `ValidationRecord` with five outputs:
    independent of the value under test (no source grades itself).
 5. **Audit record** — a local, append-only, tamper-evident entry (ALCOA++ in spirit).
 
+An optional sixth layer sits on top of these:
+
+6. **Review routing** (`notevahti.routing`) — a deterministic, trigger-gated layer that integrates
+   provenance, validity, independence, agreement, and a declared field impact into one auditable
+   route: `accept`, `review`, `specialist_review`, or `blocked`. The routes are *validation routes,
+   not truth labels*: `accept` does not mean the value is correct and `blocked` does not mean it is
+   wrong — `blocked` means the evidence cannot support auto-acceptance and a human must adjudicate.
+   It is advisory, not enforcement, and not a clinical recommendation. See
+   [docs/design/validation_routing.md](docs/design/validation_routing.md).
+
 ## Principles
 
 - **Bring your own extractor.** Any model/regex/LLM is pluggable; the core marries no vendor.
