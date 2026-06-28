@@ -55,6 +55,18 @@ class ReviewRoute:
     blocking_count: int
     rationale: list[str]
 
+    def to_dict(self) -> dict[str, object]:
+        """JSON-serializable view (e.g. to record the route in the audit trail)."""
+        return {
+            "route": self.route,
+            "active_triggers": list(self.active_triggers),
+            "blocking_flags": list(self.blocking_flags),
+            "validity_score": self.validity_score,
+            "trigger_count": self.trigger_count,
+            "blocking_count": self.blocking_count,
+            "rationale": list(self.rationale),
+        }
+
 
 def _rationale(record: ValidationRecord, triggers: list[str], field_impact: str) -> list[str]:
     lines: list[str] = []
