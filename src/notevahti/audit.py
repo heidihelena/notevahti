@@ -101,7 +101,7 @@ class AuditLog:
                     last = line
         if last is None:
             return GENESIS_HASH
-        return json.loads(last)["entry_hash"]
+        return str(json.loads(last)["entry_hash"])
 
     def append(
         self, record_id: str, timestamp: str, actor: str, payload: dict[str, Any]

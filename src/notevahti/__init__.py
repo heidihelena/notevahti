@@ -6,8 +6,13 @@ The validation core is deterministic, model-free, and offline. See SKILL.md and 
 
 __version__ = "0.1.0.dev0"
 
+from typing import TYPE_CHECKING
 
-def __getattr__(name: str):
+if TYPE_CHECKING:  # give type checkers the real symbol without importing eagerly at runtime
+    from .validate import validate_field as validate_field
+
+
+def __getattr__(name: str) -> object:
     # Lazy re-export so that importing the package does not import submodules eagerly
     # (keeps `import notevahti` cheap and avoids import cycles with `validate`).
     if name == "validate_field":

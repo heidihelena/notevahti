@@ -33,7 +33,17 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   surfaced a real weighting issue (a disagreeing independent anchor originally flagged only ~13% of
   them), now fixed by the validity rule below.
 
-### Changed
+### Added (Stage-1 evidence machinery)
+- **Ordinal agreement analytics** (`notevahti.analytics.agreement.ordinal_agreement`): for ordered
+  categories (e.g. TNM stage groups) — observed agreement, unweighted Cohen's κ, quadratic-weighted
+  κ, Gwet's AC2 (paradox-resistant), per-category prevalence, a kappa-paradox flag, and optional
+  deterministic (seeded) percentile bootstrap CIs. Separate from the deterministic core. Hand-verified
+  against worked examples (κ 0.644 → weighted 0.804 → AC2 0.833; paradox case κ −0.05 vs AC2 0.89).
+
+### Changed (engineering)
+- The codebase is now **`mypy --strict` clean** (13 modules); strict config added to `pyproject.toml`
+  and `mypy` added to the dev extra. (Further WP-A tooling — ruff, Hypothesis, pytest-socket, CI —
+  is pending network access to install/verify.)
 - **Validity correctness rule:** a *disagreeing* independent anchor (anchor_agreement < 1 with ≥1
   independent anchor) now forces `flag_for_human_review` regardless of score — a disagreeing
   independent second source is the canonical adjudication trigger. Present-but-wrong flagging went

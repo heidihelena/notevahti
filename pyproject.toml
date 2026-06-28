@@ -26,7 +26,7 @@ dependencies = []
 [project.optional-dependencies]
 # Optional, never imported by the core. Local extractors / models live here.
 extractors = []  # e.g. gliner, transformers — added per-adapter, never required by the core
-dev = ["pytest>=7"]
+dev = ["pytest>=7", "mypy>=1.8"]
 
 [project.urls]
 Homepage = "https://github.com/heidihelena/notevahti"
@@ -41,3 +41,8 @@ packages = ["src/notevahti"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src/notevahti"]

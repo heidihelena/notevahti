@@ -15,7 +15,7 @@ from typing import Any, Optional
 from . import __version__
 from .audit import AuditLog
 from .batch import validate_batch
-from .types import FieldType, Lineage, Signal, SignalKind
+from .types import Agreement, FieldType, Lineage, Signal, SignalKind
 
 
 def _lineage(d: Optional[dict[str, Any]]) -> Lineage:
@@ -100,7 +100,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     return 1
 
 
-def _agreement_dict(agreement) -> dict[str, Any]:
+def _agreement_dict(agreement: Agreement) -> dict[str, Any]:
     return {
         "status": agreement.status.value,
         "n": agreement.n,

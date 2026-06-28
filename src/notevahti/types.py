@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, asdict
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 
 # --------------------------------------------------------------------------- enums
@@ -180,7 +180,7 @@ class ValidationRecord:
 
     def to_dict(self) -> dict[str, Any]:
         """JSON-serializable view (enums are str-subclasses; tuples become lists)."""
-        return _jsonable(asdict(self))
+        return cast("dict[str, Any]", _jsonable(asdict(self)))
 
 
 # --------------------------------------------------------------------------- helpers
