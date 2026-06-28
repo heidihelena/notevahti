@@ -1,6 +1,16 @@
 # NoteVahti
 
+![Validation status](https://img.shields.io/badge/validation-Stage_0%3A_not_clinically_validated-orange)
+![Status](https://img.shields.io/badge/status-pre--alpha-lightgrey)
+![License](https://img.shields.io/badge/license-Apache--2.0-blue)
+![Python](https://img.shields.io/badge/python-3.10%E2%80%933.12-blue)
+
 Transparent, local-first extraction-**validation** toolkit for clinical registry data.
+
+> **Validation status: Stage 0 (not clinically validated).** NoteVahti produces validation *evidence*
+> for human review, not a guarantee of correctness. Whether the validity flag predicts true
+> abstraction errors is an open empirical question (Stage 1) — see
+> [docs/design/pathway.md](docs/design/pathway.md).
 
 NoteVahti is **not an extractor.** It is the deterministic trust/validation layer that sits between
 *any* extractor (a human abstractor, a regex, a clinical NLP pipeline, an LLM) and a clinical

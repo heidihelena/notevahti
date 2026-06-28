@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use NoteVahti, please cite it using these metadata."
+title: "NoteVahti: a transparent, local-first extraction-validation toolkit for clinical registry data"
+abstract: >-
+  NoteVahti is the deterministic trust/validation layer between any extractor and a clinical registry.
+  For each extracted field value and its source note it produces an auditable record: a verified
+  source span (or a hallucination flag), a transparent validity heuristic and review flag, agreement
+  versus a reference, a non-circular independent-anchor check, and a tamper-evident local audit entry.
+  It is not an extractor and not a medical device; it produces validation evidence for human review,
+  not a guarantee of correctness.
+type: software
+authors:
+  - family-names: "Andersén"
+    given-names: "Heidi Helena"
+    orcid: "https://orcid.org/0000-0001-5923-5865"
+repository-code: "https://github.com/heidihelena/notevahti"
+url: "https://github.com/heidihelena/notevahti"
+license: Apache-2.0
+version: "0.1.0.dev0"
+keywords:
+  - clinical registry
+  - validation
+  - provenance
+  - local-first
+  - audit trail
+  - clinical NLP
+  - lung cancer
