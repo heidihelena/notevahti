@@ -69,6 +69,17 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   single-token values (ECOG "1" → the "1" in "4.1 cm"). Lesson recorded in tests: NoteVahti validates
   spans an extractor supplies; it is not a re-locator, and inferred values correctly get no support.
 
+### Added (opt-in provenance)
+- **Word-boundary matching and a clinical synonym table** for `verify_span`, both **opt-in and
+  default-off** so the deterministic default is unchanged. `word_boundary=True` rejects matches
+  embedded inside a larger token (numbers are decimal-aware: "1" matches "ECOG 1." but not the "1"
+  in "4.1"); `synonyms=` (e.g. `notevahti.synonyms.default_synonyms()`, a small documented
+  abbreviation table) lets known surface variants count as support. On the messy MDT cases the two
+  options together raise binding 30→43/67 — synonyms recover abbreviated biomarkers/histology
+  (e.g. EGFR 1/4→4/4) and word-boundary *removes* spurious single-token binds (sex 5/5→1/5, the four
+  dropped were false matches inside words). Inferred staging stays 0/18 (no surface to bind — that
+  remains the extractor's job, with a span).
+
 ### Changed (engineering)
 - The codebase is now **`mypy --strict` clean** (13 modules); strict config added to `pyproject.toml`
   and `mypy` added to the dev extra. (Further WP-A tooling — ruff, Hypothesis, pytest-socket, CI —

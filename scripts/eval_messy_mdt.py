@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from notevahti.provenance import verify_span
+from notevahti.synonyms import default_synonyms
 from notevahti.types import FieldType, ProvenanceStatus
 
 _DEFAULT = Path(__file__).resolve().parent.parent / "corpus" / "messy_mdt" / "cases.jsonl"
@@ -81,7 +82,10 @@ class BindingResult:
     staging_total: int
 
 
-def evaluate(path: Path = _DEFAULT) -> BindingResult:
+def evaluate(
+    path: Path = _DEFAULT, *, word_boundary: bool = False, use_synonyms: bool = False
+) -> BindingResult:
+    syn = default_synonyms() if use_synonyms else None
     by_field: dict[str, list[int]] = {}
     found = total = staging_found = staging_total = 0
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -90,7 +94,13 @@ def evaluate(path: Path = _DEFAULT) -> BindingResult:
         rec = json.loads(line)
         note = rec["note_text"]
         for field, val in candidates(rec["ground_truth"]):
-            p = verify_span(val, note, field_type=field_type_for(field))
+            p = verify_span(
+                val,
+                note,
+                field_type=field_type_for(field),
+                word_boundary=word_boundary,
+                synonyms=syn,
+            )
             ok = p.status is ProvenanceStatus.SPAN_FOUND
             total += 1
             found += ok
@@ -114,12 +124,22 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--path", type=Path, default=_DEFAULT)
     args = ap.parse_args(argv)
-    r = evaluate(args.path)
-    print(f"ground-truth values bound by search: {r.found}/{r.total} (missed {r.missed})")
-    print(f"staging (cT/cN/cM/stage_group) bound: {r.staging_found}/{r.staging_total}")
-    print("per field (found/total):")
-    for f, (a, b) in r.by_field.items():
-        print(f"  {f:18} {a}/{b}")
+    base = evaluate(args.path)
+    enhanced = evaluate(args.path, word_boundary=True, use_synonyms=True)
+    print(
+        f"default        : bound {base.found}/{base.total}  "
+        f"staging {base.staging_found}/{base.staging_total}"
+    )
+    print(
+        f"+wb +synonyms  : bound {enhanced.found}/{enhanced.total}  "
+        f"staging {enhanced.staging_found}/{enhanced.staging_total}"
+    )
+    print("\nper field (default -> enhanced):")
+    for f in base.by_field:
+        a, b = base.by_field[f]
+        c, _ = enhanced.by_field[f]
+        mark = "  <-- improved" if c > a else ""
+        print(f"  {f:18} {a}/{b} -> {c}/{b}{mark}")
     return 0
 
 
