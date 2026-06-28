@@ -133,6 +133,15 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
 - Design note, research → validated-tool pathway, deep-research evidence base, and SKILL.md build
   playbook under `docs/` and `SKILL.md`.
 
+### Repository / community (audit #6)
+- `SECURITY.md` — private vulnerability reporting, the local-first/no-telemetry posture, the
+  tamper-evident-not-tamper-proof audit note, and a prominent **no-PHI** rule for reports.
+- `CITATION.cff` (FAIR4RS) — software citation metadata (author + ORCID, version, license, repo).
+- GitHub issue templates (bug / feature / validation question) + `config.yml` routing vulnerabilities
+  to private reporting, each carrying the no-PHI warning and the project's boundaries.
+- README **validation-status badge** ("Stage 0: not clinically validated") plus status/license/Python
+  badges and a status note.
+
 ### Boundary
 - Not a medical device; not clinical advice. Produces validation evidence for human review, not a
   guarantee of correctness. No distribution-free / conformal coverage guarantee is claimed (the
