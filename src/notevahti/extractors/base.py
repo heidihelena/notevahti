@@ -14,7 +14,7 @@ from __future__ import annotations
 import re
 from typing import Protocol, runtime_checkable
 
-from .types import ExtractionResult, FieldSpec
+from ..types import ExtractionResult, FieldSpec
 
 
 @runtime_checkable

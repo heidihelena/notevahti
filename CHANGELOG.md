@@ -17,7 +17,17 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
 - **Audit** (`AuditLog`): append-only, hash-chained JSONL; tamper-evident; PHI hashed by default.
 - **Orchestrator** (`validate_field`): wires the five outputs into one `ValidationRecord`.
 - **Extractor interface** (`Extractor` Protocol) with `PassThroughExtractor` and `RegexExtractor`
-  example adapters. No production extractor; the core runs with any extractor or none.
+  example adapters (now in the `notevahti.extractors` package; imports unchanged via re-export). No
+  production extractor; the core runs with any extractor or none.
+- **Deterministic rule-based extractor** (`notevahti.extractors.rules.RuleBasedExtractor`, catalogue
+  `rules_v1`): stdlib-only (`re`), offline, negation-aware extractor for lung-cancer MDT notes in
+  Finnish/Swedish/English — clinical/pathological TNM, stage group, histology, location/laterality,
+  biomarkers (EGFR/ALK/ROS1/BRAF/KRAS/MET/RET, PD-L1 TPS), performance status, treatment intent/plan.
+  Returns values bound to exact source spans (surface text = `note[span]`), prefers explicit no-value
+  over guessing, flags ambiguity for single-valued fields, and returns all findings for multi-valued
+  fields via `candidates()`. Lineage `model_id="rules_v1"` (`rules_lineage()`), independent of any LLM
+  and of NoteVahti's logic. Golden (fi/sv/en) + negation + determinism + offline + span-fidelity +
+  end-to-end tests. See `docs/design/extractor_rules.md`.
 - **Batch** (`validate_batch`) and **CLI** (`notevahti validate`).
 - Synthetic lung-cancer MDT corpus fixture with known ground truth (incl. adversarial cases).
 - **Synthetic MDT corpus generator** (`scripts/gen_corpus.py`): deterministic, offline, seeded.
