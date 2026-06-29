@@ -49,6 +49,23 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   analytics — **not** validation evidence; the committed corpus is unaffected.
 
 ### Added / Changed (Stage-1 lung-MDT alignment)
+- **Rule extractor `rules_v2` — systematic multilingual vocabulary:** every field now carries
+  Norwegian/Danish/Icelandic surface forms alongside fi/sv/en (harvested from the corpus's own
+  localization tables): histology (incl. `kirtilkrabbamein`, `plateepitelkarsinom`,
+  `planocellulært karcinom`, `flöguþekjukrabbamein`, `småcellet`, `smáfrumukrabbamein`, and an
+  uncertain-subtype rule), lobe location + laterality (nb/da/is), performance-status keywords
+  (`funksjonsstatus`, `funktionsniveau`), treatment-intent (Icelandic `læknandi`/`líknandi`), and
+  the NTRK biomarker. Negation cues extended (sv `inte`, nb/da `ikke`/`uten`/`uden`, is `ekki`/`án`)
+  and future cues (`planlagt`, `áætlað`, `endnu ikke`, `ekki enn`). **`mdt_discussed` redesigned** to
+  require a discussion verb or named meeting next to MDT — eliminating false positives from section
+  headers / boilerplate (now 5400/5400 correct vs gold across all six languages); histology is also
+  100% across languages. Verified against the committed `synthetic_mdt_v1` corpus.
+- **Rule extractor `rules_v2`:** expanded `treatment_plan` vocabulary with umbrella terms
+  `surgical evaluation`, `radiotherapy` and `systemic therapy` across fi/sv/nb/da/is/en (the gaps
+  surfaced by the synthetic-corpus end-to-end smoke), plus `symptom-directed care` → best supportive
+  care and an Icelandic chemoradiotherapy surface. Word boundaries keep `sädehoito` from matching
+  inside `kemosädehoito`. Diagnostic-workup recommendations are deliberately not mapped to a plan.
+  `MODEL_ID` bumped `rules_v1` → `rules_v2` (catalogue change; lineage/version/tests/docs updated).
 - **Rule extractor strengthened:** `parse_tnm` (structural TNM: prefix c/yc/p/yp/unknown, T/N/M,
   completeness complete/partial/absent/ambiguous, edition, review flag; conflicts → ambiguous, no
   guess); ECOG/WHO/PS incl. Finnish/Swedish and temporal/indirect handling; new **`mdt_discussed`**
@@ -64,6 +81,34 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   secondary outcomes; explicit negative-result policy); `corpus/MANIFEST.md`; `docs/release.md`.
 - pyproject description/keywords updated for release presentation. Validation core unchanged: still
   deterministic, offline, model-free, no runtime deps.
+- **Synthetic-corpus row model** (`notevahti.corpus.synthetic`): a stdlib-only, offline typed model
+  (`SyntheticRow`/`GroundTruth`/`Tnm`/`ExpectedField`/`QualityLabels`) and dependency-free
+  `validate_row` for the generator's per-record JSONL shape, plus the published JSON Schema
+  `corpus/schema/synthetic_case.schema.json` (with a validating example and a fine-tuning example).
+  `validate_row` enforces the generator's QC invariants (evidence is an exact span of `note_text`;
+  ambiguous TNM is not resolved; planned MDT ≠ completed; missing/indirect ECOG is not numericised;
+  `record_id` = `{case_id}_{documentation_format}`). TNM `completeness` matches `parse_tnm`; a test
+  keeps the schema and model vocabularies in sync. The agent prompt that produces this shape is saved
+  at `docs/research/synthetic_corpus_generator_prompt.md`; sizing/split/distribution design in
+  `docs/research/synthetic_corpus_design.md` (target 300 cases/language, 1800 total; case-level
+  train/dev/test split to prevent leakage). Corpus tooling, not part of the validation core.
+- **Stage-1 synthetic dataset committed** (`corpus/synthetic_mdt_v1/`, `dataset_version`
+  `notevahti_lung_mdt_synthetic_v1`): 1800 cases / 5400 records across fi/sv/nb/da/is/en, three
+  documentation formats per case, nine case categories, case-level train/dev/test split (no leakage).
+  A minority of clear, complete, non-metastatic (M0) cases are now **pathological** (post-resection
+  `p` / post-neoadjuvant `yp`) with a coherent localized staging-context phrase, instead of every
+  case being baseline clinical `c`. Deterministic generator + validator brought in-repo;
+  `validate_dataset.py` delegates row-level
+  validation to `notevahti.corpus.validate_row` (single contract) and adds corpus-level checks
+  (distributions, split, PII, the "current TNM" note convention). `validate_row` extended with the
+  row-level semantic invariants (value==components, explicit-ECOG==ground-truth, has_negation,
+  has_conflict, partial-TNM) and now accepts the generated vocabulary. Committed rows guarded by
+  `tests/test_synthetic_corpus_dataset.py`. The generation tooling is ruff-excluded as imported
+  tooling; the validation core is untouched.
+- **Code-review follow-ups (no behaviour change):** single source of truth for the TNM token grammar
+  (shared fragments compose both the extraction rules and `parse_tnm`); `_scan_tnm_runs`/`_resolve`
+  helpers; `is_registry_ready` predicate shared by the single-record path and the aggregate;
+  `_process_field` extracted in the CLI.
 
 ### Added (Stage-1 evidence machinery)
 - **Ordinal agreement analytics** (`notevahti.analytics.agreement.ordinal_agreement`): for ordered

@@ -1,0 +1,31 @@
+{
+  "dataset_version": "notevahti_lung_mdt_synthetic_v1",
+  "synthetic_only": true,
+  "no_real_patients": true,
+  "languages": [
+    "fi",
+    "sv",
+    "nb",
+    "da",
+    "is",
+    "en"
+  ],
+  "cases_per_language": 300,
+  "documentation_formats": [
+    "free_text",
+    "structured_mini",
+    "structured_v3_1"
+  ],
+  "records_per_language": 900,
+  "total_cases": 1800,
+  "total_records": 5400,
+  "primary_fields": [
+    "mdt_discussed",
+    "ecog_ps",
+    "tnm"
+  ],
+  "split_policy": "case_level",
+  "leakage_prevention": "All documentation formats for a case_id share the same split_hint.",
+  "intended_use": "Research, extractor benchmarking, validation-layer testing and registry-readiness simulation.",
+  "not_for_clinical_use": true
+}

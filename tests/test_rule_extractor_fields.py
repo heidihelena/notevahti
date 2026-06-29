@@ -110,13 +110,37 @@ def _mdt(note: str) -> str:
 
 
 def test_mdt_positive():
-    assert _mdt("Discussed at MDT on 2026-06-03.") == "MDT"  # surface span text
+    # the surface span is the discussion phrase (verb + MDT), not the bare token
+    assert _mdt("Discussed at MDT on 2026-06-03.") == "Discussed at MDT"
     assert {c.value for c in EX.candidates("Reviewed by the tumour board.", "mdt_discussed")} == {
         "MDT discussed"
     }
     assert {
         c.value for c in EX.candidates("Käsitelty moniammatillisessa kokouksessa.", "mdt_discussed")
     } == {"MDT discussed"}
+
+
+def test_mdt_header_and_boilerplate_do_not_assert():
+    # bare 'MDT' in a section header or prep-note boilerplate is not evidence of discussion
+    assert EX.candidates("MDT status: pending.", "mdt_discussed") == []
+    assert EX.candidates("Synthetic MDT preparation note; source fictional.", "mdt_discussed") == []
+
+
+def test_mdt_positive_nordic_formats():
+    for note in (
+        "diskuterad vid MDT.",  # sv
+        "diskutert i tverrfaglig MDT-møte.",  # nb
+        "drøftet på MDT-konference.",  # da
+        "rætt á MDT fundi.",  # is
+    ):
+        assert {c.value for c in EX.candidates(note, "mdt_discussed")} == {"MDT discussed"}
+
+
+def test_mdt_negated_nordic_not_accepted():
+    assert EX.candidates("ännu inte diskuterad vid MDT.", "mdt_discussed") == []  # sv
+    assert EX.candidates("ikke diskutert i MDT ennå.", "mdt_discussed") == []  # nb
+    assert EX.candidates("endnu ikke drøftet på MDT.", "mdt_discussed") == []  # da
+    assert EX.candidates("ekki enn rætt á MDT.", "mdt_discussed") == []  # is
 
 
 def test_mdt_planned_or_future_not_accepted():
@@ -130,3 +154,73 @@ def test_mdt_negated_not_accepted():
     assert (
         EX.candidates("Ei vielä käsitelty moniammatillisessa kokouksessa.", "mdt_discussed") == []
     )
+
+
+# ----------------------------------------------------------- treatment_plan vocabulary (rules_v2)
+
+
+def _plans(note: str) -> set[str]:
+    return {c.value for c in EX.candidates(note, "treatment_plan")}
+
+
+def test_surgical_evaluation_multilingual():
+    assert "surgical evaluation" in _plans("Recommended: thoracic surgery evaluation.")
+    assert "surgical evaluation" in _plans("Suositellaan leikkausarviota.")  # fi
+    assert "surgical evaluation" in _plans("Rekommenderas: kirurgbedömning.")  # sv
+    assert "surgical evaluation" in _plans("Anbefales kirurgisk vurdering.")  # nb/da
+
+
+def test_radiotherapy_multilingual_and_no_chemoradiation_overlap():
+    assert "radiotherapy" in _plans("Plan: palliative radiotherapy.")
+    assert "radiotherapy" in _plans("Suositellaan palliatiivinen sädehoito.")  # fi
+    assert "radiotherapy" in _plans("palliativ strålbehandling")  # sv
+    # 'sädehoito' inside 'kemosädehoito' must NOT produce a separate radiotherapy candidate
+    plans = _plans("radikaali kemosädehoito")
+    assert "chemoradiotherapy" in plans and "radiotherapy" not in plans
+
+
+def test_systemic_therapy_multilingual():
+    assert "systemic therapy" in _plans("Plan: systemic therapy.")
+    assert "systemic therapy" in _plans("hoito: systeeminen hoito")  # fi
+    assert "systemic therapy" in _plans("systemisk behandling")  # sv/nb/da
+
+
+def test_symptom_directed_care_maps_to_bsc():
+    assert "best supportive care" in _plans("symptom-directed care and reassessment")
+
+
+# ----------------------------------------------------- multilingual field coverage (rules_v2)
+
+
+def _hist(note: str) -> set[str]:
+    return {c.value for c in EX.candidates(note, "histology")}
+
+
+def test_histology_nordic_languages():
+    assert "adenocarcinoma" in _hist("adenokarsinom påvist")  # nb
+    assert "adenocarcinoma" in _hist("kirtilkrabbamein staðfest")  # is
+    assert "squamous cell carcinoma" in _hist("plateepitelkarsinom")  # nb
+    assert "squamous cell carcinoma" in _hist("planocellulært karcinom")  # da
+    assert "squamous cell carcinoma" in _hist("flöguþekjukrabbamein")  # is
+    assert "small cell carcinoma" in _hist("småcellet lungekreft")  # nb
+    assert "small cell carcinoma" in _hist("smáfrumukrabbamein í lunga")  # is
+
+
+def test_histology_uncertain_subtype():
+    assert "carcinoma, subtype uncertain" in _hist("karsinooma, alatyyppi epävarma")  # fi
+    assert "carcinoma, subtype uncertain" in _hist("karcinom, subtyp oklar")  # sv
+
+
+def test_histology_negation_still_holds_nordic():
+    assert "adenocarcinoma" not in _hist("ikke adenokarsinom")  # nb negation
+
+
+def _lat(note: str) -> set[str]:
+    return {c.value for c in EX.candidates(note, "laterality")}
+
+
+def test_laterality_nordic_languages():
+    assert "right" in _lat("høyre overlapp")  # nb
+    assert "right" in _lat("højre underlap")  # da
+    assert "left" in _lat("venstre overlapp")  # nb/da
+    assert "left" in _lat("vinstra efra lungnablað")  # is

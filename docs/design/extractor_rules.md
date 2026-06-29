@@ -31,9 +31,9 @@ record = validate_field(
   registry-facing), `matched_text` (= `note[span]`), `span`, `field_type`, `negated`. Span-subsumed
   matches are dropped (the maximal match wins). This is where multi-valued fields (biomarker,
   treatment_plan) and ambiguity are exposed.
-- `extract_all(note)`, `fields()`, and `rules_lineage(source_id=None) -> Lineage(model_id="rules_v1")`.
+- `extract_all(note)`, `fields()`, and `rules_lineage(source_id=None) -> Lineage(model_id="rules_v2")`.
 
-## Field catalogue (versioned: `MODEL_ID = "rules_v1"`)
+## Field catalogue (versioned: `MODEL_ID = "rules_v2"`)
 
 | Field | `FieldType` | Captured |
 |---|---|---|
@@ -63,7 +63,7 @@ inflection (`\w*` stems); canonical values are English/universal. The catalogue 
 - **Provenance-friendly:** offsets index the value exactly; multiple non-equivalent candidates are
   returned (and flagged as ambiguity for single-valued fields) rather than silently picked.
 - **Independent:** imports only `re` and `..types`; reuses none of NoteVahti's validation/anchor
-  logic; lineage `model_id="rules_v1"`.
+  logic; lineage `model_id="rules_v2"`.
 
 ## Known limitations
 
