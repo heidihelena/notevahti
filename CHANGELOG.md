@@ -78,7 +78,10 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
 - **Stage-1 synthetic dataset committed** (`corpus/synthetic_mdt_v1/`, `dataset_version`
   `notevahti_lung_mdt_synthetic_v1`): 1800 cases / 5400 records across fi/sv/nb/da/is/en, three
   documentation formats per case, nine case categories, case-level train/dev/test split (no leakage).
-  Deterministic generator + validator brought in-repo; `validate_dataset.py` delegates row-level
+  A minority of clear, complete, non-metastatic (M0) cases are now **pathological** (post-resection
+  `p` / post-neoadjuvant `yp`) with a coherent localized staging-context phrase, instead of every
+  case being baseline clinical `c`. Deterministic generator + validator brought in-repo;
+  `validate_dataset.py` delegates row-level
   validation to `notevahti.corpus.validate_row` (single contract) and adds corpus-level checks
   (distributions, split, PII, the "current TNM" note convention). `validate_row` extended with the
   row-level semantic invariants (value==components, explicit-ECOG==ground-truth, has_negation,

@@ -57,7 +57,9 @@ TREATMENT_INTENT_COUNTS = {
 
 EXPLICIT_ECOG_COUNTS = {0: 36, 1: 84, 2: 60, 3: 48, 4: 12}
 
-TNM_RE = re.compile(r"\b[cpy]?T(?:is|[0-4](?:mi|[abc])?|x)N(?:[0-3](?:[ab])?|x)M(?:0|1a|1b|1c[12]?|x)\b")
+TNM_RE = re.compile(
+    r"\b(?:y?[cp])?T(?:is|[0-4](?:mi|[abc])?|x)N(?:[0-3](?:[ab])?|x)M(?:0|1a|1b|1c[12]?|x)\b"
+)
 PERSON_ID_PATTERNS = [
     re.compile(r"\b\d{6}[-+A]\d{3}[0-9A-FHJ-NPR-Y]\b", re.IGNORECASE),
     re.compile(r"\b\d{6}[- ]?\d{4}\b"),

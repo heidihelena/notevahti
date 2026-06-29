@@ -158,6 +158,8 @@ LOCAL = {
         "old_tnm": "old TNM",
         "conflict_and": "and",
         "later_tnm": "later TNM",
+        "path_p": "pathological staging after resection",
+        "path_yp": "pathological staging after neoadjuvant therapy and resection",
         "ecog_prefix": "ECOG",
         "fictional_adult": "fictional adult",
         "age_sex": "{age}-year-old {sex}",
@@ -221,6 +223,8 @@ LOCAL = {
         "old_tnm": "aiempi TNM",
         "conflict_and": "ja",
         "later_tnm": "myöhempi TNM",
+        "path_p": "patologinen levinneisyys leikkauksen jälkeen",
+        "path_yp": "patologinen levinneisyys neoadjuvanttihoidon ja leikkauksen jälkeen",
         "ecog_prefix": "ECOG",
         "fictional_adult": "fiktiivinen aikuinen",
         "age_sex": "{age}-vuotias {sex}",
@@ -284,6 +288,8 @@ LOCAL = {
         "old_tnm": "tidigare TNM",
         "conflict_and": "och",
         "later_tnm": "senare TNM",
+        "path_p": "patologisk stadieindelning efter resektion",
+        "path_yp": "patologisk stadieindelning efter neoadjuvant behandling och resektion",
         "ecog_prefix": "ECOG",
         "fictional_adult": "fiktiv vuxen",
         "age_sex": "{age}-årig {sex}",
@@ -347,6 +353,8 @@ LOCAL = {
         "old_tnm": "tidligere TNM",
         "conflict_and": "og",
         "later_tnm": "senere TNM",
+        "path_p": "patologisk stadieinndeling etter reseksjon",
+        "path_yp": "patologisk stadieinndeling etter neoadjuvant behandling og reseksjon",
         "ecog_prefix": "ECOG",
         "fictional_adult": "fiktiv voksen",
         "age_sex": "{age} år gammel {sex}",
@@ -410,6 +418,8 @@ LOCAL = {
         "old_tnm": "tidligere TNM",
         "conflict_and": "og",
         "later_tnm": "senere TNM",
+        "path_p": "patologisk stadieinddeling efter resektion",
+        "path_yp": "patologisk stadieinddeling efter neoadjuverende behandling og resektion",
         "ecog_prefix": "ECOG",
         "fictional_adult": "fiktiv voksen",
         "age_sex": "{age}-årig {sex}",
@@ -473,6 +483,8 @@ LOCAL = {
         "old_tnm": "fyrra TNM",
         "conflict_and": "og",
         "later_tnm": "síðara TNM",
+        "path_p": "meinafræðileg stigun eftir brottnám",
+        "path_yp": "meinafræðileg stigun eftir formeðferð og brottnám",
         "ecog_prefix": "ECOG",
         "fictional_adult": "skáldaður fullorðinn einstaklingur",
         "age_sex": "{age} ára {sex}",
@@ -878,6 +890,9 @@ def make_tnm_sentence(lang: str, case: dict) -> str:
         if gt_tnm["ambiguous"]:
             return f"{l10n['old_tnm']} {case['old_tnm']}; {l10n['later_tnm']} {case['current_candidate_tnm']}; {l10n['old_current_unclear']}."
         return f"{l10n['old_tnm']} {case['old_tnm']}; {l10n['current_tnm']} {gt_tnm['full']}."
+    mode = case.get("tnm_path_mode")
+    if mode in ("p", "yp"):
+        return f"TNM: {gt_tnm['full']}; {l10n['path_p' if mode == 'p' else 'path_yp']}."
     return f"TNM: {gt_tnm['full']}."
 
 
@@ -995,6 +1010,18 @@ def make_case(lang: str, index: int, category: str, queues: dict, rng: random.Ra
     tnm = profile_to_tnm(profile)
     if stage_group is None:
         stage_group = profile[4]
+
+    # A minority of clear, complete cases are pathological (post-resection 'p' / post-neoadjuvant
+    # 'yp') rather than baseline clinical 'c', with a coherent staging-context phrase in the note.
+    # Pathological staging only on non-metastatic disease (resection / neoadjuvant is for M0).
+    tnm_path_mode = None
+    if category == "clear_explicit" and tnm["m"] == "M0":
+        tnm_path_mode = rng.choices(["c", "p", "yp"], weights=[70, 20, 10])[0]
+        if tnm_path_mode != "c":
+            tnm["prefix"] = tnm_path_mode
+            tnm["full"] = f"{tnm_path_mode}{tnm['t']}{tnm['n']}{tnm['m']}"
+        else:
+            tnm_path_mode = None
 
     site, base_size = rng.choice(TUMOUR_SITES)
     size = max(8, base_size + rng.randint(-5, 8))
@@ -1147,6 +1174,7 @@ def make_case(lang: str, index: int, category: str, queues: dict, rng: random.Ra
         "current_candidate_tnm": current_candidate_tnm,
         "tnm_conflict_a": tnm_conflict_a,
         "tnm_conflict_b": tnm_conflict_b,
+        "tnm_path_mode": tnm_path_mode,
     }
     return case
 
