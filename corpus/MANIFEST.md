@@ -32,6 +32,18 @@ produced on the repository's build date.
 - Deliberately hard English MDT notes (implicit staging, abbreviation, copy-forward, distractor,
   typo) with structured ground truth, for the provenance-binding boundary eval (`scripts/eval_messy_mdt.py`).
 
+## Case schema (planned Stage-1 corpus)
+
+The target sizing, case-level split, case-type distribution and on-disk shape for the planned
+1800-case Nordic corpus are specified in
+[`docs/research/synthetic_corpus_design.md`](../docs/research/synthetic_corpus_design.md). The
+machine-checkable contract for one case is
+[`corpus/schema/synthetic_case.schema.json`](schema/synthetic_case.schema.json) (validating example:
+[`schema/example_case.fi.json`](schema/example_case.fi.json); fine-tuning example:
+[`schema/finetuning_record.example.jsonl`](schema/finetuning_record.example.jsonl)). The typed model
+and a dependency-free validator are in `notevahti.corpus.synthetic`; a test keeps the schema and the
+model vocabularies in sync.
+
 ## Messiness levels (overall)
 
 - **clean** — gold values appear verbatim (generator default).

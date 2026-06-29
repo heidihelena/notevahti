@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/heidihelena/notevahti/corpus/schema/synthetic_case.schema.json",
+  "title": "NoteVahti synthetic Nordic lung-cancer MDT case",
+  "description": "One synthetic case: metadata, machine-checkable ground truth, the note text, and the supervised target. Synthetic only; real patient data is held out as a separate external validation set. The controlled vocabulary mirrors notevahti.corpus.synthetic (single source of truth) and the TNM vocabulary mirrors notevahti.extractors.rules.parse_tnm.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_id", "language", "documentation_format", "messiness", "truth", "note"],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable id, unique at the case level, e.g. 'fi_0001'. Shared across rendered variants of the same patient.",
+      "examples": ["fi_0001"]
+    },
+    "language": {
+      "type": "string",
+      "enum": ["fi", "sv", "nb", "da", "is", "en"],
+      "description": "Norwegian Bokmål is 'nb' (repo-wide convention)."
+    },
+    "source_type": {
+      "const": "synthetic",
+      "default": "synthetic"
+    },
+    "documentation_format": {
+      "type": "string",
+      "enum": ["free_text", "structured_mini", "structured_v3_1"],
+      "description": "Rendering of the same underlying case: free MDT prose, the structured-mini summary, or the structured v3.1 form."
+    },
+    "messiness": {
+      "type": "string",
+      "enum": ["clean", "semistructured", "messy"]
+    },
+    "split": {
+      "type": "string",
+      "enum": ["train", "dev", "test"],
+      "description": "Assigned at the CASE level, never the variant level, to prevent leakage."
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tnm", "treatment_intent"],
+      "description": "Machine-checkable ground truth.",
+      "properties": {
+        "mdt_discussed": {
+          "type": ["boolean", "null"],
+          "description": "true = documented as done, false = documented as not done / planned, null = not documented."
+        },
+        "ecog_ps": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 4,
+          "description": "ECOG performance status, or null if not explicitly documented."
+        },
+        "tnm": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["prefix", "completeness"],
+          "properties": {
+            "prefix": {
+              "type": "string",
+              "enum": ["c", "yc", "p", "yp", "unknown", "ambiguous"]
+            },
+            "t": { "type": ["string", "null"], "examples": ["T2a", "Tis", "Tx"] },
+            "n": { "type": ["string", "null"], "examples": ["N1", "Nx"] },
+            "m": { "type": ["string", "null"], "examples": ["M0", "M1b"] },
+            "completeness": {
+              "type": "string",
+              "enum": ["complete", "partial", "absent", "ambiguous"],
+              "description": "Same vocabulary as parse_tnm: complete = all of T/N/M present and coherent; partial = some present; absent = none; ambiguous = conflicting values."
+            },
+            "edition": {
+              "type": "string",
+              "default": "unknown",
+              "description": "'unknown' unless the case explicitly states one, e.g. '8th', '7th'.",
+              "examples": ["unknown", "8th", "7th"]
+            }
+          }
+        },
+        "histology": { "type": ["string", "null"] },
+        "stage_group": { "type": ["string", "null"], "examples": ["IIB", "IVA"] },
+        "biomarkers": {
+          "type": ["object", "null"],
+          "additionalProperties": { "type": "string" },
+          "description": "Map of marker -> result, e.g. {\"egfr\": \"negative\", \"pdl1\": \"TPS 60%\"}."
+        },
+        "treatment_intent": {
+          "type": "string",
+          "enum": ["curative", "palliative", "diagnostic", "unknown"]
+        },
+        "recommendation": { "type": ["string", "null"] }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The MDT note text for this rendered variant."
+    },
+    "expected_output": {
+      "type": "object",
+      "description": "Supervised target: per field, the value, its verbatim in-note evidence, and a review flag.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["value"],
+        "properties": {
+          "value": {},
+          "evidence": { "type": ["string", "null"] },
+          "requires_review": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "difficulty_tags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "explicit",
+          "missing_ecog",
+          "partial_tnm",
+          "conflicting_tnm",
+          "old_staging",
+          "future_mdt",
+          "negated_mdt",
+          "indirect_ecog",
+          "distractor_biomarkers",
+          "multilingual_abbreviation"
+        ]
+      }
+    }
+  }
+}

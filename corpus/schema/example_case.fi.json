@@ -1,0 +1,49 @@
+{
+  "case_id": "fi_0001",
+  "language": "fi",
+  "source_type": "synthetic",
+  "documentation_format": "free_text",
+  "messiness": "semistructured",
+  "split": "train",
+  "truth": {
+    "mdt_discussed": true,
+    "ecog_ps": 1,
+    "tnm": {
+      "prefix": "c",
+      "t": "T2a",
+      "n": "N1",
+      "m": "M0",
+      "completeness": "complete",
+      "edition": "unknown"
+    },
+    "histology": "adenocarcinoma",
+    "stage_group": "IIB",
+    "biomarkers": {
+      "egfr": "negative",
+      "alk": "negative",
+      "ros1": "negative",
+      "pdl1": "TPS 60%"
+    },
+    "treatment_intent": "curative",
+    "recommendation": "surgery after preoperative evaluation"
+  },
+  "note": "Potilas käsitelty keuhkosyövän MDT-kokouksessa. TT- ja PET-löydösten perusteella cT2aN1M0. Histologia adenokarsinooma. ECOG 1. EGFR, ALK ja ROS1 negatiiviset, PD-L1 TPS 60 %. Suositellaan leikkausarviota kuratiivisella intentiolla.",
+  "expected_output": {
+    "mdt_discussed": {
+      "value": true,
+      "evidence": "käsitelty keuhkosyövän MDT-kokouksessa",
+      "requires_review": false
+    },
+    "ecog_ps": {
+      "value": 1,
+      "evidence": "ECOG 1",
+      "requires_review": false
+    },
+    "tnm": {
+      "value": "cT2aN1M0",
+      "evidence": "cT2aN1M0",
+      "requires_review": false
+    }
+  },
+  "difficulty_tags": ["explicit", "distractor_biomarkers"]
+}

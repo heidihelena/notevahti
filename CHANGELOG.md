@@ -64,6 +64,17 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   secondary outcomes; explicit negative-result policy); `corpus/MANIFEST.md`; `docs/release.md`.
 - pyproject description/keywords updated for release presentation. Validation core unchanged: still
   deterministic, offline, model-free, no runtime deps.
+- **Synthetic-corpus case model** (`notevahti.corpus.synthetic`): a stdlib-only, offline typed model
+  and dependency-free `validate_case` for one Nordic lung-cancer MDT case, plus the published JSON
+  Schema `corpus/schema/synthetic_case.schema.json` (with a validating example and a fine-tuning
+  example). TNM vocabulary matches `parse_tnm`; a test keeps the schema and model in sync.
+  Sizing/split/distribution design in `docs/research/synthetic_corpus_design.md` (target 300
+  cases/language, 1800 total; case-level train/dev/test split to prevent leakage). Corpus tooling,
+  not part of the validation core.
+- **Code-review follow-ups (no behaviour change):** single source of truth for the TNM token grammar
+  (shared fragments compose both the extraction rules and `parse_tnm`); `_scan_tnm_runs`/`_resolve`
+  helpers; `is_registry_ready` predicate shared by the single-record path and the aggregate;
+  `_process_field` extracted in the CLI.
 
 ### Added (Stage-1 evidence machinery)
 - **Ordinal agreement analytics** (`notevahti.analytics.agreement.ordinal_agreement`): for ordered
