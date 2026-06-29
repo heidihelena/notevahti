@@ -132,6 +132,14 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
 ### Project docs
 - Design note, research → validated-tool pathway, deep-research evidence base, and SKILL.md build
   playbook under `docs/` and `SKILL.md`.
+- **Grant-ready polish:** README expanded (significance, honest novelty boundary, evidence-so-far,
+  validation pathway, Nordic/multilingual scope, data-protection & reproducibility, how-to-cite,
+  funding note; stale test count fixed). New `docs/research-framing.md` — a concise scientific framing
+  for funders/reviewers (background, gap/hypothesis, approach, evaluation design, impact, stage
+  gates, what funding supports).
+- **Preregistration reframed to Nordic-multilingual** (not single-registry): cohort and mandatory
+  language subgroups cover fi/sv/nb/da/is/en; data-governance generalised from Findata to the
+  applicable national secondary-use authority (SE/NO/DK/IS as well as FI).
 
 ### Repository / community (audit #6)
 - `SECURITY.md` — private vulnerability reporting, the local-first/no-telemetry posture, the
