@@ -1,9 +1,9 @@
 """Registry-ready yield: what fraction of attempted records can enter the registry without review.
 
 A record counts as *registry-ready* only if NoteVahti would let it through unattended: it is not
-flagged for review, has an acceptable provenance span, is not routed to ``blocked``, and meets a score
-threshold. This is an operational readiness number for a workflow, not a correctness claim — a
-registry-ready record is one the validator did not stop, not one proven correct.
+flagged for review, has an acceptable provenance span, is not routed to ``blocked``, and meets a
+score threshold. This is an operational readiness number for a workflow, not a correctness claim:
+a registry-ready record is one the validator did not stop, not one proven correct.
 
 Deterministic and offline. Routing is consulted to detect ``blocked`` (default field impact).
 """
@@ -32,7 +32,7 @@ class RegistryYield:
 def registry_ready_yield(
     records: Sequence[ValidationRecord], min_score: float = 0.80
 ) -> RegistryYield:
-    """Fraction of ``records`` that are registry-ready (no review, span present, not blocked, scored).
+    """Fraction of ``records`` that are registry-ready (no review, span, not blocked, scored).
 
     The condition counts are diagnostic and not mutually exclusive; ``registry_ready_yield`` is the
     only headline number. An empty input yields 0.0.
