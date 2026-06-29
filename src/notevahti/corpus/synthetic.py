@@ -316,8 +316,68 @@ def _validate_quality_labels(errors: list[str], ql: Any) -> None:
             errors.append(f"quality_labels.{k}: must be true or false")
 
 
+def _check_mdt_target(
+    errors: list[str], gt: dict[str, Any], ql: dict[str, Any], expected: dict[str, Any]
+) -> None:
+    status = gt.get("mdt_status")
+    mfield = expected.get("mdt_discussed")
+    if status == "completed" and gt.get("mdt_discussed") is not True:
+        errors.append("mdt_status 'completed' requires ground_truth.mdt_discussed true")
+    if status in ("planned", "not_completed") and gt.get("mdt_discussed") is True:
+        errors.append(f"mdt_status {status!r} is incompatible with mdt_discussed true")
+    if ql.get("has_negation") and isinstance(mfield, dict) and mfield.get("value") is not False:
+        errors.append("has_negation: expected_output.mdt_discussed.value must be false")
+
+
+def _check_ecog_target(
+    errors: list[str], gt: dict[str, Any], ql: dict[str, Any], expected: dict[str, Any]
+) -> None:
+    efield = expected.get("ecog_ps")
+    if not isinstance(efield, dict):
+        return
+    if (ql.get("has_missing_ecog") or ql.get("has_indirect_ecog")) and efield.get(
+        "value"
+    ) is not None:
+        errors.append("missing/indirect ECOG: expected_output.ecog_ps.value must be null")
+    status = gt.get("ecog_status")
+    if status == "explicit" and efield.get("value") != gt.get("ecog_ps"):
+        errors.append("explicit ECOG: expected_output.ecog_ps.value must equal ground_truth value")
+    if status not in (None, "explicit") and efield.get("requires_review") is not True:
+        errors.append(f"non-explicit ECOG ({status}): expected_output.ecog_ps must require review")
+
+
+def _check_tnm_target(
+    errors: list[str], gt: dict[str, Any], ql: dict[str, Any], expected: dict[str, Any]
+) -> None:
+    tnm = gt.get("tnm")
+    tfield = expected.get("tnm")
+    if not isinstance(tnm, dict) or not isinstance(tfield, dict):
+        return
+    unresolvable = tnm.get("ambiguous") is True or ql.get("has_conflict")
+    if unresolvable:
+        if tfield.get("value") is not None:
+            errors.append("ambiguous/conflicting TNM: expected_output.tnm.value must be null")
+        if tfield.get("requires_review") is not True:
+            errors.append("ambiguous/conflicting TNM: expected_output.tnm must require review")
+    value = tfield.get("value")
+    if value is not None:
+        comp = tfield.get("components") or {}
+        if not all(comp.get(k) for k in ("prefix", "t", "n", "m")):
+            errors.append("non-null TNM value must keep all of prefix/t/n/m in components")
+        elif f"{comp['prefix']}{comp['t']}{comp['n']}{comp['m']}" != value:
+            errors.append("expected_output.tnm.value does not match its components")
+        if tnm.get("full") != value or not tnm.get("complete") or tnm.get("ambiguous"):
+            errors.append("non-null expected TNM is inconsistent with ground_truth.tnm")
+    if ql.get("has_partial_tnm"):
+        if tnm.get("complete"):
+            errors.append("has_partial_tnm: ground_truth.tnm.complete must be false")
+        axes = [tnm.get("t"), tnm.get("n"), tnm.get("m")]
+        if not (any(a is None for a in axes) and any(a for a in axes)):
+            errors.append("has_partial_tnm: need at least one missing and one present component")
+
+
 def _cross_checks(errors: list[str], payload: dict[str, Any]) -> None:
-    """The generator's own invariants — these must hold for any correct record."""
+    """Row-level semantic invariants — these must hold for any correct record."""
     case_id = payload.get("case_id")
     fmt = payload.get("documentation_format")
     record_id = payload.get("record_id")
@@ -332,33 +392,18 @@ def _cross_checks(errors: list[str], payload: dict[str, Any]) -> None:
     gt = payload.get("ground_truth")
     expected = payload.get("expected_output")
     ql = payload.get("quality_labels")
-    if not isinstance(gt, dict):
+    if not isinstance(gt, dict) or not isinstance(expected, dict):
         return
+    ql = ql if isinstance(ql, dict) else {}
 
-    mdt_status = gt.get("mdt_status")
-    if mdt_status == "completed" and gt.get("mdt_discussed") is not True:
-        errors.append("mdt_status 'completed' requires ground_truth.mdt_discussed true")
-    if mdt_status in ("planned", "not_completed") and gt.get("mdt_discussed") is True:
-        errors.append(f"mdt_status {mdt_status!r} is incompatible with mdt_discussed true")
+    _check_mdt_target(errors, gt, ql, expected)
+    _check_ecog_target(errors, gt, ql, expected)
+    _check_tnm_target(errors, gt, ql, expected)
 
-    tnm = gt.get("tnm")
-    if isinstance(tnm, dict) and tnm.get("ambiguous") is True and isinstance(expected, dict):
-        tfield = expected.get("tnm")
-        if isinstance(tfield, dict):
-            if tfield.get("value") is not None:
-                errors.append("ambiguous TNM: expected_output.tnm.value must be null")
-            if tfield.get("requires_review") is not True:
-                errors.append("ambiguous TNM: expected_output.tnm.requires_review must be true")
-
-    if isinstance(ql, dict) and isinstance(expected, dict):
-        if ql.get("has_missing_ecog") or ql.get("has_indirect_ecog"):
-            efield = expected.get("ecog_ps")
-            if isinstance(efield, dict) and efield.get("value") is not None:
-                errors.append("missing/indirect ECOG: expected_output.ecog_ps.value must be null")
-        if ql.get("requires_review") is True and ql.get("registry_ready") is True:
-            errors.append(
-                "quality_labels: requires_review true is incompatible with registry_ready true"
-            )
+    if ql.get("requires_review") is True and ql.get("registry_ready") is True:
+        errors.append(
+            "quality_labels: requires_review true is incompatible with registry_ready true"
+        )
 
 
 def validate_row(payload: Any) -> list[str]:

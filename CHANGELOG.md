@@ -75,6 +75,16 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   at `docs/research/synthetic_corpus_generator_prompt.md`; sizing/split/distribution design in
   `docs/research/synthetic_corpus_design.md` (target 300 cases/language, 1800 total; case-level
   train/dev/test split to prevent leakage). Corpus tooling, not part of the validation core.
+- **Stage-1 synthetic dataset committed** (`corpus/synthetic_mdt_v1/`, `dataset_version`
+  `notevahti_lung_mdt_synthetic_v1`): 1800 cases / 5400 records across fi/sv/nb/da/is/en, three
+  documentation formats per case, nine case categories, case-level train/dev/test split (no leakage).
+  Deterministic generator + validator brought in-repo; `validate_dataset.py` delegates row-level
+  validation to `notevahti.corpus.validate_row` (single contract) and adds corpus-level checks
+  (distributions, split, PII, the "current TNM" note convention). `validate_row` extended with the
+  row-level semantic invariants (value==components, explicit-ECOG==ground-truth, has_negation,
+  has_conflict, partial-TNM) and now accepts the generated vocabulary. Committed rows guarded by
+  `tests/test_synthetic_corpus_dataset.py`. The generation tooling is ruff-excluded as imported
+  tooling; the validation core is untouched.
 - **Code-review follow-ups (no behaviour change):** single source of truth for the TNM token grammar
   (shared fragments compose both the extraction rules and `parse_tnm`); `_scan_tnm_runs`/`_resolve`
   helpers; `is_registry_ready` predicate shared by the single-record path and the aggregate;

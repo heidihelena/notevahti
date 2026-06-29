@@ -119,7 +119,28 @@ def test_ambiguous_tnm_must_not_be_resolved():
     payload["ground_truth"]["tnm"]["complete"] = False
     # leaving the resolved value in place must be rejected
     errors = validate_row(payload)
-    assert any("ambiguous TNM" in e for e in errors)
+    assert any("ambiguous/conflicting TNM" in e for e in errors)
+
+
+def test_explicit_ecog_must_equal_ground_truth():
+    payload = _row()
+    payload["expected_output"]["ecog_ps"]["value"] = 2  # gt says 1, status explicit
+    assert any("explicit ECOG" in e for e in validate_row(payload))
+
+
+def test_tnm_value_must_match_components():
+    payload = _row()
+    payload["expected_output"]["tnm"]["components"]["t"] = "T3"  # value still cT2aN1M0
+    assert any("does not match its components" in e for e in validate_row(payload))
+
+
+def test_negated_mdt_expected_must_be_false():
+    payload = _row()
+    payload["ground_truth"]["mdt_status"] = "not_completed"
+    payload["ground_truth"]["mdt_discussed"] = False
+    payload["quality_labels"]["has_negation"] = True
+    # expected mdt_discussed value still True -> must be false
+    assert any("has_negation" in e for e in validate_row(payload))
 
 
 def test_planned_mdt_is_not_completed():

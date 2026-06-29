@@ -71,6 +71,8 @@ files = ["src/notevahti"]
 target-version = "py310"
 line-length = 100
 src = ["src", "tests", "scripts"]
+# Imported corpus-generation tooling (long multilingual template strings); kept as-is.
+extend-exclude = ["corpus/synthetic_mdt_v1"]
 
 [tool.ruff.lint]
 # E/F pyflakes+pycodestyle, I import sorting, UP pyupgrade, B bugbear,

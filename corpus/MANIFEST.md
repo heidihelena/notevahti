@@ -32,6 +32,22 @@ produced on the repository's build date.
 - Deliberately hard English MDT notes (implicit staging, abbreviation, copy-forward, distractor,
   typo) with structured ground truth, for the provenance-binding boundary eval (`scripts/eval_messy_mdt.py`).
 
+### 4. `corpus/synthetic_mdt_v1/` — 1800 cases / 5400 records
+- The Stage-1 Nordic lung-cancer MDT corpus (`dataset_version` `notevahti_lung_mdt_synthetic_v1`):
+  300 cases/language in **fi, sv, nb, da, is, en**, each rendered in three documentation formats
+  (free_text, structured_mini, structured_v3_1) → 900 records/language, 5400 total.
+- Row shape is the canonical contract `corpus/schema/synthetic_case.schema.json` /
+  `notevahti.corpus.synthetic`. Ground truth authored first; `expected_output` carries verbatim
+  evidence; `quality_labels` mark the case type. Nine case categories incl. missing/partial/
+  conflicting TNM, planned/not-yet-discussed MDT, indirect ECOG, biomarker distractors.
+- **Split** is case-level (train 210 / dev 45 / test 45 per language); all three formats of a
+  `case_id` share one `split_hint` (no leakage).
+- Regenerate deterministically: `python3 corpus/synthetic_mdt_v1/scripts/generate_dataset.py`
+  (writes `data/*.jsonl`, then self-validates). Validate: `python3
+  corpus/synthetic_mdt_v1/scripts/validate_dataset.py corpus/synthetic_mdt_v1` — row checks delegate
+  to `notevahti.corpus.validate_row`; the script adds distributions, split, PII and note conventions.
+- Committed rows are guarded by `tests/test_synthetic_corpus_dataset.py`.
+
 ## Case schema (planned Stage-1 corpus)
 
 The target sizing, case-level split, case-type distribution and on-disk shape for the planned
