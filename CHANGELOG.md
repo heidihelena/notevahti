@@ -49,6 +49,17 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   analytics — **not** validation evidence; the committed corpus is unaffected.
 
 ### Added / Changed (Stage-1 lung-MDT alignment)
+- **Rule extractor `rules_v2` — systematic multilingual vocabulary:** every field now carries
+  Norwegian/Danish/Icelandic surface forms alongside fi/sv/en (harvested from the corpus's own
+  localization tables): histology (incl. `kirtilkrabbamein`, `plateepitelkarsinom`,
+  `planocellulært karcinom`, `flöguþekjukrabbamein`, `småcellet`, `smáfrumukrabbamein`, and an
+  uncertain-subtype rule), lobe location + laterality (nb/da/is), performance-status keywords
+  (`funksjonsstatus`, `funktionsniveau`), treatment-intent (Icelandic `læknandi`/`líknandi`), and
+  the NTRK biomarker. Negation cues extended (sv `inte`, nb/da `ikke`/`uten`/`uden`, is `ekki`/`án`)
+  and future cues (`planlagt`, `áætlað`, `endnu ikke`, `ekki enn`). **`mdt_discussed` redesigned** to
+  require a discussion verb or named meeting next to MDT — eliminating false positives from section
+  headers / boilerplate (now 5400/5400 correct vs gold across all six languages); histology is also
+  100% across languages. Verified against the committed `synthetic_mdt_v1` corpus.
 - **Rule extractor `rules_v2`:** expanded `treatment_plan` vocabulary with umbrella terms
   `surgical evaluation`, `radiotherapy` and `systemic therapy` across fi/sv/nb/da/is/en (the gaps
   surfaced by the synthetic-corpus end-to-end smoke), plus `symptom-directed care` → best supportive

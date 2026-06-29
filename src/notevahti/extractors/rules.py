@@ -1,9 +1,10 @@
 """Deterministic, offline, stdlib-only rule-based extractor for lung-cancer MDT notes.
 
 This is the **non-hallucinating "rule" persona**: it prefers returning nothing over guessing. It
-proposes candidate values bound to the exact character span where they were found, in Finnish,
-Swedish and English, and is negation-aware. It is extraction only -- it makes no diagnostic or
-therapeutic claim and no correctness guarantee; whether to trust a value is NoteVahti's job.
+proposes candidate values bound to the exact character span where they were found, across the six
+target languages (Finnish, Swedish, Norwegian Bokmål, Danish, Icelandic, English), and is
+negation-aware. It is extraction only -- it makes no diagnostic or therapeutic claim and no
+correctness guarantee; whether to trust a value is NoteVahti's job.
 
 Design notes
 ------------
@@ -34,17 +35,34 @@ MODEL_ID = "rules_v2"
 # Fields whose note may legitimately hold several values at once (do not treat as ambiguity).
 _MULTI_VALUED = frozenset({"biomarker", "treatment_plan"})
 
-# Negation cues (fi/sv/en). A cue in the short window *before* a match negates it.
+# Negation cues (fi/sv/nb/da/is/en). A cue in the short window *before* a match negates it.
 _NEGATION = re.compile(
     r"(?i)\b(?:no|not|without|negative|neg|absence|absent|ruled\s+out|denies|"
-    r"ei|ilman|eivät|negatiivinen|poissuljettu|ej|inga|ingen|utan|negativ)\b"
+    r"ei|ilman|eivät|negatiivinen|poissuljettu|"  # fi
+    r"ej|inte|inga|ingen|utan|negativ|"  # sv
+    r"ikke|uten|uden|ekki|án)\b"  # nb / da / is
 )
 _NEG_WINDOW = 30
 
-# Future / planned-intent cues (fi/sv/en). A documented MDT must be *done*, not planned or pending.
+# Future / planned-intent cues (fi/sv/nb/da/is/en). A documented MDT must be *done*, not planned.
 _MDT_FUTURE = re.compile(
     r"(?i)\b(?:will|to\s+be|planned|plan(?:ned)?\s+for|scheduled|pending|upcoming|awaiting|"
-    r"not\s+yet|suunnitel\w*|tullaan|varattu|kommer\s+att|inplanerad|planerad|ej\s+ännu)\b"
+    r"not\s+yet|suunnitel\w*|tullaan|varattu|kommer\s+att|inplanerad|planerad|ej\s+ännu|"
+    r"planlagt|planlægges|áætla\w*|skal\s+drøftes|ennå|endnu\s+ikke|ekki\s+enn)\b"
+)
+
+# Positive MDT-discussion evidence: a discussion verb next to MDT/MDK, OR a named multidisciplinary
+# meeting. This deliberately ignores bare "MDT" tokens in section headers ("MDT status:") and
+# boilerplate ("synthetic MDT preparation note"), which are not evidence that discussion happened.
+_MDT_DISCUSSED = re.compile(
+    r"(?i)(?:"
+    r"(?:discuss\w*|käsitel\w*|diskuter\w*|drøft\w*|rætt)[^.\n]{0,18}?\bMD[TK]\b"  # verb -> MDT
+    r"|tumou?r\s+board|multidisciplinary\s+team"  # en meeting names
+    r"|moniammatilli\w*[^.\n]{0,20}?kokou\w*"  # fi
+    r"|multidisciplinär\w*\s+konferens|tverrfaglig\w*\s+m[øö]te|lungekreftm[øö]te"  # sv / nb
+    r"|multidisciplinær\w*\s+konfe\w*"  # da
+    r"|\bMD[TK][-\s]?(?:m[øö]te|møde|fund\w*|konfe\w*|board|meeting)"  # MDT-<meeting word>
+    r")"
 )
 
 
@@ -104,7 +122,7 @@ _PFX_ANY = r"(?:c|yc|p|yp)"
 
 
 # --------------------------------------------------------------------------- pattern catalogue
-# Versioned with MODEL_ID. Surface forms in fi / sv / en; canonical values are English/universal.
+# Versioned with MODEL_ID. Surface forms in fi/sv/nb/da/is/en; canonical values English/universal.
 
 _RULES: tuple[_Rule, ...] = (
     # --- clinical vs pathological TNM (UICC 8th ed.) ----------------------------------------
@@ -137,9 +155,12 @@ _RULES: tuple[_Rule, ...] = (
         FieldType.STAGING,
         group=1,
     ),
-    # --- histology (negatable: "no adenocarcinoma" must not assert it) ----------------------
+    # --- histology (negatable: "no adenocarcinoma" must not assert it; fi/sv/nb/da/is/en) -----
     _Rule(
-        _c(r"(?i)adenocarcinoma\w*|adenoca\b|adenokarsinooma\w*|adenokarcinom\w*"),
+        _c(
+            r"(?i)adenocarcinoma\w*|adenoca\b|adenokarsinoom\w*|adenokarsinom\w*"
+            r"|adenokarcinom\w*|kirtilkrabbamein\w*"  # fi/nb / sv/da / is
+        ),
         "histology",
         FieldType.CATEGORICAL,
         canonical="adenocarcinoma",
@@ -148,7 +169,8 @@ _RULES: tuple[_Rule, ...] = (
     _Rule(
         _c(
             r"(?i)squamous(?:\s+cell)?(?:\s+carcinoma)?|\bSCC\b|levyepiteelikarsinooma\w*"
-            r"|okasolukarsinooma\w*|skivepitelcancer\w*"
+            r"|okasolukarsinooma\w*|skivepitelcancer\w*"  # fi / sv
+            r"|plateepitelkarsinom\w*|planocellulær\w*|flöguþekjukrabbamein\w*"  # nb / da / is
         ),
         "histology",
         FieldType.CATEGORICAL,
@@ -158,7 +180,8 @@ _RULES: tuple[_Rule, ...] = (
     _Rule(
         _c(
             r"(?i)small[-\s]cell(?:\s+(?:carcinoma|lung\s+cancer))?|\bSCLC\b"
-            r"|pienisoluinen\w*|småcellig\w*"
+            r"|pienisoluinen\w*|småcellig\w*"  # fi / sv
+            r"|småcellet\w*|smáfrumukrabbamein\w*"  # nb-da / is
         ),
         "histology",
         FieldType.CATEGORICAL,
@@ -189,46 +212,78 @@ _RULES: tuple[_Rule, ...] = (
         canonical="carcinoid",
         negatable=True,
     ),
+    # carcinoma with an explicitly uncertain subtype (fi/sv/nb/da/is/en)
+    _Rule(
+        _c(
+            r"(?i)(?:carcinoma|karsinooma|karsinom|karcinom|krabbamein),?\s+"
+            r"(?:subtype|subtyp|alatyyppi|undirgerð)\s+"
+            r"(?:uncertain|epävarma|oklar|uklar|usikker|óviss)\w*"
+        ),
+        "histology",
+        FieldType.CATEGORICAL,
+        canonical="carcinoma, subtype uncertain",
+    ),
     # --- location (lobe) and laterality -----------------------------------------------------
     _Rule(
-        _c(r"(?i)\bRUL\b|oikea\w*\s+ylälohko\w*|höger\w*\s+överlob\w*"),
+        _c(
+            r"(?i)\bRUL\b|oikea\w*\s+ylälohko\w*|höger\w*\s+överlob\w*"  # fi / sv
+            r"|h(?:øy|øj)re\s+overlap\w*|hægra\s+efra\s+lungnablað\w*"  # nb-da / is
+        ),
         "location",
         FieldType.CATEGORICAL,
         canonical="RUL",
     ),
     _Rule(
-        _c(r"(?i)\bRML\b|oikea\w*\s+keskilohko\w*|mellanlob\w*"),
+        _c(
+            r"(?i)\bRML\b|oikea\w*\s+keskilohko\w*|mellanlob\w*"  # fi / sv
+            r"|h(?:øy|øj)re\s+(?:midtlapp|mellemlap)\w*|hægra\s+miðlungnablað\w*"  # nb / da / is
+        ),
         "location",
         FieldType.CATEGORICAL,
         canonical="RML",
     ),
     _Rule(
-        _c(r"(?i)\bRLL\b|oikea\w*\s+alalohko\w*|höger\w*\s+underlob\w*"),
+        _c(
+            r"(?i)\bRLL\b|oikea\w*\s+alalohko\w*|höger\w*\s+underlob\w*"  # fi / sv
+            r"|h(?:øy|øj)re\s+underlap\w*|hægra\s+neðra\s+lungnablað\w*"  # nb-da / is
+        ),
         "location",
         FieldType.CATEGORICAL,
         canonical="RLL",
     ),
     _Rule(
-        _c(r"(?i)\bLUL\b|vasen\w*\s+ylälohko\w*|vänster\w*\s+överlob\w*"),
+        _c(
+            r"(?i)\bLUL\b|vasen\w*\s+ylälohko\w*|vänster\w*\s+överlob\w*"  # fi / sv
+            r"|venstre\s+overlap\w*|vinstra\s+efra\s+lungnablað\w*"  # nb-da / is
+        ),
         "location",
         FieldType.CATEGORICAL,
         canonical="LUL",
     ),
     _Rule(
-        _c(r"(?i)\bLLL\b|vasen\w*\s+alalohko\w*|vänster\w*\s+underlob\w*"),
+        _c(
+            r"(?i)\bLLL\b|vasen\w*\s+alalohko\w*|vänster\w*\s+underlob\w*"  # fi / sv
+            r"|venstre\s+underlap\w*|vinstra\s+neðra\s+lungnablað\w*"  # nb-da / is
+        ),
         "location",
         FieldType.CATEGORICAL,
         canonical="LLL",
     ),
     _Rule(
-        _c(r"(?i)\bright\b|oikea\w*|höger\w*"),
+        _c(
+            r"(?i)\bright\b|oikea\w*|höger\w*"  # en / fi / sv
+            r"|h(?:øy|øj)re\w*|hægr[aiu]\w*"  # nb-da / is
+        ),
         "laterality",
         FieldType.CATEGORICAL,
         canonical="right",
         negatable=True,
     ),
     _Rule(
-        _c(r"(?i)\bleft\b|vasen\w*|vänster\w*"),
+        _c(
+            r"(?i)\bleft\b|vasen\w*|vänster\w*"  # en / fi / sv
+            r"|venstre\w*|vinstr[aiu]\w*"  # nb-da / is
+        ),
         "laterality",
         FieldType.CATEGORICAL,
         canonical="left",
@@ -322,6 +377,18 @@ _RULES: tuple[_Rule, ...] = (
         canonical="RET fusion",
     ),
     _Rule(
+        _c(r"(?i)NTRK[-\s]?(?:fusion|rearrange\w*)"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="NTRK fusion",
+    ),
+    _Rule(
+        _c(r"(?i)NTRK\s*(?:neg\w*|negatiivinen)"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="NTRK negative",
+    ),
+    _Rule(
         _c(r"(?i)PD[-\s]?L1[^%\n]{0,20}?(?:TPS\s*)?(<\s*1\s*%|≥?\s*\d{1,3}\s*%)"),
         "biomarker",
         FieldType.CATEGORICAL,
@@ -344,7 +411,10 @@ _RULES: tuple[_Rule, ...] = (
         group=1,
     ),
     _Rule(
-        _c(r"(?i)\b(?:PS|toimintakyky|funktionsstatus)\s*[:=]?\s*([0-4])\b"),
+        _c(
+            r"(?i)\b(?:PS|toimintakyky|funktionsstatus|funksjonsstatus|funktionsniveau"
+            r"|færnisástand)\s*[:=]?\s*([0-4])\b"
+        ),
         "performance_status",
         FieldType.CATEGORICAL,
         template="ECOG {0}",
@@ -357,12 +427,11 @@ _RULES: tuple[_Rule, ...] = (
         template="Karnofsky {0}%",
         group=1,
     ),
-    # --- MDT discussion documented (must be DONE, not planned/negated) ----------------------
+    # --- MDT discussion documented (must be DONE, not planned/negated; fi/sv/nb/da/is/en) ----
+    # Requires a discussion verb or a named meeting next to MDT, so section headers
+    # ("MDT status:") and boilerplate ("MDT preparation note") do not assert discussion.
     _Rule(
-        _c(
-            r"(?i)\b(?:MDT|MDK|tumou?r\s+board|multidisciplinary\s+team"
-            r"|moniammatilli\w*[^.\n]{0,20}?kokou\w*)"
-        ),
+        _MDT_DISCUSSED,
         "mdt_discussed",
         FieldType.CATEGORICAL,
         canonical="MDT discussed",
@@ -371,17 +440,19 @@ _RULES: tuple[_Rule, ...] = (
     ),
     # --- treatment intent and plan ----------------------------------------------------------
     _Rule(
-        _c(r"(?i)\b(?:curative|kuratiivinen|kurativ\w*)\b"),
+        _c(r"(?i)\b(?:curative|kuratiivinen|kurativ\w*|læknandi\w*)\b"),
         "treatment_intent",
         FieldType.CATEGORICAL,
         canonical="curative",
     ),
     _Rule(
-        _c(r"(?i)\b(?:palliative|palliatiivinen|palliativ\w*)\b"),
+        _c(r"(?i)\b(?:palliative|palliatiivinen|palliativ\w*|líknandi\w*)\b"),
         "treatment_intent",
         FieldType.CATEGORICAL,
         canonical="palliative",
     ),
+    # NOTE: no generic "diagnostic" treatment_intent rule — "Diagnostic status" is a section
+    # header in the structured formats, so it would false-positive on every such note.
     _Rule(
         _c(r"(?i)\b(?:SABR|SBRT|stereotactic\w*|stereotaktinen\w*)\b"),
         "treatment_plan",

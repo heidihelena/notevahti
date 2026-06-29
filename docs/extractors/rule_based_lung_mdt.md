@@ -18,9 +18,15 @@ them.
 
 ## Supported languages (currently)
 
-Finnish, Swedish, English — surface forms and common abbreviations; canonical values are
-English/universal. Finnish/Swedish morphology is only partially covered (stem + `\w*`); rare
-inflections may be missed (a miss is preferred to a wrong value).
+Finnish, Swedish, Norwegian Bokmål, Danish, Icelandic, English — surface forms and common
+abbreviations; canonical values are English/universal. Nordic morphology is covered by stem + `\w*`,
+so rare inflections may be missed (a miss is preferred to a wrong value). Biomarker results are
+written in English in the synthetic corpus, so the English biomarker patterns apply across all
+languages. `mdt_discussed` requires a discussion verb or a named multidisciplinary meeting next to
+`MDT`, so section headers (`MDT status:`) and boilerplate (`MDT preparation note`) do not assert
+discussion. On the committed `synthetic_mdt_v1` corpus this gives histology and MDT-discussion
+extraction in all six languages (measured against gold), with workup-only recommendations
+deliberately left unextracted.
 
 ## No-guess policy
 
