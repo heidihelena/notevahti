@@ -15,17 +15,22 @@ from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
 class PreregSpec:
-    title: str = "Does the NoteVahti review flag predict true abstraction errors? (Stage-1, silent)"
+    title: str = (
+        "Does the NoteVahti review flag predict true abstraction errors in Nordic-language MDT "
+        "notes? (Stage-1, silent)"
+    )
     primary_question: str = (
-        "Among fields routed to review by NoteVahti, is the rate of true against-gold errors "
-        "higher than among accepted fields (error enrichment), and does the validity score "
-        "discriminate errors (AUROC)?"
+        "Across Nordic-language and English MDT notes, among fields routed to review by NoteVahti, "
+        "is the rate of true against-gold errors higher than among accepted fields (error "
+        "enrichment), and does the validity score discriminate errors (AUROC)?"
     )
     primary_metrics: tuple[str, ...] = (
         "review-flag error enrichment (review error rate / accept error rate) with 95% CI",
         "validity-score AUROC with 95% CI",
     )
     frozen_config_threshold: float = 0.80
+    # Nordic languages + English; the language subgroup must cover every language in the cohort.
+    languages: tuple[str, ...] = ("fi", "sv", "nb", "da", "is", "en")
     subgroups: tuple[str, ...] = ("language", "field type", "field name")
     deployment_prevalence_note: str = (
         "Report PPV/NPV at the registry's expected error prevalence, not the study's."
@@ -58,6 +63,9 @@ def preregistration_markdown(spec: PreregSpec | None = None) -> str:
         "## 2. Design",
         "- Retrospective, **silent** (NoteVahti output does not influence the registry entry).",
         "- Unit of analysis: one extracted field per case.",
+        "- Cohort: Nordic-language and English MDT notes; languages covered: "
+        + ", ".join(s.languages)
+        + ". Multi-site/multi-registry where possible (no single registry assumed).",
         "- Inputs: extracted value + source note. NoteVahti runs unchanged, offline, in the secure",
         "  environment; gold is never fed to the validator.",
         "",
@@ -79,6 +87,7 @@ def preregistration_markdown(spec: PreregSpec | None = None) -> str:
         "",
         "## 6. Mandatory subgroups (pooled numbers hide failures)",
         *[f"- by {g}" for g in s.subgroups],
+        "  (the language subgroup covers each of: " + ", ".join(s.languages) + ")",
         "",
         "## 7. Sample size",
         f"- {todo} target n and justification (precision of enrichment/AUROC CI at the expected",
@@ -88,7 +97,8 @@ def preregistration_markdown(spec: PreregSpec | None = None) -> str:
         s.kill_criterion,
         "",
         "## 9. Data governance",
-        f"- {todo} permit (e.g. Findata), pseudonymisation, secure-environment confirmation.",
+        f"- {todo} the applicable national secondary-use permit (e.g. Findata in Finland; the",
+        "  equivalent authority in SE/NO/DK/IS), pseudonymisation, secure-environment sign-off.",
         "",
         "## 10. Boundary",
         "- Not a medical device; not clinical advice. Validation evidence for human review, not a",
