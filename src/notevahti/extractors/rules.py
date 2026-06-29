@@ -1,0 +1,522 @@
+"""Deterministic, offline, stdlib-only rule-based extractor for lung-cancer MDT notes.
+
+This is the **non-hallucinating "rule" persona**: it prefers returning nothing over guessing. It
+proposes candidate values bound to the exact character span where they were found, in Finnish,
+Swedish and English, and is negation-aware. It is extraction only -- it makes no diagnostic or
+therapeutic claim and no correctness guarantee; whether to trust a value is NoteVahti's job.
+
+Design notes
+------------
+- **Independence.** This module imports only ``re`` and ``..types``. It does NOT use NoteVahti's
+  provenance/anchor/scoring logic, so its lineage (``model_id="rules_v1"``) is trivially disjoint
+  from the validator and from any LLM note generator. Use :func:`rules_lineage` for the lineage.
+- **Provenance fidelity.** The Protocol ``extract`` returns the value as the *surface text* exactly
+  at the reported span (``note[span]``), so NoteVahti's provenance can verify it byte-for-byte. The
+  registry-facing *canonical* value (e.g. "adenoCa" → "adenocarcinoma") is carried separately on
+  :class:`RuleCandidate.value`; use :meth:`RuleBasedExtractor.candidates` to get it.
+- **No-guess / ambiguity.** For single-valued fields, if the note yields more than one *distinct*
+  canonical value, ``extract`` returns no value (the conflict is visible via ``candidates``).
+  Genuinely multi-valued fields (biomarker, treatment_plan) return every finding via ``candidates``.
+- **Catalogue versioning.** The pattern catalogue is the data-driven ``_RULES`` table, versioned by
+  ``MODEL_ID``; bump it when the patterns change so a frozen study can pin the extractor version.
+"""
+
+from __future__ import annotations
+
+import re
+from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
+
+from ..types import ExtractionResult, FieldSpec, FieldType, Lineage
+
+MODEL_ID = "rules_v1"
+
+# Fields whose note may legitimately hold several values at once (do not treat as ambiguity).
+_MULTI_VALUED = frozenset({"biomarker", "treatment_plan"})
+
+# Negation cues (fi/sv/en). A cue in the short window *before* a match negates it.
+_NEGATION = re.compile(
+    r"(?i)\b(?:no|not|without|negative|neg|absence|absent|ruled\s+out|denies|"
+    r"ei|ilman|eivät|negatiivinen|poissuljettu|ej|inga|ingen|utan|negativ)\b"
+)
+_NEG_WINDOW = 30
+
+
+def rules_lineage(source_id: str | None = None) -> Lineage:
+    """Lineage for values produced by this extractor (``model_id='rules_v1'``).
+
+    Pass as ``value_lineage`` to ``validate_field`` so the rule extractor is a distinct source,
+    independent of any LLM or of NoteVahti's own logic.
+    """
+    return Lineage(source_id=source_id, model_id=MODEL_ID)
+
+
+@dataclass(frozen=True)
+class RuleCandidate:
+    """One rule match: the canonical value, the exact surface text, and its span."""
+
+    field: str
+    value: str  # canonical / registry-facing value
+    matched_text: str  # exact substring at span (note[span] == matched_text)
+    span: tuple[int, int]
+    field_type: FieldType
+    negated: bool = False
+
+
+@dataclass(frozen=True)
+class _Rule:
+    pattern: re.Pattern[str]
+    field: str
+    field_type: FieldType
+    canonical: str | None = None  # fixed canonical value
+    template: str | None = None  # canonical built from a captured group, e.g. "PD-L1 TPS {0}"
+    group: int = 0  # which group is the surface value / span
+    negatable: bool = False  # suppress (or flip) when preceded by a negation cue
+    negative_value: str | None = None  # if negatable & negated, emit this instead of suppressing
+
+
+def _c(pattern: str) -> re.Pattern[str]:
+    return re.compile(pattern)
+
+
+def _collapse(s: str) -> str:
+    return re.sub(r"\s+", " ", s).strip()
+
+
+# --------------------------------------------------------------------------- pattern catalogue
+# Versioned with MODEL_ID. Surface forms in fi / sv / en; canonical values are English/universal.
+
+_RULES: tuple[_Rule, ...] = (
+    # --- clinical vs pathological TNM (UICC 8th ed.) ----------------------------------------
+    # combined cTNM with optional c/yc prefix (or none); pathological requires p/yp prefix.
+    _Rule(
+        _c(r"(?i)(?<![A-Za-z])(?:c|yc)?T(?:is|[0-4][a-d]?|x)\s?N[0-3x]\s?M[01][a-c]?"),
+        "clinical_stage",
+        FieldType.STAGING,
+    ),
+    _Rule(
+        _c(r"(?i)(?<![A-Za-z])(?:p|yp)T(?:is|[0-4][a-d]?|x)\s?N[0-3x]\s?M[01][a-c]?"),
+        "pathological_stage",
+        FieldType.STAGING,
+    ),
+    # lone clinical T/N/M components (no combined form): clinical only (c/none), not p-prefixed.
+    _Rule(
+        _c(r"(?i)(?<![A-Za-z])c?T(?:is|[0-4][a-d]?|x)(?![A-Za-z0-9])"),
+        "clinical_stage",
+        FieldType.STAGING,
+    ),
+    _Rule(_c(r"(?i)(?<![A-Za-z])c?N[0-3](?![A-Za-z0-9])"), "clinical_stage", FieldType.STAGING),
+    _Rule(
+        _c(r"(?i)(?<![A-Za-z])c?M[01][a-c]?(?![A-Za-z0-9])"), "clinical_stage", FieldType.STAGING
+    ),
+    # stage group: require a stage keyword nearby (fi/sv/en) to avoid stray Roman numerals.
+    _Rule(
+        _c(
+            r"(?i)(?:stage|vaihe|levinneisyysryhmä|stadium)\s*"
+            r"(IA[123]|IA|IB|IIA|IIB|IIIA|IIIB|IIIC|IVA|IVB|0|I{1,3}V?|IV)"
+        ),
+        "stage_group",
+        FieldType.STAGING,
+        group=1,
+    ),
+    # --- histology (negatable: "no adenocarcinoma" must not assert it) ----------------------
+    _Rule(
+        _c(r"(?i)adenocarcinoma\w*|adenoca\b|adenokarsinooma\w*|adenokarcinom\w*"),
+        "histology",
+        FieldType.CATEGORICAL,
+        canonical="adenocarcinoma",
+        negatable=True,
+    ),
+    _Rule(
+        _c(
+            r"(?i)squamous(?:\s+cell)?(?:\s+carcinoma)?|\bSCC\b|levyepiteelikarsinooma\w*"
+            r"|okasolukarsinooma\w*|skivepitelcancer\w*"
+        ),
+        "histology",
+        FieldType.CATEGORICAL,
+        canonical="squamous cell carcinoma",
+        negatable=True,
+    ),
+    _Rule(
+        _c(
+            r"(?i)small[-\s]cell(?:\s+(?:carcinoma|lung\s+cancer))?|\bSCLC\b"
+            r"|pienisoluinen\w*|småcellig\w*"
+        ),
+        "histology",
+        FieldType.CATEGORICAL,
+        canonical="small cell carcinoma",
+        negatable=True,
+    ),
+    _Rule(
+        _c(
+            r"(?i)NSCLC[-\s]?NOS|non[-\s]small[-\s]cell[^.\n]{0,14}NOS"
+            r"|ei[-\s]pienisoluinen\w*[^.\n]{0,10}NOS"
+        ),
+        "histology",
+        FieldType.CATEGORICAL,
+        canonical="NSCLC-NOS",
+        negatable=True,
+    ),
+    _Rule(
+        _c(r"(?i)large[-\s]cell\s+carcinoma|suurisoluinen\w*|storcellig\w*"),
+        "histology",
+        FieldType.CATEGORICAL,
+        canonical="large cell carcinoma",
+        negatable=True,
+    ),
+    _Rule(
+        _c(r"(?i)carcinoid\w*|karsinoidi\w*|karcinoid\w*"),
+        "histology",
+        FieldType.CATEGORICAL,
+        canonical="carcinoid",
+        negatable=True,
+    ),
+    # --- location (lobe) and laterality -----------------------------------------------------
+    _Rule(
+        _c(r"(?i)\bRUL\b|oikea\w*\s+ylälohko\w*|höger\w*\s+överlob\w*"),
+        "location",
+        FieldType.CATEGORICAL,
+        canonical="RUL",
+    ),
+    _Rule(
+        _c(r"(?i)\bRML\b|oikea\w*\s+keskilohko\w*|mellanlob\w*"),
+        "location",
+        FieldType.CATEGORICAL,
+        canonical="RML",
+    ),
+    _Rule(
+        _c(r"(?i)\bRLL\b|oikea\w*\s+alalohko\w*|höger\w*\s+underlob\w*"),
+        "location",
+        FieldType.CATEGORICAL,
+        canonical="RLL",
+    ),
+    _Rule(
+        _c(r"(?i)\bLUL\b|vasen\w*\s+ylälohko\w*|vänster\w*\s+överlob\w*"),
+        "location",
+        FieldType.CATEGORICAL,
+        canonical="LUL",
+    ),
+    _Rule(
+        _c(r"(?i)\bLLL\b|vasen\w*\s+alalohko\w*|vänster\w*\s+underlob\w*"),
+        "location",
+        FieldType.CATEGORICAL,
+        canonical="LLL",
+    ),
+    _Rule(
+        _c(r"(?i)\bright\b|oikea\w*|höger\w*"),
+        "laterality",
+        FieldType.CATEGORICAL,
+        canonical="right",
+        negatable=True,
+    ),
+    _Rule(
+        _c(r"(?i)\bleft\b|vasen\w*|vänster\w*"),
+        "laterality",
+        FieldType.CATEGORICAL,
+        canonical="left",
+        negatable=True,
+    ),
+    # --- biomarkers (multi-valued; positives negatable -> negative_value) -------------------
+    _Rule(
+        _c(r"(?i)EGFR[^.\n]{0,18}?(?:exon\s*19|ex19)[^.\n]{0,8}?(?:del\w*)"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="EGFR exon 19 deletion",
+        negatable=True,
+        negative_value="EGFR negative",
+    ),
+    _Rule(
+        _c(r"(?i)EGFR[^.\n]{0,12}?L858R"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="EGFR L858R",
+        negatable=True,
+        negative_value="EGFR negative",
+    ),
+    _Rule(
+        _c(r"(?i)EGFR\s*(?:neg\w*|negatiivinen|wild[-\s]?type|villityyppi|\bwt\b)"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="EGFR negative",
+    ),
+    _Rule(
+        _c(r"(?i)EGFR\s*(?:mutation\w*|mutated|positive|positiivinen|mutatoitunut|\bpos\b)"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="EGFR positive",
+        negatable=True,
+        negative_value="EGFR negative",
+    ),
+    _Rule(
+        _c(r"(?i)ALK\s*(?:neg\w*|negatiivinen)"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="ALK negative",
+    ),
+    _Rule(
+        _c(r"(?i)ALK[-\s]?(?:positive|rearrange\w*|fusion|positiivinen|\bpos\b)"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="ALK positive",
+        negatable=True,
+        negative_value="ALK negative",
+    ),
+    _Rule(
+        _c(r"(?i)ROS1\s*(?:neg\w*|negatiivinen)"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="ROS1 negative",
+    ),
+    _Rule(
+        _c(r"(?i)ROS1[-\s]?(?:positive|rearrange\w*|fusion|positiivinen|\bpos\b)"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="ROS1 positive",
+        negatable=True,
+        negative_value="ROS1 negative",
+    ),
+    _Rule(
+        _c(r"(?i)BRAF\s*V600E"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="BRAF V600E",
+        negatable=True,
+        negative_value="BRAF negative",
+    ),
+    _Rule(
+        _c(r"(?i)KRAS\s*G12C"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="KRAS G12C",
+        negatable=True,
+        negative_value="KRAS negative",
+    ),
+    _Rule(
+        _c(r"(?i)MET[^.\n]{0,18}?(?:exon\s*14|ex14)[^.\n]{0,12}?skip\w*"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="MET exon 14 skipping",
+    ),
+    _Rule(
+        _c(r"(?i)RET[-\s]?(?:fusion|rearrange\w*)"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        canonical="RET fusion",
+    ),
+    _Rule(
+        _c(r"(?i)PD[-\s]?L1[^%\n]{0,20}?(?:TPS\s*)?(<\s*1\s*%|≥?\s*\d{1,3}\s*%)"),
+        "biomarker",
+        FieldType.CATEGORICAL,
+        template="PD-L1 TPS {0}",
+        group=1,
+    ),
+    # --- performance status -----------------------------------------------------------------
+    _Rule(
+        _c(r"(?i)\bECOG\s*(?:PS)?\s*[:=]?\s*([0-4])\b"),
+        "performance_status",
+        FieldType.CATEGORICAL,
+        template="ECOG {0}",
+        group=1,
+    ),
+    _Rule(
+        _c(r"(?i)\bWHO\s*(?:PS)?\s*[:=]?\s*([0-4])\b"),
+        "performance_status",
+        FieldType.CATEGORICAL,
+        template="ECOG {0}",
+        group=1,
+    ),
+    _Rule(
+        _c(r"(?i)\b(?:PS|toimintakyky)\s*[:=]?\s*([0-4])\b"),
+        "performance_status",
+        FieldType.CATEGORICAL,
+        template="ECOG {0}",
+        group=1,
+    ),
+    _Rule(
+        _c(r"(?i)\b(?:KPS|Karnofsky)\s*[:=]?\s*(\d{2,3})\s*%?"),
+        "performance_status",
+        FieldType.CATEGORICAL,
+        template="Karnofsky {0}%",
+        group=1,
+    ),
+    # --- treatment intent and plan ----------------------------------------------------------
+    _Rule(
+        _c(r"(?i)\b(?:curative|kuratiivinen|kurativ\w*)\b"),
+        "treatment_intent",
+        FieldType.CATEGORICAL,
+        canonical="curative",
+    ),
+    _Rule(
+        _c(r"(?i)\b(?:palliative|palliatiivinen|palliativ\w*)\b"),
+        "treatment_intent",
+        FieldType.CATEGORICAL,
+        canonical="palliative",
+    ),
+    _Rule(
+        _c(r"(?i)\b(?:SABR|SBRT|stereotactic\w*|stereotaktinen\w*)\b"),
+        "treatment_plan",
+        FieldType.CATEGORICAL,
+        canonical="SABR",
+    ),
+    _Rule(
+        _c(r"(?i)\b(?:lobectomy|lobektomia\w*|lobektomi\w*)\b"),
+        "treatment_plan",
+        FieldType.CATEGORICAL,
+        canonical="lobectomy",
+    ),
+    _Rule(
+        _c(r"(?i)\b(?:segmentectomy|segmentektomia\w*|segmentresektion\w*)\b"),
+        "treatment_plan",
+        FieldType.CATEGORICAL,
+        canonical="segmentectomy",
+    ),
+    _Rule(
+        _c(
+            r"(?i)\b(?:chemoradiation|chemoradiotherapy|kemosädehoito\w*"
+            r"|kemoradioterapi\w*|konkomitan\w*)\b"
+        ),
+        "treatment_plan",
+        FieldType.CATEGORICAL,
+        canonical="chemoradiotherapy",
+    ),
+    _Rule(
+        _c(r"(?i)\b(?:chemotherapy|kemoterapia\w*|solunsalpaaja\w*|cytostatika\w*)\b"),
+        "treatment_plan",
+        FieldType.CATEGORICAL,
+        canonical="chemotherapy",
+    ),
+    _Rule(
+        _c(r"(?i)\b(?:immunotherapy|immunoterapia\w*|immunterapi\w*|checkpoint\w*)\b"),
+        "treatment_plan",
+        FieldType.CATEGORICAL,
+        canonical="immunotherapy",
+    ),
+    _Rule(
+        _c(r"(?i)\btargeted\s+therapy\b|täsmälääke\w*|målriktad\w*"),
+        "treatment_plan",
+        FieldType.CATEGORICAL,
+        canonical="targeted therapy",
+    ),
+    _Rule(
+        _c(r"(?i)\bbest\s+supportive\s+care\b|\bBSC\b|oireenmukainen\s+hoito\w*"),
+        "treatment_plan",
+        FieldType.CATEGORICAL,
+        canonical="best supportive care",
+    ),
+)
+
+#: The fields this extractor knows about.
+FIELDS: tuple[str, ...] = tuple(dict.fromkeys(r.field for r in _RULES))
+
+
+def _negated_before(note: str, start: int) -> bool:
+    return _NEGATION.search(note[max(0, start - _NEG_WINDOW) : start]) is not None
+
+
+def _drop_subsumed(cands: list[RuleCandidate]) -> list[RuleCandidate]:
+    """Drop candidates whose span is strictly contained in another candidate's span."""
+    kept: list[RuleCandidate] = []
+    for c in cands:
+        cs, ce = c.span
+        contained = any(
+            (o.span[0] <= cs and ce <= o.span[1]) and (o.span[1] - o.span[0]) > (ce - cs)
+            for o in cands
+        )
+        if not contained:
+            kept.append(c)
+    return kept
+
+
+def _candidate(rule: _Rule, match: re.Match[str], note: str, *, negated: bool) -> RuleCandidate:
+    span = match.span(rule.group)
+    surface = match.group(rule.group)
+    if negated:
+        value = rule.negative_value or ""
+    elif rule.canonical is not None:
+        value = rule.canonical
+    elif rule.template is not None:
+        value = rule.template.format(_collapse(surface))
+    else:
+        value = _collapse(surface)
+    return RuleCandidate(
+        field=rule.field,
+        value=value,
+        matched_text=surface,
+        span=(span[0], span[1]),
+        field_type=rule.field_type,
+        negated=negated,
+    )
+
+
+class RuleBasedExtractor:
+    """Deterministic rule-based extractor adapter (satisfies the ``Extractor`` protocol)."""
+
+    extractor_id = "rules"
+    version = MODEL_ID
+
+    def __init__(self, rules: Sequence[_Rule] = _RULES):
+        self._rules = tuple(rules)
+
+    def fields(self) -> tuple[str, ...]:
+        return tuple(dict.fromkeys(r.field for r in self._rules))
+
+    def candidates(self, note: str, field_name: str) -> list[RuleCandidate]:
+        """Rule matches for one field, in source order; may be empty.
+
+        De-duplicated by span, and **span-subsumed matches are dropped** — a component match (e.g.
+        ``N0``) inside a larger match (``cT2a N0 M0``) is removed, so the maximal match wins and the
+        components are not mistaken for conflicting values.
+        """
+        out: list[RuleCandidate] = []
+        seen: set[tuple[int, int, str]] = set()
+        for rule in self._rules:
+            if rule.field != field_name:
+                continue
+            for m in rule.pattern.finditer(note):
+                negated = rule.negatable and _negated_before(note, m.span(rule.group)[0])
+                if negated and rule.negative_value is None:
+                    continue  # suppressed: no positive finding from a negated statement
+                cand = _candidate(rule, m, note, negated=negated)
+                key = (cand.span[0], cand.span[1], cand.value)
+                if key not in seen:
+                    seen.add(key)
+                    out.append(cand)
+        out = _drop_subsumed(out)
+        out.sort(key=lambda c: (c.span[0], c.span[1]))
+        return out
+
+    def extract_all(self, note: str) -> dict[str, list[RuleCandidate]]:
+        """All candidates for every known field."""
+        return {f: self.candidates(note, f) for f in self.fields()}
+
+    def extract(self, note: str, field: FieldSpec) -> ExtractionResult:
+        """``Extractor`` protocol: one proposed value (surface text) bound to its span, or no value.
+
+        The value is the exact surface substring at the span (provenance-verifiable). For a
+        single-valued field with conflicting candidates, returns no value (no-guess); use
+        :meth:`candidates` to see the conflict or to get every value of a multi-valued field.
+        """
+        cands = self.candidates(note, field.name)
+        if not cands:
+            return self._empty()
+        if field.name not in _MULTI_VALUED:
+            distinct = {c.value for c in cands}
+            if len(distinct) > 1:
+                return self._empty()  # ambiguous: prefer nothing over guessing
+        first = cands[0]
+        return ExtractionResult(
+            value=first.matched_text,
+            source_span=first.span,
+            extractor_id=self.extractor_id,
+            version=self.version,
+        )
+
+    def _empty(self) -> ExtractionResult:
+        return ExtractionResult(
+            value="", source_span=None, extractor_id=self.extractor_id, version=self.version
+        )
+
+
+def iter_rule_fields() -> Iterable[str]:
+    """The catalogue's field names (for docs/tests)."""
+    return FIELDS
