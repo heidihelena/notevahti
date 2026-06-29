@@ -41,6 +41,12 @@ _NEGATION = re.compile(
 )
 _NEG_WINDOW = 30
 
+# Future / planned-intent cues (fi/sv/en). A documented MDT must be *done*, not planned or pending.
+_MDT_FUTURE = re.compile(
+    r"(?i)\b(?:will|to\s+be|planned|plan(?:ned)?\s+for|scheduled|pending|upcoming|awaiting|"
+    r"not\s+yet|suunnitel\w*|tullaan|varattu|kommer\s+att|inplanerad|planerad|ej\s+ännu)\b"
+)
+
 
 def rules_lineage(source_id: str | None = None) -> Lineage:
     """Lineage for values produced by this extractor (``model_id='rules_v1'``).
@@ -73,6 +79,8 @@ class _Rule:
     group: int = 0  # which group is the surface value / span
     negatable: bool = False  # suppress (or flip) when preceded by a negation cue
     negative_value: str | None = None  # if negatable & negated, emit this instead of suppressing
+    suppress_window: re.Pattern[str] | None = None  # if this matches around the hit, drop it
+    suppress_width: int = 44  # window (chars, each side) for suppress_window
 
 
 def _c(pattern: str) -> re.Pattern[str]:
@@ -83,6 +91,18 @@ def _collapse(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+# --------------------------------------------------------------------------- TNM token grammar
+# Single source of truth for the surface grammar of TNM components and prefixes. Both the
+# extraction rules in ``_RULES`` and the structural :func:`parse_tnm` are composed from these
+# fragments, so the grammar is defined in exactly one place.
+_T_FRAG = r"T(?:is|[0-4][a-d]?|x)"
+_N_FRAG = r"N[0-3x]"
+_M_FRAG = r"M[01][a-c]?"
+_PFX_CLIN = r"(?:c|yc)"  # clinical / post-therapy clinical
+_PFX_PATH = r"(?:p|yp)"  # pathological / post-therapy pathological
+_PFX_ANY = r"(?:c|yc|p|yp)"
+
+
 # --------------------------------------------------------------------------- pattern catalogue
 # Versioned with MODEL_ID. Surface forms in fi / sv / en; canonical values are English/universal.
 
@@ -90,25 +110,23 @@ _RULES: tuple[_Rule, ...] = (
     # --- clinical vs pathological TNM (UICC 8th ed.) ----------------------------------------
     # combined cTNM with optional c/yc prefix (or none); pathological requires p/yp prefix.
     _Rule(
-        _c(r"(?i)(?<![A-Za-z])(?:c|yc)?T(?:is|[0-4][a-d]?|x)\s?N[0-3x]\s?M[01][a-c]?"),
+        _c(rf"(?i)(?<![A-Za-z]){_PFX_CLIN}?{_T_FRAG}\s?{_N_FRAG}\s?{_M_FRAG}"),
         "clinical_stage",
         FieldType.STAGING,
     ),
     _Rule(
-        _c(r"(?i)(?<![A-Za-z])(?:p|yp)T(?:is|[0-4][a-d]?|x)\s?N[0-3x]\s?M[01][a-c]?"),
+        _c(rf"(?i)(?<![A-Za-z]){_PFX_PATH}{_T_FRAG}\s?{_N_FRAG}\s?{_M_FRAG}"),
         "pathological_stage",
         FieldType.STAGING,
     ),
     # lone clinical T/N/M components (no combined form): clinical only (c/none), not p-prefixed.
     _Rule(
-        _c(r"(?i)(?<![A-Za-z])c?T(?:is|[0-4][a-d]?|x)(?![A-Za-z0-9])"),
+        _c(rf"(?i)(?<![A-Za-z])c?{_T_FRAG}(?![A-Za-z0-9])"),
         "clinical_stage",
         FieldType.STAGING,
     ),
-    _Rule(_c(r"(?i)(?<![A-Za-z])c?N[0-3](?![A-Za-z0-9])"), "clinical_stage", FieldType.STAGING),
-    _Rule(
-        _c(r"(?i)(?<![A-Za-z])c?M[01][a-c]?(?![A-Za-z0-9])"), "clinical_stage", FieldType.STAGING
-    ),
+    _Rule(_c(rf"(?i)(?<![A-Za-z])c?{_N_FRAG}(?![A-Za-z0-9])"), "clinical_stage", FieldType.STAGING),
+    _Rule(_c(rf"(?i)(?<![A-Za-z])c?{_M_FRAG}(?![A-Za-z0-9])"), "clinical_stage", FieldType.STAGING),
     # stage group: require a stage keyword nearby (fi/sv/en) to avoid stray Roman numerals.
     _Rule(
         _c(
@@ -326,7 +344,7 @@ _RULES: tuple[_Rule, ...] = (
         group=1,
     ),
     _Rule(
-        _c(r"(?i)\b(?:PS|toimintakyky)\s*[:=]?\s*([0-4])\b"),
+        _c(r"(?i)\b(?:PS|toimintakyky|funktionsstatus)\s*[:=]?\s*([0-4])\b"),
         "performance_status",
         FieldType.CATEGORICAL,
         template="ECOG {0}",
@@ -338,6 +356,18 @@ _RULES: tuple[_Rule, ...] = (
         FieldType.CATEGORICAL,
         template="Karnofsky {0}%",
         group=1,
+    ),
+    # --- MDT discussion documented (must be DONE, not planned/negated) ----------------------
+    _Rule(
+        _c(
+            r"(?i)\b(?:MDT|MDK|tumou?r\s+board|multidisciplinary\s+team"
+            r"|moniammatilli\w*[^.\n]{0,20}?kokou\w*)"
+        ),
+        "mdt_discussed",
+        FieldType.CATEGORICAL,
+        canonical="MDT discussed",
+        negatable=True,
+        suppress_window=_MDT_FUTURE,
     ),
     # --- treatment intent and plan ----------------------------------------------------------
     _Rule(
@@ -413,6 +443,15 @@ def _negated_before(note: str, start: int) -> bool:
     return _NEGATION.search(note[max(0, start - _NEG_WINDOW) : start]) is not None
 
 
+def _suppressed(note: str, match: re.Match[str], rule: _Rule) -> bool:
+    """True if a suppress-cue (e.g. future/planned intent) is in the window around the match."""
+    if rule.suppress_window is None:
+        return False
+    s, e = match.span(rule.group)
+    window = note[max(0, s - rule.suppress_width) : min(len(note), e + rule.suppress_width)]
+    return rule.suppress_window.search(window) is not None
+
+
 def _drop_subsumed(cands: list[RuleCandidate]) -> list[RuleCandidate]:
     """Drop candidates whose span is strictly contained in another candidate's span."""
     kept: list[RuleCandidate] = []
@@ -460,6 +499,13 @@ class RuleBasedExtractor:
     def fields(self) -> tuple[str, ...]:
         return tuple(dict.fromkeys(r.field for r in self._rules))
 
+    def field_type(self, field_name: str) -> FieldType | None:
+        """The declared FieldType for a known field, or None if the field is unknown."""
+        for r in self._rules:
+            if r.field == field_name:
+                return r.field_type
+        return None
+
     def candidates(self, note: str, field_name: str) -> list[RuleCandidate]:
         """Rule matches for one field, in source order; may be empty.
 
@@ -473,7 +519,10 @@ class RuleBasedExtractor:
             if rule.field != field_name:
                 continue
             for m in rule.pattern.finditer(note):
-                negated = rule.negatable and _negated_before(note, m.span(rule.group)[0])
+                start = m.span(rule.group)[0]
+                if rule.suppress_window is not None and _suppressed(note, m, rule):
+                    continue  # e.g. a planned/future MDT is not a documented MDT
+                negated = rule.negatable and _negated_before(note, start)
                 if negated and rule.negative_value is None:
                     continue  # suppressed: no positive finding from a negated statement
                 cand = _candidate(rule, m, note, negated=negated)
@@ -520,3 +569,128 @@ class RuleBasedExtractor:
 def iter_rule_fields() -> Iterable[str]:
     """The catalogue's field names (for docs/tests)."""
     return FIELDS
+
+
+# --------------------------------------------------------------------------- TNM structure
+
+# A TNM "run" is a contiguous (optionally space-separated) sequence of T/N/M tokens with an
+# optional leading descriptor prefix. Components inside a run are extracted with the sub-scanners,
+# so compact forms ("cT2aN0M0") and spaced forms ("cT2a N0 M0") parse identically. All token
+# grammar comes from the shared fragments above, so it is defined in exactly one place.
+_TOK = rf"(?:{_T_FRAG}|{_N_FRAG}|{_M_FRAG})"
+_TNM_RUN = re.compile(rf"(?i)(?<![A-Za-z]){_PFX_ANY}?{_TOK}(?:\s?{_PFX_ANY}?{_TOK})*")
+_T_SUB = re.compile(rf"(?i){_T_FRAG}")
+_N_SUB = re.compile(rf"(?i){_N_FRAG}")
+_M_SUB = re.compile(rf"(?i){_M_FRAG}")
+_PFX_LEAD = re.compile(rf"(?i)^({_PFX_ANY})")
+_EDITION_RE = re.compile(r"(?i)(?:UICC|AJCC|TNM)?\s*(\d)(?:th|rd|nd|st)\s*ed(?:ition)?")
+
+# The edition assumed when a note states none; any other stated edition is flagged for review.
+_DEFAULT_EDITION = "8th"
+
+
+def _norm_component(text: str) -> str:
+    return text[0].upper() + text[1:].lower()
+
+
+def _resolve(values: set[str], default: str) -> str:
+    """Collapse a value set to a single label: the lone value, ``default`` if empty, else mixed."""
+    if len(values) == 1:
+        return next(iter(values))
+    return "ambiguous" if values else default
+
+
+@dataclass(frozen=True)
+class TnmParse:
+    """A conservative structural read of TNM in a note. Surface only; no staging inference."""
+
+    surface: str | None  # combined surface if a single coherent stage; else None
+    prefix: str  # 'c' | 'yc' | 'p' | 'yp' | 'unknown' (or 'ambiguous' if mixed)
+    t: str | None  # e.g. 'T2a'
+    n: str | None  # e.g. 'N0'
+    m: str | None  # e.g. 'M0'
+    completeness: str  # 'complete' | 'partial' | 'absent' | 'ambiguous'
+    edition: str  # 'unknown' unless an explicit edition is stated; 'ambiguous' if conflicting
+    review_recommended: bool  # True if ambiguous or a non-default/old edition is stated
+    spans: tuple[tuple[int, int], ...]
+
+
+@dataclass
+class _TnmScan:
+    """Raw findings from scanning the TNM runs in a note, before classification."""
+
+    t_vals: set[str]
+    n_vals: set[str]
+    m_vals: set[str]
+    prefixes: set[str]
+    spans: list[tuple[int, int]]
+
+
+def _scan_tnm_runs(note: str) -> _TnmScan:
+    """Collect distinct T/N/M component values, prefixes and spans from every TNM run."""
+    scan = _TnmScan(set(), set(), set(), set(), [])
+    buckets = ((_T_SUB, scan.t_vals), (_N_SUB, scan.n_vals), (_M_SUB, scan.m_vals))
+    for run in _TNM_RUN.finditer(note):
+        text, base = run.group(0), run.start()
+        lead = _PFX_LEAD.match(text)
+        if lead:
+            scan.prefixes.add(lead.group(1).lower())
+        for sub, bucket in buckets:
+            sm = sub.search(text)
+            if sm:
+                bucket.add(_norm_component(sm.group(0)))
+                scan.spans.append((base + sm.start(), base + sm.end()))
+    return scan
+
+
+def parse_tnm(note: str) -> TnmParse:
+    """Structurally read TNM from a note WITHOUT inferring a stage.
+
+    Conservative: multiple distinct values for any component (or mixed clinical/pathological
+    prefixes, or conflicting editions) yield ``completeness='ambiguous'`` rather than a guess.
+    ``edition`` is ``'unknown'`` unless explicitly stated. Default-vs-old edition or any ambiguity
+    sets ``review_recommended`` so old/conflicting staging is never silently accepted.
+    """
+    scan = _scan_tnm_runs(note)
+    editions = {f"{m.group(1)}th" for m in _EDITION_RE.finditer(note)}
+
+    present = [bool(scan.t_vals), bool(scan.n_vals), bool(scan.m_vals)]
+    conflicting = any(
+        len(s) > 1 for s in (scan.t_vals, scan.n_vals, scan.m_vals, scan.prefixes, editions)
+    )
+    if not any(present):
+        completeness = "absent"
+    elif conflicting:
+        completeness = "ambiguous"
+    elif all(present):
+        completeness = "complete"
+    else:
+        completeness = "partial"
+
+    prefix = _resolve(scan.prefixes, "unknown")
+    edition = _resolve(editions, "unknown")
+
+    # A single coherent (non-ambiguous) component value per axis, else None.
+    t = n = m = None
+    if completeness != "ambiguous":
+        t, n, m = (_resolve(s, "") or None for s in (scan.t_vals, scan.n_vals, scan.m_vals))
+
+    spans = tuple(sorted(scan.spans))
+    # Build a combined surface only for a single coherent complete/partial read.
+    surface: str | None = None
+    if completeness in ("complete", "partial"):
+        prefix_str = "" if prefix in ("unknown", "ambiguous") else prefix
+        surface = " ".join(p for p in (prefix_str + (t or ""), n, m) if p) or None
+
+    review_recommended = completeness == "ambiguous" or edition not in ("unknown", _DEFAULT_EDITION)
+    return TnmParse(
+        surface=surface,
+        prefix=prefix,
+        t=t,
+        n=n,
+        m=m,
+        completeness=completeness,
+        edition=edition,
+        review_recommended=review_recommended,
+        spans=spans,
+    )

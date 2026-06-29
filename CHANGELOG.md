@@ -48,6 +48,23 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   notes stay byte-identical regardless of rate. A dev/CI/methodology instrument to scale the
   analytics — **not** validation evidence; the committed corpus is unaffected.
 
+### Added / Changed (Stage-1 lung-MDT alignment)
+- **Rule extractor strengthened:** `parse_tnm` (structural TNM: prefix c/yc/p/yp/unknown, T/N/M,
+  completeness complete/partial/absent/ambiguous, edition, review flag; conflicts → ambiguous, no
+  guess); ECOG/WHO/PS incl. Finnish/Swedish and temporal/indirect handling; new **`mdt_discussed`**
+  field that accepts only a *documented* MDT (future/planned/negated suppressed).
+- **`notevahti.analytics.registry_yield.registry_ready_yield`** — fraction of records NoteVahti would
+  auto-accept (not flagged, span present, not blocked, score ≥ threshold) with diagnostic counts; an
+  operational readiness number, not a correctness claim.
+- **CLI `extract-validate`** — run the reference extractor, then validate + route each value
+  end-to-end, with optional audit; the existing `validate` command is unchanged.
+- **Docs:** README now says *the validation core* is not an extractor and adds an "Optional reference
+  extractor" section; `docs/extractors/rule_based_lung_mdt.md`; `docs/research/lung_mdt_stage1_protocol.md`
+  (phases A synthetic / B real 2024 registry cohort / C quality-indicator readiness; primary &
+  secondary outcomes; explicit negative-result policy); `corpus/MANIFEST.md`; `docs/release.md`.
+- pyproject description/keywords updated for release presentation. Validation core unchanged: still
+  deterministic, offline, model-free, no runtime deps.
+
 ### Added (Stage-1 evidence machinery)
 - **Ordinal agreement analytics** (`notevahti.analytics.agreement.ordinal_agreement`): for ordered
   categories (e.g. TNM stage groups) — observed agreement, unweighted Cohen's κ, quadratic-weighted
