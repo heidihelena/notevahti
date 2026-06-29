@@ -51,9 +51,16 @@ The registry-facing canonical value is `RuleCandidate.value`.
 
 ## Versioning
 
-The catalogue is the data-driven `_RULES` table, versioned by `MODEL_ID` (currently `rules_v1`). Bump
+The catalogue is the data-driven `_RULES` table, versioned by `MODEL_ID` (currently `rules_v2`). Bump
 `MODEL_ID` whenever patterns change so a frozen Stage-1 study can pin the extractor version (it is
 recorded in the evidence-pack heuristic card).
+
+`rules_v2` added `treatment_plan` umbrella terms — `surgical evaluation` (e.g. *thoracic surgery
+evaluation*, *leikkausarvio*, *kirurgbedömning*, *kirurgisk vurdering*), `radiotherapy` (e.g.
+*palliative radiotherapy*, *sädehoito*, *strålbehandling*) and `systemic therapy` (e.g. *systeeminen
+hoito*, *systemisk behandling*) — across fi/sv/nb/da/is/en. Diagnostic-workup recommendations
+(*additional staging/biopsy*, *brain MRI*, *oncology review*) are deliberately **not** mapped to a
+treatment plan.
 
 ## Usage
 
@@ -68,7 +75,7 @@ note = "RUL adenocarcinoma, clinical stage cT2a N0 M0. ECOG 1. Discussed at MDT.
 # all candidates for a field (canonical value, exact surface, span)
 ex.candidates(note, "performance_status")   # -> [RuleCandidate(value='ECOG 1', matched_text='1', ...)]
 
-# pass an extracted value into validate_field (lineage = rules_v1, independent of any LLM)
+# pass an extracted value into validate_field (lineage = rules_v2, independent of any LLM)
 res = ex.extract(note, FieldSpec(name="clinical_stage", field_type=FieldType.STAGING))
 record = validate_field(
     res.value, note, field_type=FieldType.STAGING, field_name="clinical_stage",

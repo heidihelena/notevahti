@@ -49,6 +49,12 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   analytics — **not** validation evidence; the committed corpus is unaffected.
 
 ### Added / Changed (Stage-1 lung-MDT alignment)
+- **Rule extractor `rules_v2`:** expanded `treatment_plan` vocabulary with umbrella terms
+  `surgical evaluation`, `radiotherapy` and `systemic therapy` across fi/sv/nb/da/is/en (the gaps
+  surfaced by the synthetic-corpus end-to-end smoke), plus `symptom-directed care` → best supportive
+  care and an Icelandic chemoradiotherapy surface. Word boundaries keep `sädehoito` from matching
+  inside `kemosädehoito`. Diagnostic-workup recommendations are deliberately not mapped to a plan.
+  `MODEL_ID` bumped `rules_v1` → `rules_v2` (catalogue change; lineage/version/tests/docs updated).
 - **Rule extractor strengthened:** `parse_tnm` (structural TNM: prefix c/yc/p/yp/unknown, T/N/M,
   completeness complete/partial/absent/ambiguous, edition, review flag; conflicts → ambiguous, no
   guess); ECOG/WHO/PS incl. Finnish/Swedish and temporal/indirect handling; new **`mdt_discussed`**

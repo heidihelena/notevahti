@@ -32,4 +32,4 @@ pytest                       # offline; socket-disabled
 ## Versioning
 
 SemVer with a pre-release suffix while pre-alpha. The extractor catalogue is versioned separately by
-`MODEL_ID` (`rules_v1`) so a frozen Stage-1 study can pin it independently of the package version.
+`MODEL_ID` (`rules_v2`) so a frozen Stage-1 study can pin it independently of the package version.

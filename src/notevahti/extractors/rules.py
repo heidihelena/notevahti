@@ -8,7 +8,7 @@ therapeutic claim and no correctness guarantee; whether to trust a value is Note
 Design notes
 ------------
 - **Independence.** This module imports only ``re`` and ``..types``. It does NOT use NoteVahti's
-  provenance/anchor/scoring logic, so its lineage (``model_id="rules_v1"``) is trivially disjoint
+  provenance/anchor/scoring logic, so its lineage (``model_id="rules_v2"``) is trivially disjoint
   from the validator and from any LLM note generator. Use :func:`rules_lineage` for the lineage.
 - **Provenance fidelity.** The Protocol ``extract`` returns the value as the *surface text* exactly
   at the reported span (``note[span]``), so NoteVahti's provenance can verify it byte-for-byte. The
@@ -29,7 +29,7 @@ from dataclasses import dataclass
 
 from ..types import ExtractionResult, FieldSpec, FieldType, Lineage
 
-MODEL_ID = "rules_v1"
+MODEL_ID = "rules_v2"
 
 # Fields whose note may legitimately hold several values at once (do not treat as ambiguity).
 _MULTI_VALUED = frozenset({"biomarker", "treatment_plan"})
@@ -49,7 +49,7 @@ _MDT_FUTURE = re.compile(
 
 
 def rules_lineage(source_id: str | None = None) -> Lineage:
-    """Lineage for values produced by this extractor (``model_id='rules_v1'``).
+    """Lineage for values produced by this extractor (``model_id='rules_v2'``).
 
     Pass as ``value_lineage`` to ``validate_field`` so the rule extractor is a distinct source,
     independent of any LLM or of NoteVahti's own logic.
@@ -403,11 +403,42 @@ _RULES: tuple[_Rule, ...] = (
     _Rule(
         _c(
             r"(?i)\b(?:chemoradiation|chemoradiotherapy|kemosädehoito\w*"
-            r"|kemoradioterapi\w*|konkomitan\w*)\b"
+            r"|kemoradioterapi\w*|konkomitan\w*|lyfja-?\s*og\s*geislameðferð\w*)\b"
         ),
         "treatment_plan",
         FieldType.CATEGORICAL,
         canonical="chemoradiotherapy",
+    ),
+    # surgical evaluation / referral to surgery (distinct from a named resection above)
+    _Rule(
+        _c(
+            r"(?i)\b(?:thoracic\s+surgery\s+evaluation|surgical\s+evaluation|surgery\s+evaluation"
+            r"|leikkausarvi\w*|thoraxkirurg\w*|kirurg\w*bedömn\w*|kirurgisk\s+vurdering"
+            r"|skurðlækn\w*)\b"
+        ),
+        "treatment_plan",
+        FieldType.CATEGORICAL,
+        canonical="surgical evaluation",
+    ),
+    # radiotherapy (general / palliative); \b keeps 'sädehoito' from matching in 'kemosädehoito'
+    _Rule(
+        _c(
+            r"(?i)\b(?:radiotherapy|radiation\s+therapy|sädehoito\w*|strålbehandling\w*"
+            r"|strålebehandling\w*|geislameðferð\w*)\b"
+        ),
+        "treatment_plan",
+        FieldType.CATEGORICAL,
+        canonical="radiotherapy",
+    ),
+    # systemic therapy (umbrella term, distinct from the named chemo/immuno/targeted plans)
+    _Rule(
+        _c(
+            r"(?i)\b(?:systemic\s+(?:therapy|treatment)|systeemi\w*\s+hoito\w*"
+            r"|systemisk\s+behandling\w*|kerfismeðferð\w*)\b"
+        ),
+        "treatment_plan",
+        FieldType.CATEGORICAL,
+        canonical="systemic therapy",
     ),
     _Rule(
         _c(r"(?i)\b(?:chemotherapy|kemoterapia\w*|solunsalpaaja\w*|cytostatika\w*)\b"),
@@ -428,7 +459,10 @@ _RULES: tuple[_Rule, ...] = (
         canonical="targeted therapy",
     ),
     _Rule(
-        _c(r"(?i)\bbest\s+supportive\s+care\b|\bBSC\b|oireenmukainen\s+hoito\w*"),
+        _c(
+            r"(?i)\bbest\s+supportive\s+care\b|\bBSC\b|symptom-directed\s+care"
+            r"|oireenmukainen\s+hoito\w*"
+        ),
         "treatment_plan",
         FieldType.CATEGORICAL,
         canonical="best supportive care",

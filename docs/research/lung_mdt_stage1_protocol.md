@@ -40,7 +40,7 @@ surrendering auditability. Readiness analysis, not a deployment claim.
 
 Each extractor is evaluated **with and without** NoteVahti validation + routing:
 
-- **rule-based NoteVahti extractor** (`notevahti.extractors.rules`, `rules_v1`)
+- **rule-based NoteVahti extractor** (`notevahti.extractors.rules`, `rules_v2`)
 - **small LLM extractor** — described as an **external, optional adapter only** (not in this repo; no
   cloud calls in the core path)
 - **fine-tuned LLM extractor** — described as an **external, optional adapter only**

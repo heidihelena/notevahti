@@ -27,7 +27,7 @@ def test_package_reexports_and_protocol():
     assert isinstance(EX, Extractor)
     # the package still re-exports the original adapters (import stability)
     assert PassThroughExtractor is not None and RegexExtractor is not None
-    assert EX.version == MODEL_ID == "rules_v1"
+    assert EX.version == MODEL_ID == "rules_v2"
 
 
 @pytest.mark.parametrize("case", CASES, ids=[c["id"] for c in CASES])
@@ -115,8 +115,8 @@ def test_end_to_end_with_validate_field_offline(monkeypatch):
     assert rec.notevahti_version  # full record produced end-to-end, offline
 
 
-def test_lineage_is_independent_rules_v1():
+def test_lineage_is_independent_rules_v2():
     lin = rules_lineage(source_id="note_7")
-    assert lin.model_id == "rules_v1"
+    assert lin.model_id == "rules_v2"
     assert lin.source_id == "note_7"
     assert lin.human_id is None

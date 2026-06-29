@@ -130,3 +130,36 @@ def test_mdt_negated_not_accepted():
     assert (
         EX.candidates("Ei vielä käsitelty moniammatillisessa kokouksessa.", "mdt_discussed") == []
     )
+
+
+# ----------------------------------------------------------- treatment_plan vocabulary (rules_v2)
+
+
+def _plans(note: str) -> set[str]:
+    return {c.value for c in EX.candidates(note, "treatment_plan")}
+
+
+def test_surgical_evaluation_multilingual():
+    assert "surgical evaluation" in _plans("Recommended: thoracic surgery evaluation.")
+    assert "surgical evaluation" in _plans("Suositellaan leikkausarviota.")  # fi
+    assert "surgical evaluation" in _plans("Rekommenderas: kirurgbedömning.")  # sv
+    assert "surgical evaluation" in _plans("Anbefales kirurgisk vurdering.")  # nb/da
+
+
+def test_radiotherapy_multilingual_and_no_chemoradiation_overlap():
+    assert "radiotherapy" in _plans("Plan: palliative radiotherapy.")
+    assert "radiotherapy" in _plans("Suositellaan palliatiivinen sädehoito.")  # fi
+    assert "radiotherapy" in _plans("palliativ strålbehandling")  # sv
+    # 'sädehoito' inside 'kemosädehoito' must NOT produce a separate radiotherapy candidate
+    plans = _plans("radikaali kemosädehoito")
+    assert "chemoradiotherapy" in plans and "radiotherapy" not in plans
+
+
+def test_systemic_therapy_multilingual():
+    assert "systemic therapy" in _plans("Plan: systemic therapy.")
+    assert "systemic therapy" in _plans("hoito: systeeminen hoito")  # fi
+    assert "systemic therapy" in _plans("systemisk behandling")  # sv/nb/da
+
+
+def test_symptom_directed_care_maps_to_bsc():
+    assert "best supportive care" in _plans("symptom-directed care and reassessment")
