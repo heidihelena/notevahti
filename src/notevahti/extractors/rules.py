@@ -489,6 +489,13 @@ class RuleBasedExtractor:
     def fields(self) -> tuple[str, ...]:
         return tuple(dict.fromkeys(r.field for r in self._rules))
 
+    def field_type(self, field_name: str) -> FieldType | None:
+        """The declared FieldType for a known field, or None if the field is unknown."""
+        for r in self._rules:
+            if r.field == field_name:
+                return r.field_type
+        return None
+
     def candidates(self, note: str, field_name: str) -> list[RuleCandidate]:
         """Rule matches for one field, in source order; may be empty.
 

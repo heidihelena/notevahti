@@ -1,8 +1,11 @@
-"""Local CLI: ``notevahti validate <items.json>`` — a thin wrapper over the core.
+"""Local CLI for NoteVahti.
 
-Reads a JSON array of field inputs, validates them (optionally writing an audit log), and prints a
-JSON result to stdout. Offline; the only I/O is reading the input file and (optionally) the audit
-log. Boundary: this produces validation evidence for human review, not a clinical recommendation.
+``notevahti validate <items.json>`` — validate already-extracted field inputs.
+``notevahti extract-validate <input.json>`` — run the reference rule extractor, then validate and
+route each proposed value end-to-end.
+
+Offline; the only I/O is reading the input file and (optionally) writing an audit log. Boundary:
+this produces validation evidence for human review, not a clinical recommendation.
 """
 
 from __future__ import annotations
@@ -13,9 +16,13 @@ import sys
 from typing import Any
 
 from . import __version__
-from .audit import AuditLog
+from .analytics.registry_yield import registry_ready_yield
+from .audit import AuditLog, audit_payload
 from .batch import validate_batch
-from .types import Agreement, FieldType, Lineage, Signal, SignalKind
+from .extractors.rules import MODEL_ID, RuleBasedExtractor, rules_lineage
+from .routing import route_validation
+from .types import Agreement, FieldSpec, FieldType, Lineage, Signal, SignalKind
+from .validate import validate_field
 
 
 def _lineage(d: dict[str, Any] | None) -> Lineage:
@@ -68,7 +75,19 @@ def main(argv: list[str] | None = None) -> int:
     v.add_argument("--audit", help="path to an append-only JSONL audit log to write")
     v.add_argument("--out", help="write JSON result here instead of stdout")
 
+    ev = sub.add_parser(
+        "extract-validate", help="run the reference extractor, then validate and route each value"
+    )
+    ev.add_argument("input", help="JSON array of {record_id, note, fields: [names]}")
+    ev.add_argument("--extractor", default="rules", choices=["rules"])
+    ev.add_argument("--threshold", type=float, default=0.80)
+    ev.add_argument("--audit", help="path to an append-only JSONL audit log to write")
+    ev.add_argument("--out", help="write JSON result here instead of stdout")
+
     args = parser.parse_args(argv)
+
+    if args.command == "extract-validate":
+        return _run_extract_validate(args, parser)
 
     if args.command == "validate":
         with open(args.items, encoding="utf-8") as fh:
@@ -99,6 +118,91 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     return 1
+
+
+def _write(text: str, out: str | None) -> None:
+    if out:
+        with open(out, "w", encoding="utf-8") as fh:
+            fh.write(text + "\n")
+    else:
+        sys.stdout.write(text + "\n")
+
+
+def _run_extract_validate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    try:
+        with open(args.input, encoding="utf-8") as fh:
+            records = json.load(fh)
+    except (OSError, json.JSONDecodeError) as exc:
+        parser.error(f"could not read input JSON: {exc}")
+    if not isinstance(records, list):
+        parser.error("input JSON must be an array of {record_id, note, fields}")
+
+    extractor = RuleBasedExtractor()  # only "rules" is supported (choices enforce it)
+    audit_log = AuditLog(args.audit) if args.audit else None
+    out_records: list[dict[str, Any]] = []
+
+    for i, rec in enumerate(records):
+        if not isinstance(rec, dict) or "note" not in rec or "fields" not in rec:
+            parser.error(f"record {i} must have 'note' and 'fields'")
+        record_id = str(rec.get("record_id", f"rec-{i:04d}"))
+        note = rec["note"]
+        fields_out: dict[str, Any] = {}
+        for field_name in rec["fields"]:
+            ftype = extractor.field_type(field_name) or FieldType.TEXT
+            cands = extractor.candidates(note, field_name)
+            chosen = extractor.extract(note, FieldSpec(name=field_name, field_type=ftype))
+            entry: dict[str, Any] = {
+                "candidates": [
+                    {
+                        "value": c.value,
+                        "matched_text": c.matched_text,
+                        "span": list(c.span),
+                        "negated": c.negated,
+                    }
+                    for c in cands
+                ],
+                "chosen": None,
+                "validation": None,
+                "route": None,
+                "registry_ready": None,
+            }
+            if chosen.value:
+                entry["chosen"] = {"value": chosen.value, "span": list(chosen.source_span or ())}
+                vrec = validate_field(
+                    chosen.value,
+                    note,
+                    field_type=ftype,
+                    field_name=field_name,
+                    claimed_span=chosen.source_span,
+                    value_lineage=rules_lineage(source_id=record_id),
+                    review_threshold=args.threshold,
+                )
+                route = route_validation(vrec)
+                entry["validation"] = vrec.to_dict()
+                entry["route"] = route.to_dict()
+                entry["registry_ready"] = (
+                    registry_ready_yield([vrec], min_score=args.threshold).n_registry_ready == 1
+                )
+                if audit_log is not None:
+                    audit_log.append(
+                        record_id=f"{record_id}:{field_name}",
+                        timestamp=_edge_timestamp(),
+                        actor=f"extract-validate:{MODEL_ID}",
+                        payload=audit_payload(vrec, note=note, routing=route.to_dict()),
+                    )
+            fields_out[field_name] = entry
+        out_records.append({"record_id": record_id, "fields": fields_out})
+
+    out = {"extractor": args.extractor, "notevahti_version": __version__, "records": out_records}
+    _write(json.dumps(out, indent=2, ensure_ascii=False), args.out)
+    return 0
+
+
+def _edge_timestamp() -> str:
+    """Wall-clock timestamp for audit entries (the CLI is the edge; the core takes no clock)."""
+    from datetime import datetime, timezone
+
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _agreement_dict(agreement: Agreement) -> dict[str, Any]:
