@@ -12,8 +12,10 @@ Transparent, local-first extraction-**validation** toolkit for clinical registry
 > abstraction errors is an open empirical question (Stage 1) — see
 > [docs/design/pathway.md](docs/design/pathway.md).
 
-NoteVahti is **not an extractor.** It is the deterministic trust/validation layer that sits between
-*any* extractor (a human abstractor, a regex, a clinical NLP pipeline, an LLM) and a clinical
+**The validation core is not an extractor.** The repository includes optional reference extractors
+for benchmarking and end-to-end validation, but the core (`validate`, `provenance`, `validity`,
+`agreement`, `independence`, `audit`, `routing`) is the deterministic trust/validation layer that sits
+between *any* extractor (a human abstractor, a regex, a clinical NLP pipeline, an LLM) and a clinical
 registry. Given an extracted field value and the source note it claims to come from — primarily an
 **MDT (multidisciplinary team) meeting note** — NoteVahti answers one question, deterministically and
 offline:
@@ -91,6 +93,24 @@ The primary target is Nordic-language MDT notes. The synthetic corpus and the St
 **Finnish, Swedish, Norwegian, Danish, Icelandic and English**, and every analysis is reported per
 language (pooled numbers hide where a tool fails). NoteVahti binds no vendor and assumes no single
 registry.
+
+## Optional reference extractor
+
+The repository ships a **rule-based lung-cancer MDT extractor** (`notevahti.extractors.rules`) as a
+benchmarking and end-to-end-validation aid — **not** a clinical NLP model and **not** a truth source.
+It is:
+
+- **deterministic, offline, stdlib-only** (`re`); independent of the validator and of any LLM;
+- **conservative (no-guess):** it prefers returning nothing to guessing, is negation- and
+  future-intent-aware, and flags ambiguity instead of silently picking;
+- covering, where patterns exist: **MDT discussion**, **TNM / stage**, **ECOG/WHO performance
+  status**, **histology**, **biomarkers**, **treatment intent** and **treatment plan**, in Finnish,
+  Swedish and English;
+- emitting **candidate values bound to source spans** for the validator to verify.
+
+It is one of several possible extractors; small or fine-tuned LLM extractors can be added as
+*external, optional adapters* behind the same interface. Run it end-to-end with
+`notevahti extract-validate`. See [docs/extractors/rule_based_lung_mdt.md](docs/extractors/rule_based_lung_mdt.md).
 
 ## Principles
 

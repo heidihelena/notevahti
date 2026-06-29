@@ -5,13 +5,24 @@ build-backend = "hatchling.build"
 [project]
 name = "notevahti"
 version = "0.1.0.dev0"
-description = "Transparent, local-first extraction-validation toolkit for clinical registry data."
+description = "Transparent local-first validation and reference extraction for lung-cancer MDT registry data."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "Heidi Helena Andersén" }]
-keywords = ["clinical", "registry", "validation", "provenance", "local-first", "audit"]
+keywords = [
+    "clinical-nlp",
+    "lung-cancer",
+    "mdt",
+    "registry",
+    "provenance",
+    "audit-trail",
+    "local-first",
+    "quality-indicators",
+    "healthcare-ai",
+    "reproducible-research",
+]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Healthcare Industry",
