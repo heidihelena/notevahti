@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from .synthetic import (
     BIOMARKER_KEYS,
+    CASE_CATEGORIES,
     DATASET_VERSION,
     DOC_FORMATS,
     ECOG_STATUSES,
@@ -31,6 +32,7 @@ from .synthetic import (
 
 __all__ = [
     "BIOMARKER_KEYS",
+    "CASE_CATEGORIES",
     "DATASET_VERSION",
     "DOC_FORMATS",
     "ECOG_STATUSES",

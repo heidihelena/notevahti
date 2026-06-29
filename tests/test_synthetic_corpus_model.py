@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from notevahti.corpus import (
+    CASE_CATEGORIES,
     DOC_FORMATS,
     ECOG_STATUSES,
     LANGUAGES,
@@ -142,6 +143,35 @@ def test_requires_review_incompatible_with_registry_ready():
     assert any("registry_ready" in e for e in validate_row(payload))
 
 
+def test_null_tnm_prefix_is_allowed():
+    payload = _row()
+    payload["ground_truth"]["tnm"] = {
+        "prefix": None,
+        "t": None,
+        "n": None,
+        "m": None,
+        "full": None,
+        "complete": False,
+        "ambiguous": True,
+        "edition": "unknown",
+    }
+    payload["expected_output"]["tnm"] = {
+        "value": None,
+        "components": {"prefix": None, "t": None, "n": None, "m": None},
+        "evidence": "cT2aN1M0",
+        "requires_review": True,
+    }
+    assert validate_row(payload) == []
+
+
+def test_case_category_enum_is_checked():
+    payload = _row()
+    payload["case_category"] = "clear_explicit"
+    assert validate_row(payload) == []
+    payload["case_category"] = "totally_made_up"
+    assert any("case_category" in e for e in validate_row(payload))
+
+
 def test_from_dict_raises_on_invalid():
     with pytest.raises(ValueError):
         SyntheticRow.from_dict({"case_id": "x"})
@@ -155,13 +185,14 @@ def test_schema_and_model_vocabularies_agree():
     tnm = gt["tnm"]["properties"]
 
     assert set(props["language"]["enum"]) == LANGUAGES
+    assert set(props["case_category"]["enum"]) == CASE_CATEGORIES
     assert set(props["documentation_format"]["enum"]) == DOC_FORMATS
     assert set(props["messiness"]["enum"]) == MESSINESS
     assert set(props["split_hint"]["enum"]) == SPLITS
     assert set(gt["mdt_status"]["enum"]) == MDT_STATUSES
     assert set(gt["ecog_status"]["enum"]) == ECOG_STATUSES
     assert set(gt["treatment_intent"]["enum"]) == TREATMENT_INTENTS
-    assert set(tnm["prefix"]["enum"]) == TNM_PREFIXES
+    assert set(tnm["prefix"]["enum"]) - {None} == TNM_PREFIXES  # schema also allows null
 
 
 def test_schema_required_matches_model_required_keys():

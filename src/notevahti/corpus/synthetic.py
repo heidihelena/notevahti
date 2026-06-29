@@ -30,11 +30,32 @@ LANGUAGES = frozenset({"fi", "sv", "nb", "da", "is", "en"})  # Norwegian Bokmål
 DOC_FORMATS = frozenset({"free_text", "structured_mini", "structured_v3_1"})
 MESSINESS = frozenset({"clean", "semistructured", "messy"})
 SPLITS = frozenset({"train", "dev", "test"})
+# prefix may be null on an ambiguous/absent stage (no single descriptor); see Tnm.prefix.
 TNM_PREFIXES = frozenset({"c", "yc", "p", "yp", "unknown", "ambiguous"})
 MDT_STATUSES = frozenset({"completed", "planned", "not_completed", "unknown"})
 ECOG_STATUSES = frozenset({"explicit", "indirect", "missing", "conflicting", "unknown"})
+# Surface labels as authored by the generator prompt's distribution (prose, not tokens).
 TREATMENT_INTENTS = frozenset(
-    {"curative", "palliative", "diagnostic", "best_supportive_care", "unknown"}
+    {
+        "curative",
+        "palliative",
+        "diagnostic/additional workup",
+        "best supportive care or uncertain",
+        "unknown",
+    }
+)
+CASE_CATEGORIES = frozenset(
+    {
+        "clear_explicit",
+        "missing_ecog",
+        "partial_tnm",
+        "conflicting_tnm",
+        "old_vs_current_staging",
+        "mdt_planned",
+        "mdt_not_yet_discussed",
+        "indirect_functional_status",
+        "biomarker_treatment_complexity",
+    }
 )
 BIOMARKER_KEYS = frozenset({"egfr", "alk", "ros1", "braf", "met", "ret", "ntrk", "kras", "pdl1"})
 PRIMARY_FIELDS = ("mdt_discussed", "ecog_ps", "tnm")
@@ -57,7 +78,7 @@ QUALITY_LABEL_KEYS = frozenset(
 class Tnm:
     """Ground-truth TNM. ``None`` on an axis means it is not documented."""
 
-    prefix: str  # one of TNM_PREFIXES
+    prefix: str | None  # one of TNM_PREFIXES, or None on an ambiguous/absent stage
     t: str | None
     n: str | None
     m: str | None
@@ -137,6 +158,7 @@ class SyntheticRow:
     note_text: str
     expected_output: dict[str, ExpectedField] = field(default_factory=dict)
     quality_labels: QualityLabels = field(default_factory=QualityLabels)
+    case_category: str | None = None  # one of CASE_CATEGORIES, if recorded
     dataset_version: str = DATASET_VERSION
     source_type: str = SOURCE_TYPE
 
@@ -193,6 +215,7 @@ class SyntheticRow:
             note_text=payload["note_text"],
             expected_output=expected,
             quality_labels=QualityLabels(**{k: bool(ql[k]) for k in QUALITY_LABEL_KEYS if k in ql}),
+            case_category=payload.get("case_category"),
             dataset_version=payload.get("dataset_version", DATASET_VERSION),
             source_type=payload.get("source_type", SOURCE_TYPE),
         )
@@ -210,7 +233,9 @@ def _validate_tnm(errors: list[str], tnm: Any) -> None:
     for key in ("prefix", "complete", "ambiguous"):
         if key not in tnm:
             errors.append(f"ground_truth.tnm.{key}: required")
-    _enum(errors, "ground_truth.tnm.prefix", tnm.get("prefix"), TNM_PREFIXES)
+    prefix = tnm.get("prefix")
+    if prefix is not None:  # null is allowed for an ambiguous/absent stage
+        _enum(errors, "ground_truth.tnm.prefix", prefix, TNM_PREFIXES)
     for axis in ("t", "n", "m", "full"):
         v = tnm.get(axis)
         if v is not None and not isinstance(v, str):
@@ -374,6 +399,8 @@ def validate_row(payload: Any) -> list[str]:
     _enum(errors, "documentation_format", payload.get("documentation_format"), DOC_FORMATS)
     _enum(errors, "messiness", payload.get("messiness"), MESSINESS)
     _enum(errors, "split_hint", payload.get("split_hint"), SPLITS)
+    if "case_category" in payload:
+        _enum(errors, "case_category", payload["case_category"], CASE_CATEGORIES)
 
     if "ground_truth" in payload:
         _validate_ground_truth(errors, payload["ground_truth"])

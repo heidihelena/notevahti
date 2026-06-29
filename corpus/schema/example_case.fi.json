@@ -1,6 +1,7 @@
 {
   "dataset_version": "notevahti_lung_mdt_synthetic_v1",
   "case_id": "fi_0001",
+  "case_category": "clear_explicit",
   "record_id": "fi_0001_free_text",
   "language": "fi",
   "source_type": "synthetic",
