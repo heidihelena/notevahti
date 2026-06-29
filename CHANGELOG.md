@@ -64,13 +64,17 @@ All notable changes to NoteVahti are documented here. Format loosely follows Kee
   secondary outcomes; explicit negative-result policy); `corpus/MANIFEST.md`; `docs/release.md`.
 - pyproject description/keywords updated for release presentation. Validation core unchanged: still
   deterministic, offline, model-free, no runtime deps.
-- **Synthetic-corpus case model** (`notevahti.corpus.synthetic`): a stdlib-only, offline typed model
-  and dependency-free `validate_case` for one Nordic lung-cancer MDT case, plus the published JSON
-  Schema `corpus/schema/synthetic_case.schema.json` (with a validating example and a fine-tuning
-  example). TNM vocabulary matches `parse_tnm`; a test keeps the schema and model in sync.
-  Sizing/split/distribution design in `docs/research/synthetic_corpus_design.md` (target 300
-  cases/language, 1800 total; case-level train/dev/test split to prevent leakage). Corpus tooling,
-  not part of the validation core.
+- **Synthetic-corpus row model** (`notevahti.corpus.synthetic`): a stdlib-only, offline typed model
+  (`SyntheticRow`/`GroundTruth`/`Tnm`/`ExpectedField`/`QualityLabels`) and dependency-free
+  `validate_row` for the generator's per-record JSONL shape, plus the published JSON Schema
+  `corpus/schema/synthetic_case.schema.json` (with a validating example and a fine-tuning example).
+  `validate_row` enforces the generator's QC invariants (evidence is an exact span of `note_text`;
+  ambiguous TNM is not resolved; planned MDT ≠ completed; missing/indirect ECOG is not numericised;
+  `record_id` = `{case_id}_{documentation_format}`). TNM `completeness` matches `parse_tnm`; a test
+  keeps the schema and model vocabularies in sync. The agent prompt that produces this shape is saved
+  at `docs/research/synthetic_corpus_generator_prompt.md`; sizing/split/distribution design in
+  `docs/research/synthetic_corpus_design.md` (target 300 cases/language, 1800 total; case-level
+  train/dev/test split to prevent leakage). Corpus tooling, not part of the validation core.
 - **Code-review follow-ups (no behaviour change):** single source of truth for the TNM token grammar
   (shared fragments compose both the extraction rules and `parse_tnm`); `_scan_tnm_runs`/`_resolve`
   helpers; `is_registry_ready` predicate shared by the single-record path and the aggregate;

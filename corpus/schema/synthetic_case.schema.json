@@ -1,131 +1,125 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/heidihelena/notevahti/corpus/schema/synthetic_case.schema.json",
-  "title": "NoteVahti synthetic Nordic lung-cancer MDT case",
-  "description": "One synthetic case: metadata, machine-checkable ground truth, the note text, and the supervised target. Synthetic only; real patient data is held out as a separate external validation set. The controlled vocabulary mirrors notevahti.corpus.synthetic (single source of truth) and the TNM vocabulary mirrors notevahti.extractors.rules.parse_tnm.",
+  "title": "NoteVahti synthetic Nordic lung-cancer MDT record",
+  "description": "One JSON object per text record (row schema). Each clinical case_id is rendered in three documentation formats, so case_id appears three times with different record_id/documentation_format. Synthetic only; real patient data is held out as a separate external validation set. The controlled vocabulary mirrors notevahti.corpus.synthetic (single source of truth); TNM completeness mirrors notevahti.extractors.rules.parse_tnm.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["case_id", "language", "documentation_format", "messiness", "truth", "note"],
+  "required": [
+    "case_id",
+    "record_id",
+    "language",
+    "documentation_format",
+    "messiness",
+    "split_hint",
+    "ground_truth",
+    "note_text"
+  ],
   "properties": {
-    "case_id": {
+    "dataset_version": { "const": "notevahti_lung_mdt_synthetic_v1", "default": "notevahti_lung_mdt_synthetic_v1" },
+    "case_id": { "type": "string", "minLength": 1, "examples": ["fi_0001"] },
+    "record_id": {
       "type": "string",
       "minLength": 1,
-      "description": "Stable id, unique at the case level, e.g. 'fi_0001'. Shared across rendered variants of the same patient.",
-      "examples": ["fi_0001"]
+      "description": "Conventionally '{case_id}_{documentation_format}', e.g. 'fi_0001_free_text'.",
+      "examples": ["fi_0001_free_text"]
     },
     "language": {
       "type": "string",
       "enum": ["fi", "sv", "nb", "da", "is", "en"],
       "description": "Norwegian Bokmål is 'nb' (repo-wide convention)."
     },
-    "source_type": {
-      "const": "synthetic",
-      "default": "synthetic"
-    },
+    "source_type": { "const": "synthetic", "default": "synthetic" },
     "documentation_format": {
       "type": "string",
-      "enum": ["free_text", "structured_mini", "structured_v3_1"],
-      "description": "Rendering of the same underlying case: free MDT prose, the structured-mini summary, or the structured v3.1 form."
+      "enum": ["free_text", "structured_mini", "structured_v3_1"]
     },
-    "messiness": {
-      "type": "string",
-      "enum": ["clean", "semistructured", "messy"]
-    },
-    "split": {
+    "messiness": { "type": "string", "enum": ["clean", "semistructured", "messy"] },
+    "split_hint": {
       "type": "string",
       "enum": ["train", "dev", "test"],
-      "description": "Assigned at the CASE level, never the variant level, to prevent leakage."
+      "description": "Assigned at the CASE level: all three records of a case_id share one value."
     },
-    "truth": {
+    "ground_truth": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["tnm", "treatment_intent"],
-      "description": "Machine-checkable ground truth.",
+      "required": ["mdt_status", "ecog_status", "tnm", "treatment_intent"],
       "properties": {
         "mdt_discussed": {
           "type": ["boolean", "null"],
-          "description": "true = documented as done, false = documented as not done / planned, null = not documented."
+          "description": "true = documented done, false = documented not done, null = unknown."
         },
-        "ecog_ps": {
-          "type": ["integer", "null"],
-          "minimum": 0,
-          "maximum": 4,
-          "description": "ECOG performance status, or null if not explicitly documented."
+        "mdt_status": {
+          "type": "string",
+          "enum": ["completed", "planned", "not_completed", "unknown"]
+        },
+        "ecog_ps": { "type": ["integer", "null"], "minimum": 0, "maximum": 4 },
+        "ecog_status": {
+          "type": "string",
+          "enum": ["explicit", "indirect", "missing", "conflicting", "unknown"]
         },
         "tnm": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["prefix", "completeness"],
+          "required": ["prefix", "complete", "ambiguous"],
           "properties": {
-            "prefix": {
-              "type": "string",
-              "enum": ["c", "yc", "p", "yp", "unknown", "ambiguous"]
-            },
+            "prefix": { "type": "string", "enum": ["c", "yc", "p", "yp", "unknown", "ambiguous"] },
             "t": { "type": ["string", "null"], "examples": ["T2a", "Tis", "Tx"] },
             "n": { "type": ["string", "null"], "examples": ["N1", "Nx"] },
             "m": { "type": ["string", "null"], "examples": ["M0", "M1b"] },
-            "completeness": {
-              "type": "string",
-              "enum": ["complete", "partial", "absent", "ambiguous"],
-              "description": "Same vocabulary as parse_tnm: complete = all of T/N/M present and coherent; partial = some present; absent = none; ambiguous = conflicting values."
-            },
-            "edition": {
-              "type": "string",
-              "default": "unknown",
-              "description": "'unknown' unless the case explicitly states one, e.g. '8th', '7th'.",
-              "examples": ["unknown", "8th", "7th"]
-            }
+            "full": { "type": ["string", "null"], "examples": ["cT2aN1M0"] },
+            "complete": { "type": "boolean" },
+            "ambiguous": { "type": "boolean", "description": "If true, expected_output.tnm.value must be null and requires_review true." },
+            "edition": { "type": "string", "default": "unknown", "examples": ["unknown", "8th", "7th"] }
           }
         },
-        "histology": { "type": ["string", "null"] },
         "stage_group": { "type": ["string", "null"], "examples": ["IIB", "IVA"] },
+        "histology": { "type": ["string", "null"] },
         "biomarkers": {
           "type": ["object", "null"],
           "additionalProperties": { "type": "string" },
-          "description": "Map of marker -> result, e.g. {\"egfr\": \"negative\", \"pdl1\": \"TPS 60%\"}."
+          "description": "Keys: egfr, alk, ros1, braf, met, ret, ntrk, kras, pdl1.",
+          "propertyNames": { "enum": ["egfr", "alk", "ros1", "braf", "met", "ret", "ntrk", "kras", "pdl1"] }
         },
         "treatment_intent": {
           "type": "string",
-          "enum": ["curative", "palliative", "diagnostic", "unknown"]
+          "enum": ["curative", "palliative", "diagnostic", "best_supportive_care", "unknown"]
         },
-        "recommendation": { "type": ["string", "null"] }
+        "mdt_recommendation": { "type": ["string", "null"] },
+        "imaging_summary": { "type": ["string", "null"] },
+        "pathology_summary": { "type": ["string", "null"] },
+        "diagnostic_uncertainty": { "type": ["boolean", "string", "null"] },
+        "review_required": { "type": ["boolean", "null"] }
       }
     },
-    "note": {
-      "type": "string",
-      "minLength": 1,
-      "description": "The MDT note text for this rendered variant."
-    },
+    "note_text": { "type": "string", "minLength": 1 },
     "expected_output": {
       "type": "object",
-      "description": "Supervised target: per field, the value, its verbatim in-note evidence, and a review flag.",
+      "description": "Supervised target. Must include mdt_discussed, ecog_ps and tnm. Evidence (when not null) must be an exact span of note_text.",
       "additionalProperties": {
         "type": "object",
         "required": ["value"],
         "properties": {
           "value": {},
           "evidence": { "type": ["string", "null"] },
-          "requires_review": { "type": "boolean", "default": false }
+          "requires_review": { "type": "boolean", "default": false },
+          "components": { "type": ["object", "null"] }
         }
       }
     },
-    "difficulty_tags": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "enum": [
-          "explicit",
-          "missing_ecog",
-          "partial_tnm",
-          "conflicting_tnm",
-          "old_staging",
-          "future_mdt",
-          "negated_mdt",
-          "indirect_ecog",
-          "distractor_biomarkers",
-          "multilingual_abbreviation"
-        ]
+    "quality_labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "has_negation": { "type": "boolean" },
+        "has_conflict": { "type": "boolean" },
+        "has_missing_ecog": { "type": "boolean" },
+        "has_partial_tnm": { "type": "boolean" },
+        "has_old_staging": { "type": "boolean" },
+        "has_future_mdt": { "type": "boolean" },
+        "has_indirect_ecog": { "type": "boolean" },
+        "requires_review": { "type": "boolean" },
+        "registry_ready": { "type": "boolean" }
       }
     }
   }

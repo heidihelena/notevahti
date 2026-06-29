@@ -1,33 +1,44 @@
 {
+  "dataset_version": "notevahti_lung_mdt_synthetic_v1",
   "case_id": "fi_0001",
+  "record_id": "fi_0001_free_text",
   "language": "fi",
   "source_type": "synthetic",
   "documentation_format": "free_text",
   "messiness": "semistructured",
-  "split": "train",
-  "truth": {
+  "split_hint": "train",
+  "ground_truth": {
     "mdt_discussed": true,
+    "mdt_status": "completed",
     "ecog_ps": 1,
+    "ecog_status": "explicit",
     "tnm": {
       "prefix": "c",
       "t": "T2a",
       "n": "N1",
       "m": "M0",
-      "completeness": "complete",
+      "full": "cT2aN1M0",
+      "complete": true,
+      "ambiguous": false,
       "edition": "unknown"
     },
-    "histology": "adenocarcinoma",
     "stage_group": "IIB",
+    "histology": "adenocarcinoma",
     "biomarkers": {
       "egfr": "negative",
       "alk": "negative",
       "ros1": "negative",
+      "braf": "not_reported",
+      "met": "not_reported",
+      "ret": "not_reported",
+      "ntrk": "not_reported",
+      "kras": "not_reported",
       "pdl1": "TPS 60%"
     },
     "treatment_intent": "curative",
-    "recommendation": "surgery after preoperative evaluation"
+    "mdt_recommendation": "leikkausarvio"
   },
-  "note": "Potilas käsitelty keuhkosyövän MDT-kokouksessa. TT- ja PET-löydösten perusteella cT2aN1M0. Histologia adenokarsinooma. ECOG 1. EGFR, ALK ja ROS1 negatiiviset, PD-L1 TPS 60 %. Suositellaan leikkausarviota kuratiivisella intentiolla.",
+  "note_text": "Potilas käsitelty keuhkosyövän MDT-kokouksessa. TT- ja PET-löydösten perusteella cT2aN1M0. Histologia adenokarsinooma. ECOG 1. EGFR, ALK ja ROS1 negatiiviset, PD-L1 TPS 60 %. Suositellaan leikkausarviota kuratiivisella intentiolla.",
   "expected_output": {
     "mdt_discussed": {
       "value": true,
@@ -41,9 +52,20 @@
     },
     "tnm": {
       "value": "cT2aN1M0",
+      "components": { "prefix": "c", "t": "T2a", "n": "N1", "m": "M0" },
       "evidence": "cT2aN1M0",
       "requires_review": false
     }
   },
-  "difficulty_tags": ["explicit", "distractor_biomarkers"]
+  "quality_labels": {
+    "has_negation": false,
+    "has_conflict": false,
+    "has_missing_ecog": false,
+    "has_partial_tnm": false,
+    "has_old_staging": false,
+    "has_future_mdt": false,
+    "has_indirect_ecog": false,
+    "requires_review": false,
+    "registry_ready": true
+  }
 }

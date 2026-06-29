@@ -4,23 +4,16 @@
 deterministic Python generator* for the synthetic Stage-1 corpus and then validate its own output.
 It is a specification, not runnable code.
 
-> **Reconciliation note (read before running).** This prompt defines a *richer* per-row schema than
-> the contract already committed in
-> [`corpus/schema/synthetic_case.schema.json`](../../corpus/schema/synthetic_case.schema.json) and
-> [`notevahti.corpus.synthetic`](../../src/notevahti/corpus/synthetic.py). Differences to settle
-> first (pick one source of truth):
-> - top-level `ground_truth` vs the model's `truth`; `note_text` vs `note`;
-> - `tnm.complete` + `tnm.ambiguous` + `tnm.full` vs the model's single `completeness` enum
->   (`complete|partial|absent|ambiguous`, same vocabulary as `parse_tnm`);
-> - `quality_labels` (boolean flags) vs the model's `difficulty_tags` (string enum);
-> - `split_hint` vs `split`; extra keys `dataset_version`, `record_id`, `mdt_status`, `ecog_status`,
->   the `ntrk` biomarker, and the secondary fields `imaging_summary`, `pathology_summary`,
->   `diagnostic_uncertainty`, `review_required`.
->
-> Either (a) extend `notevahti.corpus.synthetic` + the JSON Schema to this richer shape and keep the
-> cross-check test green, or (b) have the generator emit this shape plus a thin adapter to the
-> committed model. Do **not** ship a generator whose rows fail `validate_case`. Norwegian Bokmål is
-> `nb` repo-wide (this prompt already uses `nb`).
+> **Schema status: aligned.** This prompt's per-row schema is now the canonical model. The committed
+> contract — [`corpus/schema/synthetic_case.schema.json`](../../corpus/schema/synthetic_case.schema.json)
+> and [`notevahti.corpus.synthetic`](../../src/notevahti/corpus/synthetic.py) (`SyntheticRow`,
+> `validate_row`) — matches it: `ground_truth`, `note_text`, `record_id`, `split_hint`, `mdt_status`,
+> `ecog_status`, the `ntrk` biomarker, the secondary fields, `tnm.complete`/`tnm.ambiguous`/`tnm.full`,
+> and `quality_labels` are all modelled. `validate_row` additionally enforces the QC invariants below
+> (evidence is an exact span of `note_text`; ambiguous TNM is not resolved; a planned MDT is not
+> completed; missing/indirect ECOG is not numericised; `record_id` = `{case_id}_{documentation_format}`).
+> The generator should call `validate_row` on every row and fail on any error. Norwegian Bokmål is
+> `nb` repo-wide.
 
 ---
 

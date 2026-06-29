@@ -84,17 +84,24 @@ ambiguity, negation, temporality). Target distribution:
 These map directly to the behaviours NoteVahti's deterministic core and reference extractor already
 encode (negation, future-intent suppression, conservative TNM, no-guess on conflict).
 
-## Case model
+## Record model
 
-The canonical on-disk shape is one JSON object per case. Required: `case_id`, `language`,
-`documentation_format`, `messiness`, `truth`, `note`. The `truth` block is the machine-checkable
-ground truth; `expected_output` is the supervised target (value + verbatim evidence +
-`requires_review`); `difficulty_tags` records the case type. TNM uses the same vocabulary as
-`parse_tnm` (`prefix`, `t`, `n`, `m`, `completeness`, `edition`).
+The canonical on-disk shape is the **row schema**: one JSON object per text record, so each
+`case_id` appears three times (once per documentation format) with a distinct `record_id`. Required:
+`case_id`, `record_id`, `language`, `documentation_format`, `messiness`, `split_hint`,
+`ground_truth`, `note_text`. The `ground_truth` block is the machine-checkable truth (authored
+first); `expected_output` is the supervised target (value + verbatim evidence + `requires_review`,
+plus TNM `components`); `quality_labels` carries the per-record flags. TNM keeps the generator's
+`complete`/`ambiguous` booleans, and `Tnm.completeness` derives the same vocabulary as `parse_tnm`
+(`complete`/`partial`/`absent`/`ambiguous`).
 
-A worked example is committed at
-[`corpus/schema/example_case.fi.json`](../../corpus/schema/example_case.fi.json). The full field
-list, enums and defaults are in the JSON Schema.
+This is the shape produced by
+[`synthetic_corpus_generator_prompt.md`](synthetic_corpus_generator_prompt.md). It is defined once in
+[`notevahti.corpus.synthetic`](../../src/notevahti/corpus/synthetic.py) (typed model +
+`validate_row`, which also enforces the generator's quality invariants) and mirrored by the JSON
+Schema [`corpus/schema/synthetic_case.schema.json`](../../corpus/schema/synthetic_case.schema.json);
+a test keeps the two in sync. A worked example is committed at
+[`corpus/schema/example_case.fi.json`](../../corpus/schema/example_case.fi.json).
 
 ## Fine-tuning format
 
