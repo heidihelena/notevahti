@@ -25,7 +25,7 @@ from .evidence_pack import (
     to_markdown,
 )
 from .preregistration import PreregSpec, preregistration_markdown
-from .registry_yield import RegistryYield, registry_ready_yield
+from .registry_yield import RegistryYield, is_registry_ready, registry_ready_yield
 
 __all__ = [
     "EvidencePack",
@@ -39,6 +39,7 @@ __all__ = [
     "build_evidence_pack",
     "default_heuristic_card",
     "flag_discrimination",
+    "is_registry_ready",
     "ordinal_agreement",
     "preregistration_markdown",
     "registry_ready_yield",

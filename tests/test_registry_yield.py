@@ -1,6 +1,6 @@
 """Registry-ready yield analytics."""
 
-from notevahti.analytics.registry_yield import registry_ready_yield
+from notevahti.analytics.registry_yield import is_registry_ready, registry_ready_yield
 from notevahti.types import (
     Agreement,
     AgreementStatus,
@@ -85,3 +85,26 @@ def test_threshold_changes_yield_deterministically():
 def test_empty_is_zero():
     r = registry_ready_yield([])
     assert r.n_total == 0 and r.registry_ready_yield == 0.0
+
+
+def test_is_registry_ready_matches_aggregate():
+    # The single-record predicate must agree with the aggregate's headline count, since both
+    # share one definition of "registry-ready".
+    cases = [
+        _rec(),
+        _rec(no_span=True),
+        _rec(flagged=True),
+        _rec(score=0.5),
+        _rec(independence=IndependenceStatus.VIOLATED),
+    ]
+    for rec in cases:
+        ready = is_registry_ready(rec)
+        assert ready == (registry_ready_yield([rec]).n_registry_ready == 1)
+    assert is_registry_ready(_rec()) is True
+    assert is_registry_ready(_rec(no_span=True)) is False
+
+
+def test_is_registry_ready_respects_threshold():
+    rec = _rec(score=0.75)
+    assert is_registry_ready(rec, min_score=0.70) is True
+    assert is_registry_ready(rec, min_score=0.80) is False

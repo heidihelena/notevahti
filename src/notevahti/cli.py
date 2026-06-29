@@ -16,7 +16,7 @@ import sys
 from typing import Any
 
 from . import __version__
-from .analytics.registry_yield import registry_ready_yield
+from .analytics.registry_yield import is_registry_ready
 from .audit import AuditLog, audit_payload
 from .batch import validate_batch
 from .extractors.rules import MODEL_ID, RuleBasedExtractor, rules_lineage
@@ -146,56 +146,69 @@ def _run_extract_validate(args: argparse.Namespace, parser: argparse.ArgumentPar
             parser.error(f"record {i} must have 'note' and 'fields'")
         record_id = str(rec.get("record_id", f"rec-{i:04d}"))
         note = rec["note"]
-        fields_out: dict[str, Any] = {}
-        for field_name in rec["fields"]:
-            ftype = extractor.field_type(field_name) or FieldType.TEXT
-            cands = extractor.candidates(note, field_name)
-            chosen = extractor.extract(note, FieldSpec(name=field_name, field_type=ftype))
-            entry: dict[str, Any] = {
-                "candidates": [
-                    {
-                        "value": c.value,
-                        "matched_text": c.matched_text,
-                        "span": list(c.span),
-                        "negated": c.negated,
-                    }
-                    for c in cands
-                ],
-                "chosen": None,
-                "validation": None,
-                "route": None,
-                "registry_ready": None,
-            }
-            if chosen.value:
-                entry["chosen"] = {"value": chosen.value, "span": list(chosen.source_span or ())}
-                vrec = validate_field(
-                    chosen.value,
-                    note,
-                    field_type=ftype,
-                    field_name=field_name,
-                    claimed_span=chosen.source_span,
-                    value_lineage=rules_lineage(source_id=record_id),
-                    review_threshold=args.threshold,
-                )
-                route = route_validation(vrec)
-                entry["validation"] = vrec.to_dict()
-                entry["route"] = route.to_dict()
-                entry["registry_ready"] = (
-                    registry_ready_yield([vrec], min_score=args.threshold).n_registry_ready == 1
-                )
-                if audit_log is not None:
-                    audit_log.append(
-                        record_id=f"{record_id}:{field_name}",
-                        timestamp=_edge_timestamp(),
-                        actor=f"extract-validate:{MODEL_ID}",
-                        payload=audit_payload(vrec, note=note, routing=route.to_dict()),
-                    )
-            fields_out[field_name] = entry
+        fields_out = {
+            field_name: _process_field(extractor, note, field_name, record_id, args, audit_log)
+            for field_name in rec["fields"]
+        }
         out_records.append({"record_id": record_id, "fields": fields_out})
 
     out = {"extractor": args.extractor, "notevahti_version": __version__, "records": out_records}
     _write(json.dumps(out, indent=2, ensure_ascii=False), args.out)
     return 0
+
+
+def _process_field(
+    extractor: RuleBasedExtractor,
+    note: str,
+    field_name: str,
+    record_id: str,
+    args: argparse.Namespace,
+    audit_log: AuditLog | None,
+) -> dict[str, Any]:
+    """Extract, validate and route one field of one record into a JSON-ready entry."""
+    ftype = extractor.field_type(field_name) or FieldType.TEXT
+    cands = extractor.candidates(note, field_name)
+    chosen = extractor.extract(note, FieldSpec(name=field_name, field_type=ftype))
+    entry: dict[str, Any] = {
+        "candidates": [
+            {
+                "value": c.value,
+                "matched_text": c.matched_text,
+                "span": list(c.span),
+                "negated": c.negated,
+            }
+            for c in cands
+        ],
+        "chosen": None,
+        "validation": None,
+        "route": None,
+        "registry_ready": None,
+    }
+    if not chosen.value:
+        return entry  # no value (absent or ambiguous): nothing to validate
+
+    entry["chosen"] = {"value": chosen.value, "span": list(chosen.source_span or ())}
+    vrec = validate_field(
+        chosen.value,
+        note,
+        field_type=ftype,
+        field_name=field_name,
+        claimed_span=chosen.source_span,
+        value_lineage=rules_lineage(source_id=record_id),
+        review_threshold=args.threshold,
+    )
+    route = route_validation(vrec)
+    entry["validation"] = vrec.to_dict()
+    entry["route"] = route.to_dict()
+    entry["registry_ready"] = is_registry_ready(vrec, min_score=args.threshold)
+    if audit_log is not None:
+        audit_log.append(
+            record_id=f"{record_id}:{field_name}",
+            timestamp=_edge_timestamp(),
+            actor=f"extract-validate:{MODEL_ID}",
+            payload=audit_payload(vrec, note=note, routing=route.to_dict()),
+        )
+    return entry
 
 
 def _edge_timestamp() -> str:

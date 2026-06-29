@@ -91,6 +91,18 @@ def _collapse(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+# --------------------------------------------------------------------------- TNM token grammar
+# Single source of truth for the surface grammar of TNM components and prefixes. Both the
+# extraction rules in ``_RULES`` and the structural :func:`parse_tnm` are composed from these
+# fragments, so the grammar is defined in exactly one place.
+_T_FRAG = r"T(?:is|[0-4][a-d]?|x)"
+_N_FRAG = r"N[0-3x]"
+_M_FRAG = r"M[01][a-c]?"
+_PFX_CLIN = r"(?:c|yc)"  # clinical / post-therapy clinical
+_PFX_PATH = r"(?:p|yp)"  # pathological / post-therapy pathological
+_PFX_ANY = r"(?:c|yc|p|yp)"
+
+
 # --------------------------------------------------------------------------- pattern catalogue
 # Versioned with MODEL_ID. Surface forms in fi / sv / en; canonical values are English/universal.
 
@@ -98,25 +110,23 @@ _RULES: tuple[_Rule, ...] = (
     # --- clinical vs pathological TNM (UICC 8th ed.) ----------------------------------------
     # combined cTNM with optional c/yc prefix (or none); pathological requires p/yp prefix.
     _Rule(
-        _c(r"(?i)(?<![A-Za-z])(?:c|yc)?T(?:is|[0-4][a-d]?|x)\s?N[0-3x]\s?M[01][a-c]?"),
+        _c(rf"(?i)(?<![A-Za-z]){_PFX_CLIN}?{_T_FRAG}\s?{_N_FRAG}\s?{_M_FRAG}"),
         "clinical_stage",
         FieldType.STAGING,
     ),
     _Rule(
-        _c(r"(?i)(?<![A-Za-z])(?:p|yp)T(?:is|[0-4][a-d]?|x)\s?N[0-3x]\s?M[01][a-c]?"),
+        _c(rf"(?i)(?<![A-Za-z]){_PFX_PATH}{_T_FRAG}\s?{_N_FRAG}\s?{_M_FRAG}"),
         "pathological_stage",
         FieldType.STAGING,
     ),
     # lone clinical T/N/M components (no combined form): clinical only (c/none), not p-prefixed.
     _Rule(
-        _c(r"(?i)(?<![A-Za-z])c?T(?:is|[0-4][a-d]?|x)(?![A-Za-z0-9])"),
+        _c(rf"(?i)(?<![A-Za-z])c?{_T_FRAG}(?![A-Za-z0-9])"),
         "clinical_stage",
         FieldType.STAGING,
     ),
-    _Rule(_c(r"(?i)(?<![A-Za-z])c?N[0-3](?![A-Za-z0-9])"), "clinical_stage", FieldType.STAGING),
-    _Rule(
-        _c(r"(?i)(?<![A-Za-z])c?M[01][a-c]?(?![A-Za-z0-9])"), "clinical_stage", FieldType.STAGING
-    ),
+    _Rule(_c(rf"(?i)(?<![A-Za-z])c?{_N_FRAG}(?![A-Za-z0-9])"), "clinical_stage", FieldType.STAGING),
+    _Rule(_c(rf"(?i)(?<![A-Za-z])c?{_M_FRAG}(?![A-Za-z0-9])"), "clinical_stage", FieldType.STAGING),
     # stage group: require a stage keyword nearby (fi/sv/en) to avoid stray Roman numerals.
     _Rule(
         _c(
@@ -565,19 +575,29 @@ def iter_rule_fields() -> Iterable[str]:
 
 # A TNM "run" is a contiguous (optionally space-separated) sequence of T/N/M tokens with an
 # optional leading descriptor prefix. Components inside a run are extracted with the sub-scanners,
-# so compact forms ("cT2aN0M0") and spaced forms ("cT2a N0 M0") parse identically.
-_PFX = r"(?:c|yc|p|yp)"
-_TOK = r"(?:T(?:is|[0-4][a-d]?|x)|N[0-3]|M[01][a-c]?)"
-_TNM_RUN = re.compile(rf"(?i)(?<![A-Za-z]){_PFX}?{_TOK}(?:\s?{_PFX}?{_TOK})*")
-_T_SUB = re.compile(r"(?i)T(?:is|[0-4][a-d]?|x)")
-_N_SUB = re.compile(r"(?i)N[0-3]")
-_M_SUB = re.compile(r"(?i)M[01][a-c]?")
-_PFX_LEAD = re.compile(rf"(?i)^({_PFX})")
+# so compact forms ("cT2aN0M0") and spaced forms ("cT2a N0 M0") parse identically. All token
+# grammar comes from the shared fragments above, so it is defined in exactly one place.
+_TOK = rf"(?:{_T_FRAG}|{_N_FRAG}|{_M_FRAG})"
+_TNM_RUN = re.compile(rf"(?i)(?<![A-Za-z]){_PFX_ANY}?{_TOK}(?:\s?{_PFX_ANY}?{_TOK})*")
+_T_SUB = re.compile(rf"(?i){_T_FRAG}")
+_N_SUB = re.compile(rf"(?i){_N_FRAG}")
+_M_SUB = re.compile(rf"(?i){_M_FRAG}")
+_PFX_LEAD = re.compile(rf"(?i)^({_PFX_ANY})")
 _EDITION_RE = re.compile(r"(?i)(?:UICC|AJCC|TNM)?\s*(\d)(?:th|rd|nd|st)\s*ed(?:ition)?")
+
+# The edition assumed when a note states none; any other stated edition is flagged for review.
+_DEFAULT_EDITION = "8th"
 
 
 def _norm_component(text: str) -> str:
     return text[0].upper() + text[1:].lower()
+
+
+def _resolve(values: set[str], default: str) -> str:
+    """Collapse a value set to a single label: the lone value, ``default`` if empty, else mixed."""
+    if len(values) == 1:
+        return next(iter(values))
+    return "ambiguous" if values else default
 
 
 @dataclass(frozen=True)
@@ -595,6 +615,34 @@ class TnmParse:
     spans: tuple[tuple[int, int], ...]
 
 
+@dataclass
+class _TnmScan:
+    """Raw findings from scanning the TNM runs in a note, before classification."""
+
+    t_vals: set[str]
+    n_vals: set[str]
+    m_vals: set[str]
+    prefixes: set[str]
+    spans: list[tuple[int, int]]
+
+
+def _scan_tnm_runs(note: str) -> _TnmScan:
+    """Collect distinct T/N/M component values, prefixes and spans from every TNM run."""
+    scan = _TnmScan(set(), set(), set(), set(), [])
+    buckets = ((_T_SUB, scan.t_vals), (_N_SUB, scan.n_vals), (_M_SUB, scan.m_vals))
+    for run in _TNM_RUN.finditer(note):
+        text, base = run.group(0), run.start()
+        lead = _PFX_LEAD.match(text)
+        if lead:
+            scan.prefixes.add(lead.group(1).lower())
+        for sub, bucket in buckets:
+            sm = sub.search(text)
+            if sm:
+                bucket.add(_norm_component(sm.group(0)))
+                scan.spans.append((base + sm.start(), base + sm.end()))
+    return scan
+
+
 def parse_tnm(note: str) -> TnmParse:
     """Structurally read TNM from a note WITHOUT inferring a stage.
 
@@ -603,39 +651,13 @@ def parse_tnm(note: str) -> TnmParse:
     ``edition`` is ``'unknown'`` unless explicitly stated. Default-vs-old edition or any ambiguity
     sets ``review_recommended`` so old/conflicting staging is never silently accepted.
     """
-    t_vals: set[str] = set()
-    n_vals: set[str] = set()
-    m_vals: set[str] = set()
-    prefixes: set[str] = set()
-    t_spans: list[tuple[int, int]] = []
-    n_spans: list[tuple[int, int]] = []
-    m_spans: list[tuple[int, int]] = []
-    for run in _TNM_RUN.finditer(note):
-        text, base = run.group(0), run.start()
-        lead = _PFX_LEAD.match(text)
-        if lead:
-            prefixes.add(lead.group(1).lower())
-        for sub, bucket, sp in (
-            (_T_SUB, t_vals, t_spans),
-            (_N_SUB, n_vals, n_spans),
-            (_M_SUB, m_vals, m_spans),
-        ):
-            sm = sub.search(text)
-            if sm:
-                bucket.add(_norm_component(sm.group(0)))
-                sp.append((base + sm.start(), base + sm.end()))
-
+    scan = _scan_tnm_runs(note)
     editions = {f"{m.group(1)}th" for m in _EDITION_RE.finditer(note)}
 
-    conflicting = (
-        len(t_vals) > 1
-        or len(n_vals) > 1
-        or len(m_vals) > 1
-        or len(prefixes) > 1
-        or len(editions) > 1
+    present = [bool(scan.t_vals), bool(scan.n_vals), bool(scan.m_vals)]
+    conflicting = any(
+        len(s) > 1 for s in (scan.t_vals, scan.n_vals, scan.m_vals, scan.prefixes, editions)
     )
-    present = [bool(t_vals), bool(n_vals), bool(m_vals)]
-
     if not any(present):
         completeness = "absent"
     elif conflicting:
@@ -645,35 +667,22 @@ def parse_tnm(note: str) -> TnmParse:
     else:
         completeness = "partial"
 
-    def _one(vals: set[str]) -> str | None:
-        return next(iter(vals)) if len(vals) == 1 else None
+    prefix = _resolve(scan.prefixes, "unknown")
+    edition = _resolve(editions, "unknown")
 
-    if len(prefixes) == 1:
-        prefix = next(iter(prefixes))
-    elif len(prefixes) > 1:
-        prefix = "ambiguous"
-    else:
-        prefix = "unknown"
+    # A single coherent (non-ambiguous) component value per axis, else None.
+    t = n = m = None
+    if completeness != "ambiguous":
+        t, n, m = (_resolve(s, "") or None for s in (scan.t_vals, scan.n_vals, scan.m_vals))
 
-    if len(editions) == 1:
-        edition = next(iter(editions))
-    elif len(editions) > 1:
-        edition = "ambiguous"
-    else:
-        edition = "unknown"
-
-    t = _one(t_vals) if completeness != "ambiguous" else None
-    n = _one(n_vals) if completeness != "ambiguous" else None
-    m = _one(m_vals) if completeness != "ambiguous" else None
-
-    spans: tuple[tuple[int, int], ...] = tuple(sorted(t_spans + n_spans + m_spans))
+    spans = tuple(sorted(scan.spans))
     # Build a combined surface only for a single coherent complete/partial read.
     surface: str | None = None
     if completeness in ("complete", "partial"):
         prefix_str = "" if prefix in ("unknown", "ambiguous") else prefix
         surface = " ".join(p for p in (prefix_str + (t or ""), n, m) if p) or None
 
-    review_recommended = completeness == "ambiguous" or edition not in ("unknown", "8th")
+    review_recommended = completeness == "ambiguous" or edition not in ("unknown", _DEFAULT_EDITION)
     return TnmParse(
         surface=surface,
         prefix=prefix,
